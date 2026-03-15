@@ -94,9 +94,9 @@ export default function HomePage() {
               <MotionButtonWrap className="w-full sm:w-auto">
                 <Button
                   asChild
-                  className="w-full bg-slate-950 bg-gradient-to-br from-slate-800 via-slate-950 to-slate-950 sm:w-auto"
+                  className="w-full bg-slate-950 bg-gradient-to-br from-slate-900 via-slate-950 to-slate-950 font-bold text-white shadow-[0_1px_2px_rgba(0,0,0,0.1),0_8px_16px_rgba(0,0,0,0.1),0_16px_32px_-8px_rgba(0,0,0,0.2)] ring-1 ring-white/20 sm:w-auto"
                 >
-                  <Link href="/sign-up">Start free</Link>
+                  <Link href="/sign-up">Start for free</Link>
                 </Button>
               </MotionButtonWrap>
             </div>
@@ -135,7 +135,7 @@ export default function HomePage() {
                       <Button
                         asChild
                         size="lg"
-                        className="w-full bg-slate-950 bg-gradient-to-br from-slate-800 via-slate-950 to-slate-950 sm:w-auto"
+                        className="group w-full bg-slate-950 bg-gradient-to-br from-slate-900 via-black to-slate-950 font-bold text-white shadow-[0_1px_2px_rgba(0,0,0,0.1),0_12px_24px_rgba(0,0,0,0.15),0_24px_48px_-12px_rgba(0,0,0,0.25)] ring-1 ring-white/20 sm:w-auto"
                       >
                         <Link href="/sign-up">
                           Build your first resume

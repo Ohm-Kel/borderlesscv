@@ -92,24 +92,80 @@ const professionalHeadlineOptions = [
 
 const professionalHeadlineOptionSet = new Set<string>(professionalHeadlineOptions);
 
+type OnboardingFormState = {
+  name: string;
+  headline: string;
+  location: string;
+  phone: string;
+  links: LinkEntry[];
+  targetCountries: string[];
+  targetRoles: string[];
+  experienceLevel: "STUDENT" | "GRADUATE" | "EARLY_CAREER";
+};
+
+type OnboardingFieldErrors = Partial<Record<"name" | "headline" | "location" | "phone" | "links" | "targetCountries" | "targetRoles", string>>;
+
+function normalizeLinks(links: LinkEntry[]) {
+  return links.filter((link) => link.label.trim() || link.url.trim());
+}
+
+function getStepFieldErrors(step: number, form: OnboardingFormState): OnboardingFieldErrors {
+  const errors: OnboardingFieldErrors = {};
+
+  if (step === 1) {
+    if (form.name.trim().length < 2) {
+      errors.name = "Enter your full name.";
+    }
+    if (form.headline.trim().length < 2) {
+      errors.headline = "Choose a professional headline or write your own.";
+    }
+    if (form.location.trim().length < 2) {
+      errors.location = "Enter your location.";
+    }
+    if (form.phone.trim().length < 7) {
+      errors.phone = "Enter a valid phone number.";
+    }
+
+    const incompleteLinks = normalizeLinks(form.links).some((link) => !link.label.trim() || !link.url.trim());
+    if (incompleteLinks) {
+      errors.links = "Complete each professional link or remove the unfinished row.";
+    }
+  }
+
+  if (step === 2) {
+    if (form.targetCountries.length === 0) {
+      errors.targetCountries = "Pick at least one target country.";
+    }
+    if (form.targetRoles.length === 0) {
+      errors.targetRoles = "Add at least one target role before continuing.";
+    }
+  }
+
+  return errors;
+}
+
+function getFirstErrorMessage(errors: OnboardingFieldErrors) {
+  return Object.values(errors).find(Boolean) ?? "Please review the form and try again.";
+}
+
+function getStepForField(field: keyof OnboardingFieldErrors) {
+  if (field === "targetCountries" || field === "targetRoles") {
+    return 2;
+  }
+
+  return 1;
+}
+
 export function OnboardingForm({
   initialData,
 }: {
-  initialData: {
-    name: string;
-    headline: string;
-    location: string;
-    phone: string;
-    links: LinkEntry[];
-    targetCountries: string[];
-    targetRoles: string[];
-    experienceLevel: "STUDENT" | "GRADUATE" | "EARLY_CAREER";
-  };
+  initialData: OnboardingFormState;
 }) {
   const router = useRouter();
   const [step, setStep] = useState(1);
   const [pending, setPending] = useState(false);
   const [form, setForm] = useState(initialData);
+  const [errors, setErrors] = useState<OnboardingFieldErrors>({});
   const [headlineSelection, setHeadlineSelection] = useState<string>(() => {
     if (!initialData.headline) {
       return "";
@@ -127,6 +183,7 @@ export function OnboardingForm({
 
   function handleHeadlineSelectionChange(value: string) {
     setHeadlineSelection(value);
+    setErrors((current) => ({ ...current, headline: undefined }));
 
     if (value === customHeadlineValue) {
       const nextCustomHeadline = customHeadline || form.headline;
@@ -138,25 +195,83 @@ export function OnboardingForm({
     setForm((current) => ({ ...current, headline: value }));
   }
 
+  function handleContinue() {
+    const stepErrors = getStepFieldErrors(step, form);
+
+    if (Object.keys(stepErrors).length > 0) {
+      setErrors(stepErrors);
+      toast.error("Complete this step first", {
+        description: getFirstErrorMessage(stepErrors),
+      });
+      return;
+    }
+
+    setErrors({});
+    setStep((current) => Math.min(3, current + 1));
+  }
+
   async function handleSubmit() {
+    const normalizedForm = {
+      ...form,
+      links: normalizeLinks(form.links),
+    };
+    const identityErrors = getStepFieldErrors(1, normalizedForm);
+    const targetErrors = getStepFieldErrors(2, normalizedForm);
+    const combinedErrors = {
+      ...identityErrors,
+      ...targetErrors,
+    };
+
+    if (Object.keys(combinedErrors).length > 0) {
+      const firstField = Object.keys(combinedErrors)[0] as keyof OnboardingFieldErrors;
+      setErrors(combinedErrors);
+      setStep(getStepForField(firstField));
+      toast.error("Complete the missing onboarding details", {
+        description: getFirstErrorMessage(combinedErrors),
+      });
+      return;
+    }
+
     setPending(true);
 
     const response = await fetch("/api/onboarding", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(form),
+      body: JSON.stringify(normalizedForm),
     });
 
     const payload = await response.json();
     setPending(false);
 
     if (!response.ok) {
+      if (payload?.error && typeof payload.error === "object") {
+        const serverErrors = Object.fromEntries(
+          Object.entries(payload.error).map(([key, value]) => [key, Array.isArray(value) ? value[0] : value]),
+        ) as OnboardingFieldErrors;
+        const firstField = Object.keys(serverErrors)[0] as keyof OnboardingFieldErrors | undefined;
+
+        setErrors(serverErrors);
+        if (firstField) {
+          setStep(getStepForField(firstField));
+        }
+      }
+
       toast.error("Could not save onboarding", {
-        description: typeof payload.error === "string" ? payload.error : "Please review the form and try again.",
+        description:
+          typeof payload.error === "string"
+            ? payload.error
+            : payload?.error && typeof payload.error === "object"
+              ? getFirstErrorMessage(
+                  Object.fromEntries(
+                    Object.entries(payload.error).map(([key, value]) => [key, Array.isArray(value) ? value[0] : value]),
+                  ) as OnboardingFieldErrors,
+                )
+              : "Please review the form and try again.",
       });
       return;
     }
 
+    setErrors({});
     router.push("/dashboard");
     router.refresh();
   }
@@ -248,9 +363,13 @@ export function OnboardingForm({
                 <Input
                   id="name"
                   value={form.name}
-                  onChange={(e) => setForm((c) => ({ ...c, name: e.target.value }))}
+                  onChange={(e) => {
+                    setForm((c) => ({ ...c, name: e.target.value }));
+                    setErrors((current) => ({ ...current, name: undefined }));
+                  }}
                   placeholder="Ama Mensah"
                 />
+                {errors.name ? <p className="text-[0.76rem] text-rose-500">{errors.name}</p> : null}
               </div>
               <div className="space-y-2">
                 <Label className="flex items-center gap-2 text-[0.72rem] font-semibold uppercase tracking-[0.18em] text-slate-500">
@@ -291,6 +410,7 @@ export function OnboardingForm({
                         const value = e.target.value;
                         setCustomHeadline(value);
                         setForm((current) => ({ ...current, headline: value }));
+                        setErrors((current) => ({ ...current, headline: undefined }));
                       }}
                       placeholder="Write your own headline"
                     />
@@ -298,6 +418,7 @@ export function OnboardingForm({
                   <p className="text-[0.76rem] leading-[1.7] text-slate-400">
                     Pick the closest role label for now. You can refine it later in your profile.
                   </p>
+                  {errors.headline ? <p className="text-[0.76rem] text-rose-500">{errors.headline}</p> : null}
                 </div>
               </div>
               <div className="space-y-2">
@@ -307,9 +428,13 @@ export function OnboardingForm({
                 <Input
                   id="location"
                   value={form.location}
-                  onChange={(e) => setForm((c) => ({ ...c, location: e.target.value }))}
+                  onChange={(e) => {
+                    setForm((c) => ({ ...c, location: e.target.value }));
+                    setErrors((current) => ({ ...current, location: undefined }));
+                  }}
                   placeholder="Accra, Ghana"
                 />
+                {errors.location ? <p className="text-[0.76rem] text-rose-500">{errors.location}</p> : null}
               </div>
               <div className="space-y-2">
                 <Label htmlFor="phone" className="text-[0.72rem] font-semibold uppercase tracking-[0.18em] text-slate-500">
@@ -318,17 +443,25 @@ export function OnboardingForm({
                 <Input
                   id="phone"
                   value={form.phone}
-                  onChange={(e) => setForm((c) => ({ ...c, phone: e.target.value }))}
+                  onChange={(e) => {
+                    setForm((c) => ({ ...c, phone: e.target.value }));
+                    setErrors((current) => ({ ...current, phone: undefined }));
+                  }}
                   placeholder="+233..."
                 />
+                {errors.phone ? <p className="text-[0.76rem] text-rose-500">{errors.phone}</p> : null}
               </div>
               <div className="md:col-span-2">
                 <LinkEditor
                   items={form.links}
-                  onChange={(links) => setForm((c) => ({ ...c, links }))}
+                  onChange={(links) => {
+                    setForm((c) => ({ ...c, links }));
+                    setErrors((current) => ({ ...current, links: undefined }));
+                  }}
                   title="Professional links"
                   description="Add only links you are comfortable sharing on resumes and applications."
                 />
+                {errors.links ? <p className="mt-2 text-[0.76rem] text-rose-500">{errors.links}</p> : null}
               </div>
             </div>
           )}
@@ -348,12 +481,15 @@ export function OnboardingForm({
                         key={country.value}
                         type="button"
                         onClick={() =>
-                          setForm((c) => ({
-                            ...c,
-                            targetCountries: selected
-                              ? c.targetCountries.filter((v) => v !== country.value)
-                              : [...c.targetCountries, country.value],
-                          }))
+                          {
+                            setForm((c) => ({
+                              ...c,
+                              targetCountries: selected
+                                ? c.targetCountries.filter((v) => v !== country.value)
+                                : [...c.targetCountries, country.value],
+                            }));
+                            setErrors((current) => ({ ...current, targetCountries: undefined }));
+                          }
                         }
                         className={cn(
                           "flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium transition-all duration-200",
@@ -368,14 +504,19 @@ export function OnboardingForm({
                     );
                   })}
                 </div>
+                {errors.targetCountries ? <p className="text-[0.76rem] text-rose-500">{errors.targetCountries}</p> : null}
               </div>
               <TagEditor
                 label="Target roles"
                 values={form.targetRoles}
-                onChange={(targetRoles) => setForm((c) => ({ ...c, targetRoles }))}
+                onChange={(targetRoles) => {
+                  setForm((c) => ({ ...c, targetRoles }));
+                  setErrors((current) => ({ ...current, targetRoles: undefined }));
+                }}
                 placeholder="Product analyst, frontend intern, operations associate..."
                 helperText="Roles guide keyword tailoring and resume emphasis modes."
               />
+              {errors.targetRoles ? <p className="-mt-4 text-[0.76rem] text-rose-500">{errors.targetRoles}</p> : null}
             </div>
           )}
 
@@ -444,7 +585,7 @@ export function OnboardingForm({
               <Button
                 type="button"
                 className="bg-slate-950 shadow-[0_14px_28px_rgba(15,23,42,0.18)] hover:shadow-[0_18px_36px_rgba(15,23,42,0.24)]"
-                onClick={() => setStep((c) => Math.min(3, c + 1))}
+                onClick={handleContinue}
               >
                 Continue
                 <MoveRight className="h-4 w-4" />
