@@ -52,6 +52,7 @@ export async function POST(
           title: `${sourceResume.title} Copy v1`,
           tone: latestVersion.tone,
           content: parseResumeDocument(latestVersion),
+          aiGuidance: latestVersion.aiGuidance ?? undefined,
           sourceVersionId: latestVersion.id,
         },
       },

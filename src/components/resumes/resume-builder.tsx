@@ -10,6 +10,7 @@ import { toast } from "sonner";
 
 import { EMPHASIS_MODE_OPTIONS, RESUME_TEMPLATE_OPTIONS } from "@/lib/constants/countries";
 import { COUNTRY_GUIDANCE, SECTION_KEYS, type SectionKey } from "@/lib/constants/resume";
+import type { TailoringGuidance } from "@/lib/validations/ai";
 import type { ProfileContent, ProfileListEntry } from "@/lib/validations/profile";
 import type { ResumeDocument } from "@/lib/validations/resume";
 import { cn } from "@/lib/utils";
@@ -48,6 +49,7 @@ type ResumeVersionState = {
   jobDescription: string | null;
   changeSummary: string | null;
   tone: "INTERNSHIP" | "GRADUATE" | "PROFESSIONAL";
+  aiGuidance: TailoringGuidance | null;
   content: ResumeDocument;
   createdAt: string;
 };
@@ -93,6 +95,7 @@ export function ResumeBuilder({
   const [activeVersionId, setActiveVersionId] = useState(initialVersions[0]?.id);
   const [saveState, setSaveState] = useState("Saved");
   const [pendingBulletKey, setPendingBulletKey] = useState<string | null>(null);
+  const [analyzingTailoring, setAnalyzingTailoring] = useState(false);
   const [creatingVersion, setCreatingVersion] = useState(false);
   const [versionForm, setVersionForm] = useState({
     title: `${initialResume.title} Tailored`,
@@ -136,6 +139,7 @@ export function ResumeBuilder({
             jobDescription: activeVersion.jobDescription || "",
             changeSummary: activeVersion.changeSummary || "",
             tone: activeVersion.tone,
+            aiGuidance: activeVersion.aiGuidance || undefined,
             content: activeVersion.content,
           }),
         }),
@@ -244,6 +248,7 @@ export function ResumeBuilder({
       body: JSON.stringify({
         ...versionForm,
         sourceVersionId: activeVersion.id,
+        aiGuidance: activeVersion.aiGuidance || undefined,
         content: activeVersion.content,
       }),
     });
@@ -255,21 +260,22 @@ export function ResumeBuilder({
       return;
     }
 
-    setVersions((current) => [
-      {
-        id: payload.versionId,
-        versionNumber: Math.max(...current.map((version) => version.versionNumber)) + 1,
-        title: versionForm.title,
-        jobTitle: versionForm.jobTitle,
-        companyName: versionForm.companyName,
-        jobDescription: versionForm.jobDescription,
-        changeSummary: versionForm.changeSummary,
-        tone: versionForm.tone,
-        content: activeVersion.content,
-        createdAt: new Date().toISOString(),
-      },
-      ...current,
-    ]);
+    const createdVersion: ResumeVersionState = {
+      id: payload.versionId,
+      versionNumber: Math.max(...versions.map((version) => version.versionNumber)) + 1,
+      title: versionForm.title,
+      jobTitle: versionForm.jobTitle,
+      companyName: versionForm.companyName,
+      jobDescription: versionForm.jobDescription,
+      changeSummary: versionForm.changeSummary,
+      tone: versionForm.tone,
+      aiGuidance: activeVersion.aiGuidance,
+      content: activeVersion.content,
+      createdAt: new Date().toISOString(),
+    };
+
+    setVersions((current) => [createdVersion, ...current]);
+    setActiveVersionId(createdVersion.id);
     setVersionForm({
       title: `${resume.title} Tailored`,
       jobTitle: "",
@@ -278,6 +284,7 @@ export function ResumeBuilder({
       changeSummary: "",
       tone: "GRADUATE",
     });
+    toast.success("New resume version created");
   }
 
   function handleDragEnd(event: DragEndEvent) {
@@ -294,6 +301,39 @@ export function ResumeBuilder({
         sectionOrder: arrayMove(order, order.indexOf(active.id as SectionKey), order.indexOf(over.id as SectionKey)),
       },
     }));
+  }
+
+  async function analyzeTailoring() {
+    if (!activeVersion.jobDescription?.trim()) {
+      toast.error("Add a job description first");
+      return;
+    }
+
+    setAnalyzingTailoring(true);
+    const response = await fetch("/api/ai/tailor-resume", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        facts: collectFacts(activeVersion.content).slice(0, 40),
+        currentSummary: activeVersion.content.summary,
+        jobDescription: activeVersion.jobDescription,
+        country: resume.targetCountry,
+        tone: activeVersion.tone,
+      }),
+    });
+    const payload = await response.json();
+    setAnalyzingTailoring(false);
+
+    if (!response.ok) {
+      toast.error("Tailoring analysis failed");
+      return;
+    }
+
+    updateActiveVersion((current) => ({
+      ...current,
+      aiGuidance: payload,
+    }));
+    toast.success("Tailoring analysis updated");
   }
 
   return (
@@ -508,6 +548,97 @@ export function ResumeBuilder({
               <Field label="Professional summary">
                 <Textarea value={activeVersion.content.summary} onChange={(event) => updateActiveVersion((current) => ({ ...current, content: { ...current.content, summary: event.target.value } }))} className="min-h-[140px]" />
               </Field>
+              <div className="rounded-[28px] border border-slate-200 bg-slate-50/80 p-5">
+                <div className="flex flex-wrap items-start justify-between gap-4">
+                  <div>
+                    <h4 className="font-semibold text-slate-950">Job tailoring analysis</h4>
+                    <p className="mt-1 text-sm leading-6 text-slate-500">
+                      Compare this version against the job description and get a tailored summary, keyword matches, and evidence gaps without inventing qualifications.
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    {activeVersion.aiGuidance ? (
+                      <Button
+                        variant="secondary"
+                        onClick={() =>
+                          updateActiveVersion((current) => ({
+                            ...current,
+                            content: {
+                              ...current.content,
+                              summary: current.aiGuidance?.tailoredSummary || current.content.summary,
+                            },
+                          }))
+                        }
+                      >
+                        Apply tailored summary
+                      </Button>
+                    ) : null}
+                    <Button variant="accent" onClick={analyzeTailoring} disabled={analyzingTailoring || !activeVersion.jobDescription?.trim()}>
+                      {analyzingTailoring ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
+                      Analyze fit
+                    </Button>
+                  </div>
+                </div>
+                {activeVersion.aiGuidance ? (
+                  <div className="mt-5 grid gap-4 xl:grid-cols-2">
+                    <div className="space-y-4 rounded-[24px] bg-white p-4 ring-1 ring-slate-200">
+                      <div>
+                        <p className="section-label">Tailored summary</p>
+                        <p className="mt-2 text-sm leading-7 text-slate-700">{activeVersion.aiGuidance.tailoredSummary}</p>
+                      </div>
+                      <div>
+                        <p className="section-label">Caution</p>
+                        <p className="mt-2 text-sm leading-7 text-amber-700">{activeVersion.aiGuidance.caution}</p>
+                      </div>
+                    </div>
+                    <div className="space-y-4 rounded-[24px] bg-white p-4 ring-1 ring-slate-200">
+                      <div>
+                        <p className="section-label">Matched keywords</p>
+                        <div className="mt-2 space-y-2">
+                          {activeVersion.aiGuidance.matchedKeywords.length ? (
+                            activeVersion.aiGuidance.matchedKeywords.map((match) => (
+                              <div key={`${match.keyword}-${match.evidence}`} className="rounded-2xl bg-emerald-50 px-3 py-2">
+                                <p className="text-sm font-semibold text-emerald-800">{match.keyword}</p>
+                                <p className="text-xs leading-6 text-emerald-700">{match.evidence}</p>
+                              </div>
+                            ))
+                          ) : (
+                            <p className="text-sm text-slate-500">No strong explicit keyword matches detected yet.</p>
+                          )}
+                        </div>
+                      </div>
+                      <div>
+                        <p className="section-label">Missing evidence</p>
+                        <div className="mt-2 flex flex-wrap gap-2">
+                          {activeVersion.aiGuidance.missingKeywords.length ? (
+                            activeVersion.aiGuidance.missingKeywords.map((keyword) => (
+                              <Badge key={keyword} variant="danger">
+                                {keyword}
+                              </Badge>
+                            ))
+                          ) : (
+                            <p className="text-sm text-slate-500">No major unsupported keywords were flagged.</p>
+                          )}
+                        </div>
+                      </div>
+                      <div>
+                        <p className="section-label">Improvement suggestions</p>
+                        <ul className="mt-2 space-y-2 text-sm leading-6 text-slate-600">
+                          {activeVersion.aiGuidance.improvementSuggestions.map((suggestion) => (
+                            <li key={suggestion} className="list-disc pl-1 ml-5">
+                              {suggestion}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="mt-4 rounded-[22px] bg-white p-4 text-sm leading-7 text-slate-500 ring-1 ring-slate-200">
+                    Run analysis after adding a target job description to see which requirements your current resume already supports and which ones still need real evidence.
+                  </div>
+                )}
+              </div>
               <div className="rounded-[28px] bg-slate-100 p-5">
                 <h4 className="font-semibold text-slate-950">Section order and visibility</h4>
                 <p className="mt-1 text-sm leading-6 text-slate-500">Drag to reorder. Toggle off sections that do not help this version.</p>

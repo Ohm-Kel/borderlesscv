@@ -37,6 +37,7 @@ export async function PUT(
       jobDescription: parsed.data.jobDescription || undefined,
       changeSummary: parsed.data.changeSummary || undefined,
       tone: parsed.data.tone,
+      aiGuidance: parsed.data.aiGuidance,
       content: parsed.data.content,
     },
   });

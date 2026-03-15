@@ -1,6 +1,8 @@
 import type { MasterProfile, ResumeVersion } from "@prisma/client";
 
 import { createEmptyProfileContent } from "@/lib/defaults";
+import type { TailoringGuidance } from "@/lib/validations/ai";
+import { tailoringGuidanceSchema } from "@/lib/validations/ai";
 import type { ProfileContent } from "@/lib/validations/profile";
 import { profileContentSchema } from "@/lib/validations/profile";
 import type { ResumeDocument } from "@/lib/validations/resume";
@@ -24,4 +26,9 @@ export function parseResumeDocument(version: Pick<ResumeVersion, "content"> | nu
     hiddenSections: [],
     sections: createEmptyProfileContent(),
   };
+}
+
+export function parseTailoringGuidance(version: Pick<ResumeVersion, "aiGuidance"> | null | undefined): TailoringGuidance | null {
+  const parsed = tailoringGuidanceSchema.safeParse(version?.aiGuidance);
+  return parsed.success ? parsed.data : null;
 }

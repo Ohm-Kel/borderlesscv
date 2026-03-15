@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 
 import { PageHeader } from "@/components/shared/page-header";
 import { ResumeBuilder } from "@/components/resumes/resume-builder";
-import { parseResumeDocument } from "@/lib/serializers";
+import { parseResumeDocument, parseTailoringGuidance } from "@/lib/serializers";
 import { prisma } from "@/lib/prisma";
 import { requireOnboardedUser } from "@/lib/session";
 
@@ -66,6 +66,7 @@ export default async function ResumeBuilderPage({
           jobDescription: version.jobDescription,
           changeSummary: version.changeSummary,
           tone: version.tone,
+          aiGuidance: parseTailoringGuidance(version),
           content: parseResumeDocument(version),
           createdAt: version.createdAt.toISOString(),
         }))}

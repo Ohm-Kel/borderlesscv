@@ -1,6 +1,7 @@
 import { z } from "zod";
 
 import { SECTION_KEYS } from "@/lib/constants/resume";
+import { tailoringGuidanceSchema } from "@/lib/validations/ai";
 import { profileContentSchema } from "@/lib/validations/profile";
 
 const countryEnum = z.enum(["GHANA", "UK", "USA", "CANADA", "EUROPE", "REMOTE"]);
@@ -32,6 +33,7 @@ export const createResumeVersionSchema = z.object({
   changeSummary: z.string().trim().max(240).optional().default(""),
   tone: z.enum(["INTERNSHIP", "GRADUATE", "PROFESSIONAL"]).default("GRADUATE"),
   sourceVersionId: z.string().trim().optional(),
+  aiGuidance: tailoringGuidanceSchema.optional(),
   content: resumeDocumentSchema,
 });
 

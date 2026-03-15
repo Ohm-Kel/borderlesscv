@@ -1,6 +1,7 @@
 import OpenAI from "openai";
 
 import type { CountryPreset, ResumeTone } from "@prisma/client";
+import type { TailoringGuidance } from "@/lib/validations/ai";
 
 const client = process.env.OPENAI_API_KEY ? new OpenAI({ apiKey: process.env.OPENAI_API_KEY }) : null;
 const model = process.env.OPENAI_MODEL ?? "gpt-4.1-mini";
@@ -109,6 +110,27 @@ const KNOWN_SKILLS = [
   "PostgreSQL",
 ];
 
+function extractKnownKeywords(jobDescription: string) {
+  const normalized = jobDescription.toLowerCase();
+  return KNOWN_SKILLS.filter((skill) => normalized.includes(skill.toLowerCase())).slice(0, 8);
+}
+
+function buildFactMatches(facts: string[], keywords: string[]) {
+  return keywords
+    .map((keyword) => {
+      const evidence = facts.find((fact) => fact.toLowerCase().includes(keyword.toLowerCase()));
+      if (!evidence) {
+        return null;
+      }
+
+      return {
+        keyword,
+        evidence: evidence.slice(0, 240),
+      };
+    })
+    .filter((value): value is { keyword: string; evidence: string } => Boolean(value));
+}
+
 export async function suggestSkills(input: { facts: string[] }) {
   const fallbackSkills = KNOWN_SKILLS.filter((skill) =>
     input.facts.some((fact) => fact.toLowerCase().includes(skill.toLowerCase())),
@@ -143,6 +165,38 @@ export async function generateCoverLetter(input: {
     fallback: {
       content: `${intro}${body}${close}`,
       note: "Cover letter drafted from supplied facts only.",
+    },
+  });
+}
+
+export async function tailorResumeToJob(input: {
+  facts: string[];
+  currentSummary?: string;
+  jobDescription: string;
+  country: CountryPreset;
+  tone: ResumeTone;
+}) {
+  const keywords = extractKnownKeywords(input.jobDescription);
+  const matchedKeywords = buildFactMatches(input.facts, keywords);
+  const missingKeywords = keywords.filter(
+    (keyword) => !matchedKeywords.some((match) => match.keyword.toLowerCase() === keyword.toLowerCase()),
+  );
+  const fallbackSummaryBase = input.currentSummary?.trim() || input.facts.slice(0, 3).join(". ");
+
+  return createStructuredOutput<TailoringGuidance>({
+    system:
+      "You tailor resumes for BorderlessCV. You may only transform the user's facts and compare them against the job description. Never invent achievements, tools, years, or qualifications. Return JSON with keys tailoredSummary, matchedKeywords, missingKeywords, improvementSuggestions, and caution. matchedKeywords must include direct evidence from the facts. missingKeywords should list requirements from the job description that are not evidenced in the facts. improvementSuggestions must tell the user how to reframe existing facts without making things up. caution should remind the user not to invent missing qualifications.",
+    user: JSON.stringify(input),
+    fallback: {
+      tailoredSummary: `${fallbackSummaryBase.replace(/\.$/, "")}. Add a measurable outcome if available.`,
+      matchedKeywords,
+      missingKeywords,
+      improvementSuggestions: [
+        "Mirror the role language only where your existing facts clearly support it.",
+        "Move the strongest job-relevant project or internship higher in the section order.",
+        "Tighten bullets so each one highlights a concrete action or deliverable.",
+      ],
+      caution: "Do not add tools, metrics, or qualifications that are not already supported by your profile.",
     },
   });
 }
