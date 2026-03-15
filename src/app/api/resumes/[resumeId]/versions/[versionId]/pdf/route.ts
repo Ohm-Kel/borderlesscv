@@ -56,6 +56,7 @@ export async function GET(
         phone: resume.user.phone || "",
       },
       document,
+      templateKey: resume.templateKey,
     }),
   );
 

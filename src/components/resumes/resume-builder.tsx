@@ -9,7 +9,7 @@ import { Eye, EyeOff, GripVertical, Loader2, Plus, Sparkles } from "lucide-react
 import { toast } from "sonner";
 
 import { EMPHASIS_MODE_OPTIONS, RESUME_TEMPLATE_OPTIONS } from "@/lib/constants/countries";
-import { COUNTRY_GUIDANCE, SECTION_KEYS, type SectionKey } from "@/lib/constants/resume";
+import { COUNTRY_GUIDANCE, SECTION_KEYS, SECTION_LABELS, type SectionKey } from "@/lib/constants/resume";
 import type { TailoringGuidance } from "@/lib/validations/ai";
 import type { ProfileContent, ProfileListEntry } from "@/lib/validations/profile";
 import type { ResumeDocument } from "@/lib/validations/resume";
@@ -75,6 +75,93 @@ function collectFacts(document: ResumeDocument) {
   ].filter(Boolean);
 }
 
+function normalizeText(value: string) {
+  return value.toLowerCase().replace(/\s+/g, " ").trim();
+}
+
+function collectSectionFacts(document: ResumeDocument, section: SectionKey) {
+  if (section === "skills") {
+    return document.sections.skills;
+  }
+
+  if (section === "languages") {
+    return document.sections.languages.map((item) => `${item.name} ${item.proficiency}`);
+  }
+
+  if (section === "certifications") {
+    return document.sections.certifications.flatMap((item) => [item.title, item.issuer, item.credentialId, item.date, item.url]);
+  }
+
+  if (section === "awards") {
+    return document.sections.awards.flatMap((item) => [item.title, item.issuer, item.description, item.date]);
+  }
+
+  if (section === "links") {
+    return document.sections.links.flatMap((item) => [item.label, item.url]);
+  }
+
+  return (document.sections[section] as ProfileListEntry[]).flatMap((item) => [
+    item.title,
+    item.organization,
+    item.location,
+    item.description,
+    item.date,
+    ...item.bullets,
+    item.url,
+  ]);
+}
+
+function getSectionKeywordMap(document: ResumeDocument, tailoringGuidance: TailoringGuidance | null) {
+  const initialMap = SECTION_KEYS.reduce<Record<SectionKey, string[]>>((accumulator, section) => {
+    accumulator[section] = [];
+    return accumulator;
+  }, {} as Record<SectionKey, string[]>);
+
+  if (!tailoringGuidance) {
+    return initialMap;
+  }
+
+  tailoringGuidance.matchedKeywords.forEach((match) => {
+    const normalizedKeyword = normalizeText(match.keyword);
+    const normalizedEvidence = normalizeText(match.evidence);
+
+    SECTION_KEYS.forEach((section) => {
+      const sectionFacts = collectSectionFacts(document, section).flatMap((fact) => (fact ? [normalizeText(fact)] : []));
+      const hasMatch = sectionFacts.some(
+        (fact) => fact.includes(normalizedKeyword) || fact.includes(normalizedEvidence) || normalizedEvidence.includes(fact),
+      );
+
+      if (hasMatch && !initialMap[section].includes(match.keyword)) {
+        initialMap[section].push(match.keyword);
+      }
+    });
+  });
+
+  return initialMap;
+}
+
+function applyPreferredSectionOrder(currentOrder: SectionKey[], preferredOrder: SectionKey[]) {
+  return [
+    ...preferredOrder.filter((section) => currentOrder.includes(section)),
+    ...currentOrder.filter((section) => !preferredOrder.includes(section)),
+  ];
+}
+
+function buildEvidenceFirstOrder(currentOrder: SectionKey[], sectionKeywordMap: Record<SectionKey, string[]>, preferredOrder: SectionKey[]) {
+  const matchedSections = currentOrder.filter((section) => sectionKeywordMap[section].length > 0);
+
+  if (!matchedSections.length) {
+    return applyPreferredSectionOrder(currentOrder, preferredOrder);
+  }
+
+  const prioritizedMatches = [
+    ...preferredOrder.filter((section) => matchedSections.includes(section)),
+    ...matchedSections.filter((section) => !preferredOrder.includes(section)),
+  ];
+
+  return [...prioritizedMatches, ...currentOrder.filter((section) => !matchedSections.includes(section))];
+}
+
 export function ResumeBuilder({
   resume: initialResume,
   versions: initialVersions,
@@ -109,6 +196,14 @@ export function ResumeBuilder({
 
   const activeVersion = versions.find((version) => version.id === activeVersionId) ?? versions[0];
   const guidance = COUNTRY_GUIDANCE[resume.targetCountry];
+  const sectionKeywordMap = getSectionKeywordMap(activeVersion.content, activeVersion.aiGuidance);
+  const matchedSectionEntries = activeVersion.content.sectionOrder
+    .filter((section) => sectionKeywordMap[section].length > 0)
+    .map((section) => ({
+      section,
+      keywords: sectionKeywordMap[section],
+    }));
+  const recommendedSectionOrder = buildEvidenceFirstOrder(activeVersion.content.sectionOrder, sectionKeywordMap, guidance.preferredOrder);
   const snapshot = JSON.stringify({ resume, activeVersion });
 
   useEffect(() => {
@@ -336,6 +431,36 @@ export function ResumeBuilder({
     toast.success("Tailoring analysis updated");
   }
 
+  function applyCountrySectionOrder() {
+    updateActiveVersion((current) => ({
+      ...current,
+      content: {
+        ...current.content,
+        sectionOrder: applyPreferredSectionOrder(current.content.sectionOrder, guidance.preferredOrder),
+      },
+    }));
+    toast.success(`${resume.targetCountry} section order applied`);
+  }
+
+  function prioritizeMatchedEvidence() {
+    if (!activeVersion.aiGuidance) {
+      toast.error("Run tailoring analysis first");
+      return;
+    }
+
+    const matchedSections = SECTION_KEYS.filter((section) => sectionKeywordMap[section].length > 0);
+
+    updateActiveVersion((current) => ({
+      ...current,
+      content: {
+        ...current.content,
+        sectionOrder: buildEvidenceFirstOrder(current.content.sectionOrder, sectionKeywordMap, guidance.preferredOrder),
+        hiddenSections: current.content.hiddenSections.filter((section) => !matchedSections.includes(section)),
+      },
+    }));
+    toast.success("Relevant sections moved higher");
+  }
+
   return (
     <div className="grid gap-6 xl:grid-cols-[1.05fr_0.95fr]">
       <div className="space-y-6">
@@ -556,7 +681,7 @@ export function ResumeBuilder({
                       Compare this version against the job description and get a tailored summary, keyword matches, and evidence gaps without inventing qualifications.
                     </p>
                   </div>
-                  <div className="flex items-center gap-3">
+                  <div className="flex flex-wrap items-center gap-3">
                     {activeVersion.aiGuidance ? (
                       <Button
                         variant="secondary"
@@ -573,6 +698,14 @@ export function ResumeBuilder({
                         Apply tailored summary
                       </Button>
                     ) : null}
+                    {activeVersion.aiGuidance ? (
+                      <Button variant="secondary" onClick={prioritizeMatchedEvidence}>
+                        Prioritize matched evidence
+                      </Button>
+                    ) : null}
+                    <Button variant="secondary" onClick={applyCountrySectionOrder}>
+                      Use {resume.targetCountry} order
+                    </Button>
                     <Button variant="accent" onClick={analyzeTailoring} disabled={analyzingTailoring || !activeVersion.jobDescription?.trim()}>
                       {analyzingTailoring ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
                       Analyze fit
@@ -631,6 +764,24 @@ export function ResumeBuilder({
                           ))}
                         </ul>
                       </div>
+                      <div>
+                        <p className="section-label">Evidence hotspots</p>
+                        <div className="mt-2 space-y-2">
+                          {matchedSectionEntries.length ? (
+                            matchedSectionEntries.map(({ section, keywords }) => (
+                              <div key={section} className="rounded-2xl bg-slate-50 px-3 py-2">
+                                <div className="flex items-center justify-between gap-3">
+                                  <p className="text-sm font-semibold text-slate-800">{SECTION_LABELS[section]}</p>
+                                  <Badge variant="outline">{keywords.length} match{keywords.length === 1 ? "" : "es"}</Badge>
+                                </div>
+                                <p className="mt-1 text-xs leading-6 text-slate-600">{keywords.join(", ")}</p>
+                              </div>
+                            ))
+                          ) : (
+                            <p className="text-sm text-slate-500">No strong section-level evidence clusters detected yet.</p>
+                          )}
+                        </div>
+                      </div>
                     </div>
                   </div>
                 ) : (
@@ -650,7 +801,10 @@ export function ResumeBuilder({
                           <SortableSectionRow
                             key={section}
                             id={section}
+                            label={SECTION_LABELS[section]}
                             hidden={activeVersion.content.hiddenSections.includes(section)}
+                            matchedKeywords={sectionKeywordMap[section]}
+                            recommended={recommendedSectionOrder.indexOf(section) < 3 && sectionKeywordMap[section].length > 0}
                             onToggleHidden={() =>
                               updateActiveVersion((current) => ({
                                 ...current,
@@ -766,8 +920,6 @@ export function ResumeBuilder({
               personalDetails={personalDetails}
               document={activeVersion.content}
               templateKey={resume.templateKey}
-              targetCountry={resume.targetCountry}
-              targetRole={resume.targetRole}
             />
           </ScrollArea>
         </div>
@@ -787,11 +939,17 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
 
 function SortableSectionRow({
   id,
+  label,
   hidden,
+  matchedKeywords,
+  recommended,
   onToggleHidden,
 }: {
   id: string;
+  label: string;
   hidden: boolean;
+  matchedKeywords: string[];
+  recommended: boolean;
   onToggleHidden: () => void;
 }) {
   const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id });
@@ -800,13 +958,21 @@ function SortableSectionRow({
     <div
       ref={setNodeRef}
       style={{ transform: CSS.Transform.toString(transform), transition }}
-      className="flex items-center justify-between rounded-2xl border border-white/70 bg-white px-4 py-3"
+      className={cn(
+        "flex items-center justify-between rounded-2xl border bg-white px-4 py-3",
+        recommended ? "border-emerald-200 bg-emerald-50/60" : "border-white/70",
+      )}
     >
       <div className="flex items-center gap-3">
         <button type="button" className="cursor-grab text-slate-400" {...attributes} {...listeners}>
           <GripVertical className="h-4 w-4" />
         </button>
-        <span className="text-sm font-medium text-slate-700">{id}</span>
+        <div>
+          <span className="text-sm font-medium text-slate-700">{label}</span>
+          {matchedKeywords.length ? (
+            <p className="mt-1 text-xs leading-5 text-slate-500">Matched: {matchedKeywords.join(", ")}</p>
+          ) : null}
+        </div>
       </div>
       <div className="flex items-center gap-2">
         <Switch checked={!hidden} onCheckedChange={onToggleHidden} />

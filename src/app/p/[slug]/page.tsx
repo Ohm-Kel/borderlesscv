@@ -49,8 +49,6 @@ export default async function PublicProfilePage({
           }}
           document={document}
           templateKey="ATLAS"
-          targetCountry={user.targetCountries[0] || "REMOTE"}
-          targetRole={user.targetRoles[0] || ""}
         />
       </div>
     </div>
