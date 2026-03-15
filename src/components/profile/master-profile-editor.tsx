@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Loader2, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 
@@ -14,6 +14,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
+import { formatDate } from "@/lib/utils";
 import type { ProfileContent } from "@/lib/validations/profile";
 
 function buildFacts(form: {
@@ -35,8 +36,30 @@ function buildFacts(form: {
   ].filter(Boolean);
 }
 
+function calculateLocalCompleteness(form: {
+  personalDetails: {
+    name: string;
+  };
+  professionalSummary: string;
+  content: ProfileContent;
+}) {
+  const weightedChecks = [
+    Boolean(form.personalDetails.name),
+    Boolean(form.professionalSummary),
+    form.content.education.length > 0,
+    form.content.experience.length > 0 || form.content.internships.length > 0,
+    form.content.projects.length > 0,
+    form.content.skills.length > 0,
+    form.content.links.length > 0,
+  ];
+
+  return Math.round((weightedChecks.filter(Boolean).length / weightedChecks.length) * 100);
+}
+
 export function MasterProfileEditor({
   initialData,
+  initialProfileCompleteness,
+  initialLastAutosavedAt,
   primaryCountry,
 }: {
   initialData: {
@@ -49,35 +72,67 @@ export function MasterProfileEditor({
     professionalSummary: string;
     content: ProfileContent;
   };
+  initialProfileCompleteness: number;
+  initialLastAutosavedAt: string | null;
   primaryCountry: "GHANA" | "UK" | "USA" | "CANADA" | "EUROPE" | "REMOTE";
 }) {
   const [form, setForm] = useState(initialData);
-  const [saving, setSaving] = useState(false);
+  const [manualSaving, setManualSaving] = useState(false);
   const [summaryPending, setSummaryPending] = useState(false);
   const [skillsPending, setSkillsPending] = useState(false);
+  const [saveState, setSaveState] = useState(initialLastAutosavedAt ? "Saved" : "Ready to save");
+  const [lastSavedAt, setLastSavedAt] = useState<string | null>(initialLastAutosavedAt);
+  const mountedRef = useRef(false);
+  const profileCompleteness = calculateLocalCompleteness(form);
 
-  async function saveProfile() {
-    setSaving(true);
-
+  const persistProfile = useCallback(async (nextForm: typeof form, notify: boolean) => {
     const response = await fetch("/api/profile", {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(form),
+      body: JSON.stringify(nextForm),
     });
 
-    const payload = await response.json();
-    setSaving(false);
+    const responseData = await response.json();
 
     if (!response.ok) {
-      toast.error("Could not save profile", {
-        description: typeof payload.error === "string" ? payload.error : "Please review the form and try again.",
-      });
+      setSaveState("Autosave failed");
+      if (notify) {
+        toast.error("Could not save profile", {
+          description: typeof responseData.error === "string" ? responseData.error : "Please review the form and try again.",
+        });
+      }
       return;
     }
 
-    toast.success("Master profile saved");
+    setLastSavedAt(responseData.profile.lastAutosavedAt);
+    setSaveState("Saved");
+
+    if (notify) {
+      toast.success("Master profile saved");
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!mountedRef.current) {
+      mountedRef.current = true;
+      return;
+    }
+
+    const timeout = setTimeout(() => {
+      setSaveState("Saving...");
+      void persistProfile(form, false);
+    }, 900);
+
+    return () => clearTimeout(timeout);
+  }, [form, persistProfile]);
+
+  async function saveProfile() {
+    setManualSaving(true);
+    setSaveState("Saving...");
+    await persistProfile(form, true);
+    setManualSaving(false);
   }
 
   async function handleGenerateSummary() {
@@ -147,15 +202,21 @@ export function MasterProfileEditor({
             <p className="mt-2 max-w-2xl text-sm leading-7 text-slate-500">
               Everything here powers resume versions, cover letters, and AI rewriting. Keep it factual and recruiter-trustworthy.
             </p>
+            <div className="mt-3 flex flex-wrap items-center gap-3 text-sm text-slate-500">
+              <span>Completeness: {profileCompleteness || initialProfileCompleteness}%</span>
+              <span>Autosave: {saveState}</span>
+              {lastSavedAt ? <span>Last saved: {formatDate(lastSavedAt, "MMM d, yyyy h:mm a")}</span> : null}
+            </div>
           </div>
           <div className="flex flex-wrap items-center gap-3">
             <Badge variant="accent">Private by default</Badge>
+            <Badge variant="outline">Autosave on</Badge>
             <Button type="button" variant="secondary" onClick={handleSuggestSkills} disabled={skillsPending}>
               {skillsPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
               Suggest skills
             </Button>
-            <Button type="button" onClick={saveProfile} disabled={saving}>
-              {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
+            <Button type="button" onClick={saveProfile} disabled={manualSaving}>
+              {manualSaving ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
               Save profile
             </Button>
           </div>

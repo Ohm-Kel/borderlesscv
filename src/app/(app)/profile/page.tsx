@@ -25,6 +25,8 @@ export default async function ProfilePage() {
         description="Capture your verified experience once, then reuse it for country-aware resumes, cover letters, and job tracking."
       />
       <MasterProfileEditor
+        initialProfileCompleteness={user?.masterProfile?.profileCompleteness ?? 0}
+        initialLastAutosavedAt={user?.masterProfile?.lastAutosavedAt?.toISOString() ?? null}
         primaryCountry={user?.targetCountries[0] || "REMOTE"}
         initialData={{
           personalDetails: {
