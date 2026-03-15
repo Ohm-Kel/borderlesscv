@@ -42,7 +42,8 @@ export function uniqueBy<T>(items: T[], getKey: (item: T) => string) {
 }
 
 export function buildAbsoluteUrl(path: string) {
-  const baseUrl = process.env.NEXTAUTH_URL ?? "http://localhost:3000";
+  const vercelUrl = process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : undefined;
+  const baseUrl = process.env.NEXTAUTH_URL ?? vercelUrl ?? "http://localhost:3000";
   return new URL(path, baseUrl).toString();
 }
 

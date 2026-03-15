@@ -41,6 +41,7 @@ npm run typecheck
 npm run build
 npm run db:generate
 npm run db:migrate
+npm run db:deploy
 ```
 
 ## Database
@@ -52,6 +53,12 @@ Apply migrations with:
 
 ```bash
 npm run db:migrate
+```
+
+For production deployments, use:
+
+```bash
+npm run db:deploy
 ```
 
 ## Product Structure
@@ -68,3 +75,10 @@ npm run db:migrate
 - AI prompts are explicitly constrained to transform only user-provided facts.
 - Public profiles are disabled by default.
 - Resume exports are generated through a server-side PDF route.
+
+## Vercel Deployment
+
+- Vercel is the recommended hosting target for this repo.
+- Add `DATABASE_URL`, `NEXTAUTH_SECRET`, and `NEXTAUTH_URL` before the app is expected to work.
+- Add `OPENAI_API_KEY`, Google OAuth values, and email values to enable AI, Google sign-in, and reset emails.
+- Deployment checklist: `docs/vercel-deployment.md`
