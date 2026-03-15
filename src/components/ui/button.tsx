@@ -5,14 +5,14 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-2xl text-sm font-semibold transition-all duration-200 disabled:pointer-events-none disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--background)]",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-2xl text-sm font-semibold transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] disabled:pointer-events-none disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--background)] motion-safe:hover:-translate-y-0.5 motion-safe:active:translate-y-0",
   {
     variants: {
       variant: {
-        default: "bg-slate-950 text-white shadow-sm hover:bg-slate-800",
-        secondary: "bg-white text-slate-900 ring-1 ring-slate-200 hover:bg-slate-50",
+        default: "bg-slate-950 text-white shadow-[0_14px_30px_rgba(15,23,42,0.16)] hover:bg-slate-900",
+        secondary: "bg-white text-slate-900 ring-1 ring-slate-200 shadow-[0_12px_24px_rgba(15,23,42,0.06)] hover:bg-slate-50",
         ghost: "text-slate-700 hover:bg-slate-100",
-        accent: "bg-[var(--accent)] text-white shadow-sm hover:brightness-95",
+        accent: "bg-[var(--accent)] text-white shadow-[0_14px_30px_rgba(19,78,74,0.18)] hover:brightness-95",
         outline: "bg-transparent text-slate-800 ring-1 ring-slate-300 hover:bg-white",
         danger: "bg-rose-600 text-white shadow-sm hover:bg-rose-500",
       },
