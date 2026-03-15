@@ -382,7 +382,7 @@ export function OnboardingForm({
                     >
                       <CircleHelp className="h-3.5 w-3.5" />
                     </button>
-                    <span className="pointer-events-none invisible absolute left-full top-1/2 z-20 ml-3 w-64 -translate-y-1/2 rounded-[18px] border border-slate-200 bg-white/95 px-3.5 py-3 text-[0.74rem] font-normal normal-case tracking-normal text-slate-600 opacity-0 shadow-[0_14px_32px_rgba(15,23,42,0.10)] transition-all duration-200 group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100">
+                    <span className="pointer-events-none invisible absolute right-0 top-full z-20 mt-2 w-64 max-w-[calc(100vw-3rem)] rounded-[18px] border border-slate-200 bg-white/95 px-3.5 py-3 text-left text-[0.74rem] font-normal normal-case tracking-normal text-slate-600 opacity-0 shadow-[0_14px_32px_rgba(15,23,42,0.10)] transition-all duration-200 group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100">
                       A professional headline is the short role description that sits below your name on a resume, for example
                       {" "}
                       <span className="font-medium text-slate-950">Entry-level data analyst</span>.
