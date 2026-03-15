@@ -10,13 +10,34 @@ export default async function ApplicationsPage() {
     prisma.application.findMany({
       where: { userId: user.id },
       orderBy: { updatedAt: "desc" },
+      include: {
+        resume: {
+          select: {
+            title: true,
+          },
+        },
+        resumeVersion: {
+          select: {
+            versionNumber: true,
+            title: true,
+          },
+        },
+      },
     }),
     prisma.resume.findMany({
       where: { userId: user.id },
       orderBy: { updatedAt: "desc" },
-      select: {
-        id: true,
-        title: true,
+      include: {
+        versions: {
+          orderBy: {
+            versionNumber: "desc",
+          },
+          select: {
+            id: true,
+            versionNumber: true,
+            title: true,
+          },
+        },
       },
     }),
   ]);
@@ -43,8 +64,17 @@ export default async function ApplicationsPage() {
           nextStepAt: application.nextStepAt?.toISOString() ?? null,
           resumeId: application.resumeId,
           resumeVersionId: application.resumeVersionId,
+          resumeTitle: application.resume?.title ?? null,
+          resumeVersionLabel: application.resumeVersion ? `${application.resume?.title ?? "Resume"} • v${application.resumeVersion.versionNumber}` : null,
         }))}
         resumeOptions={resumes.map((resume) => ({ value: resume.id, label: resume.title }))}
+        resumeVersionOptions={resumes.flatMap((resume) =>
+          resume.versions.map((version) => ({
+            value: version.id,
+            label: `${resume.title} • v${version.versionNumber} • ${version.title}`,
+            resumeId: resume.id,
+          })),
+        )}
       />
     </div>
   );

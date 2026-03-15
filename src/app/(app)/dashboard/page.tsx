@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowRight, BriefcaseBusiness, FileText, Sparkles, Target } from "lucide-react";
+import { ArrowRight, BriefcaseBusiness, CalendarClock, FileText, Sparkles, Target } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -12,12 +12,11 @@ import { requireOnboardedUser } from "@/lib/session";
 export default async function DashboardPage() {
   const user = await requireOnboardedUser();
 
-  const [profile, resumes, applications, coverLetters] = await Promise.all([
+  const [profile, resumes, applications, applicationCount, upcomingFollowUps, coverLetters] = await Promise.all([
     prisma.masterProfile.findUnique({
       where: { userId: user.id },
       select: {
         profileCompleteness: true,
-        updatedAt: true,
       },
     }),
     prisma.resume.findMany({
@@ -35,6 +34,19 @@ export default async function DashboardPage() {
       where: { userId: user.id },
       orderBy: { updatedAt: "desc" },
       take: 5,
+    }),
+    prisma.application.count({
+      where: { userId: user.id },
+    }),
+    prisma.application.findMany({
+      where: {
+        userId: user.id,
+        nextStepAt: {
+          not: null,
+        },
+      },
+      orderBy: { nextStepAt: "asc" },
+      take: 4,
     }),
     prisma.coverLetter.count({
       where: { userId: user.id },
@@ -54,7 +66,7 @@ export default async function DashboardPage() {
     },
     {
       label: "Tracked applications",
-      value: applications.length.toString(),
+      value: applicationCount.toString(),
       icon: BriefcaseBusiness,
     },
     {
@@ -176,6 +188,41 @@ export default async function DashboardPage() {
           </CardContent>
         </Card>
       </div>
+
+      <Card className="rounded-[32px] bg-white">
+        <CardContent className="space-y-5 p-6">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-slate-100 text-slate-700">
+                <CalendarClock className="h-5 w-5" />
+              </div>
+              <div>
+                <p className="section-label">Upcoming follow-ups</p>
+                <h2 className="mt-1 text-xl font-semibold text-slate-950">What needs action next</h2>
+              </div>
+            </div>
+            <Button asChild variant="secondary">
+              <Link href="/applications">Open tracker</Link>
+            </Button>
+          </div>
+          {upcomingFollowUps.length === 0 ? (
+            <div className="rounded-[28px] bg-slate-100 p-5 text-sm leading-7 text-slate-600">
+              No follow-up dates scheduled yet. Add interview dates, check-ins, and response deadlines in the application tracker.
+            </div>
+          ) : (
+            <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+              {upcomingFollowUps.map((application) => (
+                <div key={application.id} className="rounded-[24px] border border-slate-200 p-4">
+                  <Badge variant="outline">{application.status}</Badge>
+                  <h3 className="mt-3 font-semibold text-slate-950">{application.role}</h3>
+                  <p className="text-sm text-slate-500">{application.company}</p>
+                  <p className="mt-3 text-sm text-slate-600">Next step: {formatDate(application.nextStepAt, "EEE, MMM d")}</p>
+                </div>
+              ))}
+            </div>
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
 }

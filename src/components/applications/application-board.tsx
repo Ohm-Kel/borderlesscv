@@ -1,15 +1,18 @@
 "use client";
 
 import { useState } from "react";
-import { Loader2, Plus } from "lucide-react";
+import Link from "next/link";
+import { CalendarClock, ExternalLink, FileText, Loader2, Plus } from "lucide-react";
 import { toast } from "sonner";
 
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { formatDate } from "@/lib/utils";
 
 const STATUSES = ["SAVED", "APPLIED", "INTERVIEW", "OFFER", "REJECTED", "WITHDRAWN"] as const;
 
@@ -27,14 +30,18 @@ type Application = {
   nextStepAt: string | null;
   resumeId: string | null;
   resumeVersionId: string | null;
+  resumeTitle: string | null;
+  resumeVersionLabel: string | null;
 };
 
 export function ApplicationBoard({
   initialApplications,
   resumeOptions,
+  resumeVersionOptions,
 }: {
   initialApplications: Application[];
   resumeOptions: Array<{ value: string; label: string }>;
+  resumeVersionOptions: Array<{ value: string; label: string; resumeId: string }>;
 }) {
   const [applications, setApplications] = useState(initialApplications);
   const [creating, setCreating] = useState(false);
@@ -52,6 +59,10 @@ export function ApplicationBoard({
     resumeId: "",
     resumeVersionId: "",
   });
+
+  const filteredVersionOptions = form.resumeId
+    ? resumeVersionOptions.filter((option) => option.resumeId === form.resumeId)
+    : resumeVersionOptions;
 
   async function createApplication() {
     setCreating(true);
@@ -83,6 +94,8 @@ export function ApplicationBoard({
         nextStepAt: form.nextStepAt || null,
         resumeId: form.resumeId || null,
         resumeVersionId: form.resumeVersionId || null,
+        resumeTitle: resumeOptions.find((option) => option.value === form.resumeId)?.label || null,
+        resumeVersionLabel: resumeVersionOptions.find((option) => option.value === form.resumeVersionId)?.label || null,
       },
       ...current,
     ]);
@@ -117,6 +130,11 @@ export function ApplicationBoard({
     });
   }
 
+  const upcomingFollowUps = [...applications]
+    .filter((application) => application.nextStepAt)
+    .sort((left, right) => new Date(left.nextStepAt!).getTime() - new Date(right.nextStepAt!).getTime())
+    .slice(0, 4);
+
   return (
     <div className="space-y-6">
       <Card className="rounded-[32px] bg-white">
@@ -145,12 +163,48 @@ export function ApplicationBoard({
             </Select>
           </Field>
           <Field label="Resume">
-            <Select value={form.resumeId || ""} onValueChange={(value) => setForm((current) => ({ ...current, resumeId: value }))}>
+            <Select
+              value={form.resumeId || ""}
+              onValueChange={(value) =>
+                setForm((current) => ({
+                  ...current,
+                  resumeId: value,
+                  resumeVersionId:
+                    resumeVersionOptions.some((option) => option.value === current.resumeVersionId && option.resumeId === value)
+                      ? current.resumeVersionId
+                      : "",
+                }))
+              }
+            >
               <SelectTrigger>
                 <SelectValue placeholder="Attach resume" />
               </SelectTrigger>
               <SelectContent>
                 {resumeOptions.map((option) => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </Field>
+          <Field label="Resume version">
+            <Select
+              value={form.resumeVersionId || ""}
+              onValueChange={(value) => {
+                const selectedVersion = resumeVersionOptions.find((option) => option.value === value);
+                setForm((current) => ({
+                  ...current,
+                  resumeVersionId: value,
+                  resumeId: selectedVersion?.resumeId || current.resumeId,
+                }));
+              }}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Attach version used" />
+              </SelectTrigger>
+              <SelectContent>
+                {filteredVersionOptions.map((option) => (
                   <SelectItem key={option.value} value={option.value}>
                     {option.label}
                   </SelectItem>
@@ -169,6 +223,9 @@ export function ApplicationBoard({
           <Field label="Applied date">
             <Input type="date" value={form.appliedAt} onChange={(event) => setForm((current) => ({ ...current, appliedAt: event.target.value }))} />
           </Field>
+          <Field label="Next step date">
+            <Input type="date" value={form.nextStepAt} onChange={(event) => setForm((current) => ({ ...current, nextStepAt: event.target.value }))} />
+          </Field>
           <div className="xl:col-span-3">
             <Field label="Notes">
               <Textarea value={form.notes} onChange={(event) => setForm((current) => ({ ...current, notes: event.target.value }))} className="min-h-[110px]" />
@@ -182,6 +239,64 @@ export function ApplicationBoard({
           </div>
         </CardContent>
       </Card>
+
+      <div className="grid gap-4 xl:grid-cols-[1.05fr_0.95fr]">
+        <Card className="rounded-[30px] bg-white">
+          <CardContent className="space-y-4 p-5">
+            <div className="flex items-center gap-3">
+              <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-slate-100 text-slate-700">
+                <CalendarClock className="h-5 w-5" />
+              </div>
+              <div>
+                <p className="section-label">Upcoming follow-ups</p>
+                <h3 className="mt-1 font-semibold text-slate-950">What needs attention next</h3>
+              </div>
+            </div>
+            {upcomingFollowUps.length ? (
+              <div className="space-y-3">
+                {upcomingFollowUps.map((application) => (
+                  <div key={application.id} className="rounded-[24px] border border-slate-200 p-4">
+                    <div className="flex items-start justify-between gap-3">
+                      <div>
+                        <h4 className="font-semibold text-slate-950">{application.role}</h4>
+                        <p className="text-sm text-slate-500">{application.company}</p>
+                      </div>
+                      <Badge variant="outline">{application.status}</Badge>
+                    </div>
+                    <p className="mt-2 text-sm text-slate-600">
+                      Next step: {formatDate(application.nextStepAt, "EEE, MMM d")}
+                    </p>
+                    {application.resumeVersionLabel ? (
+                      <p className="mt-1 text-xs uppercase tracking-[0.18em] text-slate-400">{application.resumeVersionLabel}</p>
+                    ) : null}
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="rounded-[24px] bg-slate-100 p-4 text-sm leading-7 text-slate-500">
+                No upcoming follow-ups yet. Add a next step date when you schedule an interview, send a follow-up, or expect a recruiter response.
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        <Card className="rounded-[30px] bg-white">
+          <CardContent className="space-y-4 p-5">
+            <div className="flex items-center gap-3">
+              <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-slate-100 text-slate-700">
+                <FileText className="h-5 w-5" />
+              </div>
+              <div>
+                <p className="section-label">Version tracking</p>
+                <h3 className="mt-1 font-semibold text-slate-950">Know which resume was used</h3>
+              </div>
+            </div>
+            <div className="rounded-[24px] bg-slate-100 p-4 text-sm leading-7 text-slate-500">
+              Attach the exact resume version you used for each application so you can learn which tailored drafts perform best over time.
+            </div>
+          </CardContent>
+        </Card>
+      </div>
 
       <div className="grid gap-4 xl:grid-cols-6">
         {STATUSES.map((status) => (
@@ -198,9 +313,20 @@ export function ApplicationBoard({
                   .filter((item) => item.status === status)
                   .map((application) => (
                     <div key={application.id} className="rounded-[22px] border border-slate-200 p-4">
-                      <h4 className="font-semibold text-slate-950">{application.role}</h4>
-                      <p className="text-sm text-slate-500">{application.company}</p>
+                      <div className="flex items-start justify-between gap-3">
+                        <div>
+                          <h4 className="font-semibold text-slate-950">{application.role}</h4>
+                          <p className="text-sm text-slate-500">{application.company}</p>
+                        </div>
+                        {application.jobUrl ? (
+                          <Link href={application.jobUrl} target="_blank" className="text-slate-400 transition hover:text-slate-700">
+                            <ExternalLink className="h-4 w-4" />
+                          </Link>
+                        ) : null}
+                      </div>
                       <p className="mt-2 text-xs uppercase tracking-[0.18em] text-slate-400">{application.location || application.country || "No location"}</p>
+                      {application.resumeVersionLabel ? <p className="mt-2 text-xs font-medium text-slate-500">{application.resumeVersionLabel}</p> : null}
+                      {application.nextStepAt ? <p className="mt-2 text-xs text-slate-500">Next step: {formatDate(application.nextStepAt, "MMM d")}</p> : null}
                       {application.notes ? <p className="mt-3 text-sm leading-6 text-slate-600">{application.notes}</p> : null}
                       <div className="mt-3">
                         <Select value={application.status} onValueChange={(value) => updateStatus(application.id, value as Application["status"])}>
