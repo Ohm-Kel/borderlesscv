@@ -31,7 +31,7 @@ const features = [
 ];
 
 export default async function HomePage() {
-  const session = await getServerAuthSession();
+  const session = await getOptionalSession();
 
   return (
     <div className="mesh-bg min-h-screen">
@@ -140,4 +140,13 @@ export default async function HomePage() {
       </div>
     </div>
   );
+}
+
+async function getOptionalSession() {
+  try {
+    return await getServerAuthSession();
+  } catch (error) {
+    console.error("Public homepage session lookup failed", error);
+    return null;
+  }
 }
