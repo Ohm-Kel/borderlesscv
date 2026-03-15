@@ -56,6 +56,7 @@ export default async function DashboardPage() {
 
   const completeness = profile?.profileCompleteness ?? 0;
   const versionCount = resumes.reduce((count, resume) => count + resume.versions.length, 0);
+  const currentTime = Date.now();
 
   const firstName = user.name?.split(" ")[0] || "there";
   const hour = new Date().getHours();
@@ -287,7 +288,7 @@ export default async function DashboardPage() {
             {upcomingFollowUps.map((application) => {
               const status = statusStyles[application.status] ?? statusStyles["APPLIED"];
               const daysUntil = application.nextStepAt
-                ? Math.ceil((new Date(application.nextStepAt).getTime() - Date.now()) / 86400000)
+                ? Math.ceil((new Date(application.nextStepAt).getTime() - currentTime) / 86400000)
                 : null;
               const isUrgent = daysUntil !== null && daysUntil <= 2;
               return (

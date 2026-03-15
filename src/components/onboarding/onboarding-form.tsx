@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { Award, Briefcase, Check, GraduationCap, Loader2, MoveRight } from "lucide-react";
+import { Award, Briefcase, Check, CircleHelp, GraduationCap, Loader2, MoveRight } from "lucide-react";
 import { toast } from "sonner";
 
 import { LinkEditor } from "@/components/shared/profile-aux-editors";
@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
 import type { LinkEntry } from "@/lib/validations/profile";
 
@@ -68,6 +69,29 @@ const stepHeadings = [
   },
 ] as const;
 
+const customHeadlineValue = "__OTHER__";
+
+const professionalHeadlineOptions = [
+  "Internship candidate",
+  "Graduate trainee",
+  "Entry-level data analyst",
+  "Entry-level software engineer",
+  "Junior frontend developer",
+  "Junior backend developer",
+  "Junior full-stack developer",
+  "Product analyst",
+  "Business analyst",
+  "Operations associate",
+  "Project coordinator",
+  "Marketing associate",
+  "Customer success associate",
+  "Research assistant",
+  "UI/UX designer",
+  "Administrative assistant",
+] as const;
+
+const professionalHeadlineOptionSet = new Set<string>(professionalHeadlineOptions);
+
 export function OnboardingForm({
   initialData,
 }: {
@@ -86,6 +110,33 @@ export function OnboardingForm({
   const [step, setStep] = useState(1);
   const [pending, setPending] = useState(false);
   const [form, setForm] = useState(initialData);
+  const [headlineSelection, setHeadlineSelection] = useState<string>(() => {
+    if (!initialData.headline) {
+      return "";
+    }
+
+    return professionalHeadlineOptionSet.has(initialData.headline) ? initialData.headline : customHeadlineValue;
+  });
+  const [customHeadline, setCustomHeadline] = useState(() => {
+    if (!initialData.headline || professionalHeadlineOptionSet.has(initialData.headline)) {
+      return "";
+    }
+
+    return initialData.headline;
+  });
+
+  function handleHeadlineSelectionChange(value: string) {
+    setHeadlineSelection(value);
+
+    if (value === customHeadlineValue) {
+      const nextCustomHeadline = customHeadline || form.headline;
+      setCustomHeadline(nextCustomHeadline);
+      setForm((current) => ({ ...current, headline: nextCustomHeadline }));
+      return;
+    }
+
+    setForm((current) => ({ ...current, headline: value }));
+  }
 
   async function handleSubmit() {
     setPending(true);
@@ -202,15 +253,52 @@ export function OnboardingForm({
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="headline" className="text-[0.72rem] font-semibold uppercase tracking-[0.18em] text-slate-500">
-                  Professional headline
+                <Label className="flex items-center gap-2 text-[0.72rem] font-semibold uppercase tracking-[0.18em] text-slate-500">
+                  <span>Professional headline</span>
+                  <span className="group relative inline-flex">
+                    <button
+                      type="button"
+                      className="inline-flex h-4 w-4 items-center justify-center rounded-full text-slate-400 transition-colors hover:text-slate-600 focus:outline-none focus:ring-2 focus:ring-slate-200"
+                      aria-label="What is a professional headline?"
+                    >
+                      <CircleHelp className="h-3.5 w-3.5" />
+                    </button>
+                    <span className="pointer-events-none invisible absolute left-full top-1/2 z-20 ml-3 w-64 -translate-y-1/2 rounded-[18px] border border-slate-200 bg-white/95 px-3.5 py-3 text-[0.74rem] font-normal normal-case tracking-normal text-slate-600 opacity-0 shadow-[0_14px_32px_rgba(15,23,42,0.10)] transition-all duration-200 group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100">
+                      A professional headline is the short role description that sits below your name on a resume, for example
+                      {" "}
+                      <span className="font-medium text-slate-950">Entry-level data analyst</span>.
+                    </span>
+                  </span>
                 </Label>
-                <Input
-                  id="headline"
-                  value={form.headline}
-                  onChange={(e) => setForm((c) => ({ ...c, headline: e.target.value }))}
-                  placeholder="Entry-level data analyst"
-                />
+                <div className="space-y-3">
+                  <Select value={headlineSelection || undefined} onValueChange={handleHeadlineSelectionChange}>
+                    <SelectTrigger id="headline" className="h-12 rounded-[20px] border-slate-200 bg-white shadow-[0_10px_24px_rgba(15,23,42,0.05)]">
+                      <SelectValue placeholder="Choose a headline that fits you best" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {professionalHeadlineOptions.map((option) => (
+                        <SelectItem key={option} value={option}>
+                          {option}
+                        </SelectItem>
+                      ))}
+                      <SelectItem value={customHeadlineValue}>Other (write my own)</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  {headlineSelection === customHeadlineValue ? (
+                    <Input
+                      value={customHeadline}
+                      onChange={(e) => {
+                        const value = e.target.value;
+                        setCustomHeadline(value);
+                        setForm((current) => ({ ...current, headline: value }));
+                      }}
+                      placeholder="Write your own headline"
+                    />
+                  ) : null}
+                  <p className="text-[0.76rem] leading-[1.7] text-slate-400">
+                    Pick the closest role label for now. You can refine it later in your profile.
+                  </p>
+                </div>
               </div>
               <div className="space-y-2">
                 <Label htmlFor="location" className="text-[0.72rem] font-semibold uppercase tracking-[0.18em] text-slate-500">
