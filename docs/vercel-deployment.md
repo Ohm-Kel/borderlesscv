@@ -23,6 +23,7 @@ This project is ready to deploy on Vercel, but it will not be usable until the r
 Add these in both `Preview` and `Production` unless noted otherwise:
 
 - `DATABASE_URL`
+- `DIRECT_URL`
 - `NEXTAUTH_SECRET`
 - `NEXTAUTH_URL`
 
@@ -73,6 +74,11 @@ npm run db:deploy
 ```
 
 Do not use `npm run db:migrate` in production. That command is for local development only.
+
+For Supabase with Prisma on Vercel:
+
+- `DATABASE_URL` should use the transaction pooler
+- `DIRECT_URL` should use the session pooler or direct connection
 
 ## Operational recommendation
 
