@@ -1,0 +1,226 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum ExperienceLevel {
+  STUDENT
+  GRADUATE
+  EARLY_CAREER
+}
+
+enum CountryPreset {
+  GHANA
+  UK
+  USA
+  CANADA
+  EUROPE
+  REMOTE
+}
+
+enum ResumeTemplateKey {
+  ATLAS
+  HORIZON
+  EMBER
+}
+
+enum ResumeVisibility {
+  PRIVATE
+  PUBLIC
+}
+
+enum EmphasisMode {
+  AUTO
+  EDUCATION_FIRST
+  SKILLS_FIRST
+  EXPERIENCE_FIRST
+}
+
+enum ResumeTone {
+  INTERNSHIP
+  GRADUATE
+  PROFESSIONAL
+}
+
+enum ApplicationStatus {
+  SAVED
+  APPLIED
+  INTERVIEW
+  OFFER
+  REJECTED
+  WITHDRAWN
+}
+
+model User {
+  id                   String               @id @default(cuid())
+  name                 String?
+  email                String               @unique
+  emailVerified        DateTime?
+  image                String?
+  passwordHash         String?
+  headline             String?
+  location             String?
+  phone                String?
+  links                Json?
+  targetCountries      CountryPreset[]      @default([])
+  targetRoles          String[]             @default([])
+  experienceLevel      ExperienceLevel      @default(STUDENT)
+  onboardingStep       Int                  @default(0)
+  onboardedAt          DateTime?
+  publicProfileEnabled Boolean              @default(false)
+  publicProfileSlug    String?              @unique
+  masterProfile        MasterProfile?
+  resumes              Resume[]
+  coverLetters         CoverLetter[]
+  applications         Application[]
+  accounts             Account[]
+  sessions             Session[]
+  passwordResetTokens  PasswordResetToken[]
+  createdAt            DateTime             @default(now())
+  updatedAt            DateTime             @updatedAt
+}
+
+model MasterProfile {
+  id                 String   @id @default(cuid())
+  userId             String   @unique
+  professionalSummary String?
+  profileCompleteness Int     @default(0)
+  content            Json
+  lastAutosavedAt    DateTime?
+  user               User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+}
+
+model Resume {
+  id            String            @id @default(cuid())
+  userId        String
+  baseResumeId  String?
+  title         String
+  targetRole    String?
+  targetCountry CountryPreset?
+  templateKey   ResumeTemplateKey @default(ATLAS)
+  emphasisMode  EmphasisMode      @default(AUTO)
+  visibility    ResumeVisibility  @default(PRIVATE)
+  summary       String?
+  sectionOrder  Json?
+  hiddenSections Json?
+  user          User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  baseResume    Resume?           @relation("ResumeDerivations", fields: [baseResumeId], references: [id], onDelete: SetNull)
+  derivedResumes Resume[]         @relation("ResumeDerivations")
+  versions      ResumeVersion[]
+  applications  Application[]
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
+}
+
+model ResumeVersion {
+  id              String        @id @default(cuid())
+  resumeId        String
+  sourceVersionId String?
+  versionNumber   Int
+  title           String
+  jobTitle        String?
+  companyName     String?
+  jobDescription  String?
+  changeSummary   String?
+  tone            ResumeTone    @default(GRADUATE)
+  content         Json
+  aiGuidance      Json?
+  resume          Resume        @relation(fields: [resumeId], references: [id], onDelete: Cascade)
+  sourceVersion   ResumeVersion? @relation("ResumeVersionDerivations", fields: [sourceVersionId], references: [id], onDelete: SetNull)
+  derivedVersions ResumeVersion[] @relation("ResumeVersionDerivations")
+  applications    Application[]
+  coverLetters    CoverLetter[]
+  createdAt       DateTime      @default(now())
+
+  @@unique([resumeId, versionNumber])
+}
+
+model Application {
+  id              String            @id @default(cuid())
+  userId          String
+  resumeId        String?
+  resumeVersionId String?
+  company         String
+  role            String
+  location        String?
+  country         CountryPreset?
+  jobUrl          String?
+  source          String?
+  notes           String?
+  status          ApplicationStatus @default(SAVED)
+  appliedAt       DateTime?
+  nextStepAt      DateTime?
+  user            User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  resume          Resume?           @relation(fields: [resumeId], references: [id], onDelete: SetNull)
+  resumeVersion   ResumeVersion?    @relation(fields: [resumeVersionId], references: [id], onDelete: SetNull)
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+}
+
+model CoverLetter {
+  id              String        @id @default(cuid())
+  userId          String
+  resumeVersionId String
+  title           String
+  companyName     String?
+  jobTitle        String?
+  jobDescription  String?
+  content         String
+  user            User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  resumeVersion   ResumeVersion @relation(fields: [resumeVersionId], references: [id], onDelete: Cascade)
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+}
+
+model PasswordResetToken {
+  id         String   @id @default(cuid())
+  identifier String
+  token      String   @unique
+  userId     String
+  expiresAt  DateTime
+  usedAt     DateTime?
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt  DateTime @default(now())
+
+  @@index([identifier])
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}

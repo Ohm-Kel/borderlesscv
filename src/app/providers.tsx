@@ -1,0 +1,22 @@
+"use client";
+
+import { SessionProvider } from "next-auth/react";
+import { Toaster } from "sonner";
+
+export function AppProviders({ children }: { children: React.ReactNode }) {
+  return (
+    <SessionProvider>
+      {children}
+      <Toaster
+        richColors
+        closeButton
+        position="top-right"
+        toastOptions={{
+          classNames: {
+            toast: "!rounded-2xl !border !border-slate-200 !bg-white !text-slate-950 !shadow-xl",
+          },
+        }}
+      />
+    </SessionProvider>
+  );
+}

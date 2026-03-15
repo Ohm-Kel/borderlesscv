@@ -1,0 +1,30 @@
+import { z } from "zod";
+
+export const applicationSchema = z.object({
+  company: z.string().trim().min(2, "Company is required.").max(120),
+  role: z.string().trim().min(2, "Role is required.").max(120),
+  location: z.string().trim().max(120).optional().default(""),
+  country: z.enum(["GHANA", "UK", "USA", "CANADA", "EUROPE", "REMOTE"]).optional(),
+  jobUrl: z
+    .string()
+    .trim()
+    .optional()
+    .transform((value) => value?.trim() || undefined)
+    .refine((value) => !value || z.url().safeParse(value).success, "Enter a valid job URL."),
+  source: z.string().trim().max(120).optional().default(""),
+  notes: z.string().trim().max(2000).optional().default(""),
+  status: z.enum(["SAVED", "APPLIED", "INTERVIEW", "OFFER", "REJECTED", "WITHDRAWN"]).default("SAVED"),
+  appliedAt: z.string().optional().default(""),
+  nextStepAt: z.string().optional().default(""),
+  resumeId: z.string().optional(),
+  resumeVersionId: z.string().optional(),
+});
+
+export const coverLetterSchema = z.object({
+  resumeVersionId: z.string().min(1),
+  title: z.string().trim().min(2, "Title is required.").max(120),
+  companyName: z.string().trim().max(120).optional().default(""),
+  jobTitle: z.string().trim().max(120).optional().default(""),
+  jobDescription: z.string().trim().max(8000).optional().default(""),
+  content: z.string().trim().min(50, "Cover letter content is required.").max(8000),
+});
