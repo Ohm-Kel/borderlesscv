@@ -24,6 +24,14 @@ const statusStyles: Record<string, { label: string; className: string }> = {
   WITHDRAWN: { label: "Withdrawn", className: "border-slate-200 bg-slate-50 text-slate-500" },
 };
 
+function isUrgentFollowUp(nextStepAt: Date | null) {
+  if (!nextStepAt) {
+    return false;
+  }
+
+  return Math.ceil((nextStepAt.getTime() - Date.now()) / 86400000) <= 2;
+}
+
 export default async function DashboardPage() {
   const user = await requireOnboardedUser();
 
@@ -56,7 +64,6 @@ export default async function DashboardPage() {
 
   const completeness = profile?.profileCompleteness ?? 0;
   const versionCount = resumes.reduce((count, resume) => count + resume.versions.length, 0);
-  const currentTime = Date.now();
 
   const firstName = user.name?.split(" ")[0] || "there";
   const hour = new Date().getHours();
@@ -287,10 +294,7 @@ export default async function DashboardPage() {
           <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
             {upcomingFollowUps.map((application) => {
               const status = statusStyles[application.status] ?? statusStyles["APPLIED"];
-              const daysUntil = application.nextStepAt
-                ? Math.ceil((new Date(application.nextStepAt).getTime() - currentTime) / 86400000)
-                : null;
-              const isUrgent = daysUntil !== null && daysUntil <= 2;
+              const isUrgent = isUrgentFollowUp(application.nextStepAt);
               return (
                 <div
                   key={application.id}

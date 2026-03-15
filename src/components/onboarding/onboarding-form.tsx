@@ -423,7 +423,7 @@ export function OnboardingForm({
                   <Check className="h-3 w-3 stroke-[2.5]" />
                 </div>
                 <p className="text-[0.8rem] leading-[1.75] text-slate-600">
-                  BorderlessCV's AI tools will only transform the facts you provide. They never invent achievements, dates, tools, or metrics.
+                  BorderlessCV&apos;s AI tools will only transform the facts you provide. They never invent achievements, dates, tools, or metrics.
                 </p>
               </div>
             </div>
