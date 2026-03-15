@@ -15,19 +15,21 @@ export default async function OnboardingPage() {
 
   const user = await prisma.user.findUnique({
     where: { id: sessionUser.id },
-    include: {
-      masterProfile: true,
-    },
+    include: { masterProfile: true },
   });
 
   const profileContent = parseProfileContent(user?.masterProfile);
 
   return (
     <div className="mesh-bg min-h-screen">
-      <div className="mx-auto max-w-4xl px-4 py-8 lg:px-8">
-        <div className="mb-8">
+      <div className="mx-auto max-w-5xl px-4 py-8 lg:px-8 lg:py-10">
+
+        {/* Page header */}
+        <div className="mb-10 flex items-center justify-between gap-4">
           <Logo />
+          <p className="text-[0.82rem] text-slate-400">Setting up your workspace — 3 steps</p>
         </div>
+
         <OnboardingForm
           initialData={{
             name: user?.name || "",

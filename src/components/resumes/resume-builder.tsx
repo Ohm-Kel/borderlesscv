@@ -468,12 +468,24 @@ export function ResumeBuilder({
           <CardContent className="space-y-5 p-6">
             <div className="flex flex-wrap items-center justify-between gap-4">
               <div>
-                <p className="section-label">Builder</p>
-                <h2 className="mt-2 text-2xl font-semibold text-slate-950">{resume.title}</h2>
-                <p className="mt-2 text-sm leading-7 text-slate-500">Autosave: {saveState}</p>
+                <p className="section-label">Resume builder</p>
+                <h2 className="mt-1.5 text-[1.4rem] font-semibold tracking-[-0.02em] text-slate-950">{resume.title}</h2>
+                <div className="mt-2 flex items-center gap-2">
+                  <span className={cn(
+                    "inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-[0.68rem] font-semibold",
+                    saveState === "Saved" ? "bg-emerald-50 text-emerald-700 border border-emerald-200" :
+                    saveState === "Saving..." ? "bg-amber-50 text-amber-700 border border-amber-200" :
+                    "bg-rose-50 text-rose-600 border border-rose-200"
+                  )}>
+                    <span className={cn("h-1.5 w-1.5 rounded-full", saveState === "Saved" ? "bg-emerald-500" : saveState === "Saving..." ? "bg-amber-400 animate-pulse" : "bg-rose-500")} />
+                    {saveState}
+                  </span>
+                  <span className={cn("rounded-full border px-2.5 py-0.5 text-[0.68rem] font-semibold", resume.visibility === "PUBLIC" ? "border-blue-200 bg-blue-50 text-blue-700" : "border-slate-200 bg-slate-50 text-slate-500")}>
+                    {resume.visibility}
+                  </span>
+                </div>
               </div>
               <div className="flex flex-wrap items-center gap-3">
-                <Badge variant="outline">{resume.visibility}</Badge>
                 <Button asChild variant="secondary">
                   <Link href={`/api/resumes/${resume.id}/versions/${activeVersion.id}/pdf`} target="_blank">
                     Export PDF
@@ -603,26 +615,28 @@ export function ResumeBuilder({
                 <p className="section-label">Version history</p>
                 <h3 className="mt-2 text-lg font-semibold text-slate-950">Drafts</h3>
               </div>
-              <div className="space-y-3">
+              <div className="space-y-2.5">
                 {versions.map((version) => (
                   <button
                     key={version.id}
                     type="button"
                     onClick={() => setActiveVersionId(version.id)}
                     className={cn(
-                      "w-full rounded-[24px] border px-4 py-3 text-left transition",
-                      version.id === activeVersion.id ? "border-slate-950 bg-slate-950 text-white" : "border-slate-200 bg-white text-slate-700 hover:border-slate-300",
+                      "w-full rounded-[22px] border px-4 py-3.5 text-left transition-all duration-200",
+                      version.id === activeVersion.id
+                        ? "border-slate-950 bg-slate-950 text-white shadow-[0_8px_22px_rgba(15,23,42,0.20)]"
+                        : "border-slate-200 bg-white text-slate-700 hover:border-slate-300 hover:shadow-[0_4px_12px_rgba(15,23,42,0.06)]",
                     )}
                   >
-                    <div className="font-semibold">{version.title}</div>
-                    <div className={cn("mt-1 text-xs uppercase tracking-[0.18em]", version.id === activeVersion.id ? "text-slate-200" : "text-slate-400")}>
+                    <div className="text-[0.875rem] font-semibold">{version.title}</div>
+                    <div className={cn("mt-1 text-[0.65rem] font-semibold uppercase tracking-[0.18em]", version.id === activeVersion.id ? "text-slate-300" : "text-slate-400")}>
                       v{version.versionNumber}
                     </div>
                     {version.changeSummary ? <p className={cn("mt-2 text-sm leading-6", version.id === activeVersion.id ? "text-slate-200" : "text-slate-500")}>{version.changeSummary}</p> : null}
                   </button>
                 ))}
               </div>
-              <div className="rounded-[24px] bg-slate-100 p-4 text-sm leading-7 text-slate-600">{guidance.headline}</div>
+              <div className="rounded-[22px] border border-slate-200/60 bg-slate-50/80 px-4 py-3.5 text-[0.82rem] leading-[1.75] text-slate-600">{guidance.headline}</div>
             </CardContent>
           </Card>
 
@@ -904,15 +918,27 @@ export function ResumeBuilder({
       <div className="xl:sticky xl:top-6 xl:self-start">
         <div className="space-y-4">
           <Card className="rounded-[32px] bg-white">
-            <CardContent className="space-y-3 p-5">
-              <p className="section-label">Country guidance</p>
-              <h3 className="text-lg font-semibold text-slate-950">{resume.targetCountry} hiring notes</h3>
-              <p className="text-sm leading-7 text-slate-600">{guidance.summaryStyle}</p>
-              <ul className="space-y-2 text-sm leading-7 text-slate-500">
-                <li>ATS priority: {guidance.atsPriority}</li>
-                <li>Page target: {guidance.pageTarget}</li>
-                <li>Do not include: {guidance.doNotInclude}</li>
-              </ul>
+            <CardContent className="space-y-4 p-5">
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <p className="section-label">Country guidance</p>
+                  <h3 className="mt-1.5 text-[1rem] font-semibold text-slate-950">{resume.targetCountry} hiring notes</h3>
+                </div>
+                <span className="text-xl leading-none">{({ GHANA: "🇬🇭", UK: "🇬🇧", USA: "🇺🇸", CANADA: "🇨🇦", EUROPE: "🇪🇺", REMOTE: "🌐" } as Record<string, string>)[resume.targetCountry] ?? "🌐"}</span>
+              </div>
+              <p className="text-[0.82rem] leading-[1.75] text-slate-600">{guidance.summaryStyle}</p>
+              <div className="space-y-2 rounded-[18px] border border-slate-200/60 bg-slate-50/80 p-3.5">
+                {[
+                  { label: "ATS priority", value: guidance.atsPriority },
+                  { label: "Page target", value: guidance.pageTarget },
+                  { label: "Do not include", value: guidance.doNotInclude },
+                ].map(({ label, value }) => (
+                  <div key={label} className="flex items-start gap-2 text-[0.78rem]">
+                    <span className="shrink-0 font-semibold text-slate-500">{label}:</span>
+                    <span className="text-slate-600">{value}</span>
+                  </div>
+                ))}
+              </div>
             </CardContent>
           </Card>
           <ScrollArea className="max-h-[calc(100vh-2rem)] rounded-[32px]">

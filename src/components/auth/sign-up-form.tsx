@@ -27,45 +27,55 @@ export function SignUpForm({ googleEnabled }: { googleEnabled: boolean }) {
     event.preventDefault();
     setPending(true);
 
-    const response = await fetch("/api/auth/sign-up", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(form),
-    });
+    try {
+      const response = await fetch("/api/auth/sign-up", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(form),
+      });
 
-    const payload = await response.json();
+      const payload = await response.json().catch(() => null);
 
-    if (!response.ok) {
-      setPending(false);
+      if (!response.ok) {
+        const description =
+          payload && typeof payload === "object" && "error" in payload && typeof payload.error === "string"
+            ? payload.error
+            : "Please review your details and try again.";
+
+        toast.error("Could not create account", {
+          description,
+        });
+        return;
+      }
+
+      const result = await signIn("credentials", {
+        email: form.email,
+        password: form.password,
+        redirect: false,
+        callbackUrl: "/onboarding",
+      });
+
+      if (result?.error) {
+        toast.error("Account created, but sign-in failed", {
+          description: "Use your email and password on the sign-in screen.",
+        });
+        router.push("/sign-in");
+        return;
+      }
+
+      startTransition(() => {
+        router.push("/onboarding");
+        router.refresh();
+      });
+    } catch {
       toast.error("Could not create account", {
-        description: typeof payload.error === "string" ? payload.error : "Please review your details and try again.",
+        description: "The request failed before the server returned a usable response. Please try again.",
       });
-      return;
+    } finally {
+      setPending(false);
     }
-
-    const result = await signIn("credentials", {
-      email: form.email,
-      password: form.password,
-      redirect: false,
-      callbackUrl: "/onboarding",
-    });
-
-    setPending(false);
-
-    if (result?.error) {
-      toast.error("Account created, but sign-in failed", {
-        description: "Use your email and password on the sign-in screen.",
-      });
-      router.push("/sign-in");
-      return;
-    }
-
-    startTransition(() => {
-      router.push("/onboarding");
-      router.refresh();
-    });
   }
 
   return (

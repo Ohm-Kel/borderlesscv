@@ -87,14 +87,14 @@ export default function HomePage() {
             <Logo className="min-w-0" />
             <div className="flex w-full flex-col gap-3 sm:flex-row sm:justify-end lg:w-auto">
               <MotionButtonWrap className="w-full sm:w-auto">
-                <Button asChild variant="ghost" className="w-full sm:w-auto">
+                <Button asChild variant="ghost" className="w-full text-slate-600 hover:text-slate-950 sm:w-auto">
                   <Link href="/sign-in">Sign in</Link>
                 </Button>
               </MotionButtonWrap>
               <MotionButtonWrap className="w-full sm:w-auto">
                 <Button
                   asChild
-                  className="w-full bg-slate-950 shadow-[0_16px_32px_rgba(15,23,42,0.20)] hover:shadow-[0_20px_40px_rgba(15,23,42,0.26)] sm:w-auto"
+                  className="w-full bg-slate-950 bg-gradient-to-br from-slate-800 via-slate-950 to-slate-950 sm:w-auto"
                 >
                   <Link href="/sign-up">Start free</Link>
                 </Button>
@@ -135,11 +135,11 @@ export default function HomePage() {
                       <Button
                         asChild
                         size="lg"
-                        className="w-full bg-slate-950 shadow-[0_18px_38px_rgba(15,23,42,0.20)] hover:shadow-[0_24px_48px_rgba(15,23,42,0.28)] sm:w-auto"
+                        className="w-full bg-slate-950 bg-gradient-to-br from-slate-800 via-slate-950 to-slate-950 sm:w-auto"
                       >
                         <Link href="/sign-up">
                           Build your first resume
-                          <ArrowRight className="h-4 w-4" />
+                          <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
                         </Link>
                       </Button>
                     </MotionButtonWrap>

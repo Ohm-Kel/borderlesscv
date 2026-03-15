@@ -20,9 +20,12 @@ export function SidebarNav() {
   const pathname = usePathname();
 
   return (
-    <aside className="flex h-full flex-col gap-8 rounded-[32px] border border-white/70 bg-white/90 px-5 py-6 shadow-[0_24px_60px_rgba(15,23,42,0.08)]">
-      <Logo href="/dashboard" />
-      <nav className="space-y-2">
+    <aside className="flex h-full flex-col gap-7 rounded-[32px] border border-white/75 bg-white/92 px-4 py-6 shadow-[0_20px_56px_rgba(15,23,42,0.08)] backdrop-blur-sm">
+      <div className="px-2">
+        <Logo href="/dashboard" />
+      </div>
+
+      <nav className="space-y-1">
         {navigation.map((item) => {
           const active = pathname === item.href || pathname.startsWith(`${item.href}/`);
           const Icon = item.icon;
@@ -31,21 +34,33 @@ export function SidebarNav() {
               key={item.href}
               href={item.href}
               className={cn(
-                "flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-medium transition",
-                active ? "bg-slate-950 text-white shadow-sm" : "text-slate-600 hover:bg-slate-100 hover:text-slate-950",
+                "relative flex items-center gap-3 rounded-[18px] px-4 py-3 text-[0.875rem] font-medium transition-all duration-200",
+                active
+                  ? "bg-slate-950 text-white shadow-[0_8px_22px_rgba(15,23,42,0.20)]"
+                  : "text-slate-500 hover:bg-slate-100/80 hover:text-slate-950",
               )}
             >
-              <Icon className="h-4 w-4" />
+              {active && (
+                <span className="absolute left-0 top-1/2 h-5 w-[3px] -translate-y-1/2 rounded-r-full bg-white/30" />
+              )}
+              <Icon className="h-4 w-4 shrink-0" />
               {item.label}
             </Link>
           );
         })}
       </nav>
-      <div className="mt-auto rounded-[28px] bg-[linear-gradient(180deg,#0f172a,#1e293b)] p-5 text-white">
-        <p className="text-xs uppercase tracking-[0.18em] text-slate-300">Country-aware guidance</p>
-        <h3 className="mt-2 text-lg font-semibold">Built for graduates applying across markets.</h3>
-        <p className="mt-2 text-sm leading-6 text-slate-300">
-          Keep one trusted profile, tailor versions by country, and track every application from one workspace.
+
+      {/* Bottom promo card */}
+      <div className="mt-auto overflow-hidden rounded-[24px] bg-[linear-gradient(150deg,#0c1629_0%,#1e293b_100%)] p-5 text-white shadow-[0_12px_32px_rgba(15,23,42,0.22)]">
+        <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+        <p className="text-[0.65rem] font-semibold uppercase tracking-[0.22em] text-slate-400">
+          Country-aware guidance
+        </p>
+        <h3 className="mt-2 text-[0.9rem] font-semibold leading-snug">
+          Built for graduates applying across markets.
+        </h3>
+        <p className="mt-2 text-[0.75rem] leading-[1.7] text-slate-400">
+          One trusted profile, tailored versions by country, every application tracked in one workspace.
         </p>
       </div>
     </aside>

@@ -1,3 +1,4 @@
+import { Prisma } from "@prisma/client";
 import { hash } from "bcryptjs";
 import { NextResponse } from "next/server";
 
@@ -6,50 +7,74 @@ import { prisma } from "@/lib/prisma";
 import { signUpSchema } from "@/lib/validations/auth";
 
 export async function POST(request: Request) {
-  const json = await request.json();
-  const parsed = signUpSchema.safeParse(json);
+  try {
+    const json = await request.json();
+    const parsed = signUpSchema.safeParse(json);
 
-  if (!parsed.success) {
-    return NextResponse.json(
-      {
-        error: parsed.error.flatten().fieldErrors,
-      },
-      { status: 400 },
-    );
-  }
+    if (!parsed.success) {
+      return NextResponse.json(
+        {
+          error: parsed.error.flatten().fieldErrors,
+        },
+        { status: 400 },
+      );
+    }
 
-  const existingUser = await prisma.user.findUnique({
-    where: { email: parsed.data.email },
-    select: { id: true },
-  });
+    const existingUser = await prisma.user.findUnique({
+      where: { email: parsed.data.email },
+      select: { id: true },
+    });
 
-  if (existingUser) {
-    return NextResponse.json({ error: "An account with that email already exists." }, { status: 409 });
-  }
+    if (existingUser) {
+      return NextResponse.json({ error: "An account with that email already exists." }, { status: 409 });
+    }
 
-  const passwordHash = await hash(parsed.data.password, 12);
+    const passwordHash = await hash(parsed.data.password, 12);
 
-  const user = await prisma.user.create({
-    data: {
-      name: parsed.data.name,
-      email: parsed.data.email,
-      passwordHash,
-      links: [],
-      publicProfileSlug: makePublicProfileSlug(parsed.data.name, crypto.randomUUID()),
-      masterProfile: {
-        create: {
-          content: createEmptyProfileContent(),
+    const user = await prisma.user.create({
+      data: {
+        name: parsed.data.name,
+        email: parsed.data.email,
+        passwordHash,
+        links: [],
+        publicProfileSlug: makePublicProfileSlug(parsed.data.name, crypto.randomUUID()),
+        masterProfile: {
+          create: {
+            content: createEmptyProfileContent(),
+          },
         },
       },
-    },
-    select: {
-      id: true,
-      email: true,
-      name: true,
-    },
-  });
+      select: {
+        id: true,
+        email: true,
+        name: true,
+      },
+    });
 
-  return NextResponse.json({
-    user,
-  });
+    return NextResponse.json({
+      user,
+    });
+  } catch (error) {
+    console.error("Sign-up request failed", error);
+
+    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2002") {
+      return NextResponse.json({ error: "An account with that email already exists." }, { status: 409 });
+    }
+
+    if (error instanceof Prisma.PrismaClientInitializationError) {
+      return NextResponse.json(
+        {
+          error: "BorderlessCV could not reach the database. Check the deployed database connection settings and try again.",
+        },
+        { status: 503 },
+      );
+    }
+
+    return NextResponse.json(
+      {
+        error: "Something went wrong while creating your account. Please try again shortly.",
+      },
+      { status: 500 },
+    );
+  }
 }

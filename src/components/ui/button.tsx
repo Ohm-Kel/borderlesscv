@@ -9,10 +9,10 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: "bg-slate-950 text-white shadow-[0_14px_30px_rgba(15,23,42,0.16)] hover:bg-slate-900",
+        default: "bg-slate-950 text-white shadow-[0_1px_2px_rgba(15,23,42,0.12),0_8px_16px_rgba(15,23,42,0.08),0_16px_32px_-8px_rgba(15,23,42,0.16)] ring-1 ring-white/10 hover:bg-slate-900",
         secondary: "bg-white text-slate-900 ring-1 ring-slate-200 shadow-[0_12px_24px_rgba(15,23,42,0.06)] hover:bg-slate-50",
         ghost: "text-slate-700 hover:bg-slate-100",
-        accent: "bg-[var(--accent)] text-white shadow-[0_14px_30px_rgba(19,78,74,0.18)] hover:brightness-95",
+        accent: "bg-[var(--accent)] text-white shadow-[0_1px_2px_rgba(19,78,74,0.14),0_8px_16px_rgba(19,78,74,0.10),0_16px_32px_-8px_rgba(19,78,74,0.18)] ring-1 ring-white/10 hover:brightness-95",
         outline: "bg-transparent text-slate-800 ring-1 ring-slate-300 hover:bg-white",
         danger: "bg-rose-600 text-white shadow-sm hover:bg-rose-500",
       },
