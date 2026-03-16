@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
-import { CalendarClock, ChevronDown, ExternalLink, Loader2, Plus } from "lucide-react";
+import { CalendarClock, ExternalLink, Loader2, Plus } from "lucide-react";
 import { toast } from "sonner";
 
 import { Badge } from "@/components/ui/badge";
@@ -46,6 +46,7 @@ export function ApplicationBoard({
 }) {
   const [applications, setApplications] = useState(initialApplications);
   const [creating, setCreating] = useState(false);
+  const [showComposer, setShowComposer] = useState(initialApplications.length === 0);
   const [form, setForm] = useState({
     company: "",
     role: "",
@@ -70,7 +71,7 @@ export function ApplicationBoard({
       [...applications]
         .filter((application) => application.nextStepAt)
         .sort((left, right) => new Date(left.nextStepAt!).getTime() - new Date(right.nextStepAt!).getTime())
-        .slice(0, 4),
+        .slice(0, 6),
     [applications],
   );
 
@@ -132,6 +133,7 @@ export function ApplicationBoard({
       resumeId: "",
       resumeVersionId: "",
     });
+    setShowComposer(false);
     toast.success("Application added");
   }
 
@@ -151,43 +153,32 @@ export function ApplicationBoard({
   }
 
   return (
-    <div className="grid h-full min-h-0 gap-4 xl:grid-cols-[360px_minmax(0,1fr)]">
-      <div className="flex min-h-0 flex-col gap-4">
-        <Card className="rounded-[28px] bg-white">
-          <CardContent className="space-y-4 p-4">
-            <div>
-              <p className="section-label">Tracker</p>
-              <h2 className="mt-1 text-[1.2rem] font-semibold text-slate-950">Application tracker</h2>
-              <p className="mt-1 text-sm text-slate-500">
-                Keep each role, resume version, and next step tied together.
-              </p>
-            </div>
-            <div className="grid grid-cols-2 gap-2">
-              {counts.map((item) => (
-                <div key={item.status} className="rounded-[18px] border border-slate-200 bg-slate-50/70 px-3 py-2.5">
-                  <p className="text-[0.62rem] font-semibold uppercase tracking-[0.18em] text-slate-400">
-                    {item.status}
-                  </p>
-                  <p className="mt-1 text-lg font-semibold text-slate-950">{item.count}</p>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
+    <div className="flex h-full min-h-0 flex-col gap-3">
+      <section className="surface-card flex h-[56px] items-center justify-between gap-4 rounded-[24px] border border-white/75 px-4 shadow-[0_10px_26px_rgba(15,23,42,0.05)]">
+        <div className="min-w-0">
+          <p className="truncate text-sm font-medium text-slate-700">
+            Application tracker. {applications.length} role{applications.length === 1 ? "" : "s"} tracked with version-aware follow-up history.
+          </p>
+        </div>
+        <Button size="sm" variant={showComposer ? "default" : "secondary"} className="shrink-0" onClick={() => setShowComposer((current) => !current)}>
+          <Plus className="h-4 w-4" />
+          Add application
+        </Button>
+      </section>
 
-        <details className="group overflow-hidden rounded-[28px] border border-white/75 bg-white/92 shadow-[0_10px_30px_rgba(15,23,42,0.05)]" open={!applications.length}>
-          <summary className="flex cursor-pointer list-none items-center justify-between gap-3 px-4 py-4">
-            <div>
-              <p className="section-label">New application</p>
-              <h3 className="mt-1 text-base font-semibold text-slate-950">Capture role, source, and resume used</h3>
-            </div>
-            <span className="flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-600 transition group-open:bg-slate-950 group-open:text-white">
-              Add
-              <ChevronDown className="h-3.5 w-3.5 transition-transform duration-200 group-open:rotate-180" />
-            </span>
-          </summary>
-          <div className="border-t border-slate-100 px-4 pb-4 pt-3">
-            <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-1">
+      <div className="grid gap-2 lg:grid-cols-6">
+        {counts.map((item) => (
+          <div key={item.status} className="rounded-[18px] border border-white/75 bg-white/92 px-3 py-2.5 shadow-[0_8px_22px_rgba(15,23,42,0.04)]">
+            <p className="text-[0.62rem] font-semibold uppercase tracking-[0.18em] text-slate-400">{item.status}</p>
+            <p className="mt-1 text-lg font-semibold text-slate-950">{item.count}</p>
+          </div>
+        ))}
+      </div>
+
+      {showComposer ? (
+        <Card className="rounded-[26px] bg-white">
+          <CardContent className="space-y-4 p-4">
+            <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
               <Field label="Company">
                 <Input value={form.company} onChange={(event) => setForm((current) => ({ ...current, company: event.target.value }))} />
               </Field>
@@ -273,143 +264,159 @@ export function ApplicationBoard({
               <Field label="Next step">
                 <Input type="date" value={form.nextStepAt} onChange={(event) => setForm((current) => ({ ...current, nextStepAt: event.target.value }))} />
               </Field>
-              <Field label="Notes">
-                <Textarea value={form.notes} onChange={(event) => setForm((current) => ({ ...current, notes: event.target.value }))} className="min-h-[92px]" />
-              </Field>
+              <div className="md:col-span-2 xl:col-span-4">
+                <Field label="Notes">
+                  <Textarea value={form.notes} onChange={(event) => setForm((current) => ({ ...current, notes: event.target.value }))} className="min-h-[96px]" />
+                </Field>
+              </div>
             </div>
-            <div className="mt-3">
+            <div className="flex items-center justify-end gap-3">
+              <Button variant="ghost" onClick={() => setShowComposer(false)}>
+                Cancel
+              </Button>
               <Button onClick={createApplication} disabled={creating}>
                 {creating ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4" />}
-                Add application
+                Save application
               </Button>
             </div>
-          </div>
-        </details>
+          </CardContent>
+        </Card>
+      ) : null}
 
-        <Card className="min-h-0 rounded-[28px] bg-white">
-          <CardContent className="flex h-full min-h-0 flex-col p-4">
-            <div className="mb-3 flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-[14px] bg-slate-950 text-white">
-                <CalendarClock className="h-4 w-4" />
-              </div>
-              <div>
-                <p className="section-label">Upcoming</p>
-                <h3 className="mt-1 text-base font-semibold text-slate-950">Follow-ups</h3>
-              </div>
+      <div className="grid min-h-0 flex-1 gap-3 xl:grid-cols-[1.18fr_0.82fr]">
+        <section className="min-h-0 rounded-[26px] border border-white/75 bg-white/92 shadow-[0_12px_34px_rgba(15,23,42,0.05)]">
+          <div className="flex items-center justify-between gap-3 border-b border-slate-200 px-4 py-3.5">
+            <div>
+              <p className="section-label">Pipeline</p>
+              <h2 className="mt-1 text-[1.05rem] font-semibold text-slate-950">Tracked applications</h2>
             </div>
-            {upcomingFollowUps.length ? (
-              <ScrollArea className="min-h-0 flex-1 pr-3">
-                <div className="space-y-3">
-                  {upcomingFollowUps.map((application) => (
-                    <div key={application.id} className="rounded-[20px] border border-slate-200 px-4 py-3">
-                      <div className="flex items-start justify-between gap-3">
-                        <div>
-                          <h4 className="text-sm font-semibold text-slate-950">{application.role}</h4>
-                          <p className="text-xs text-slate-500">{application.company}</p>
+            <Badge variant="outline">{applications.length} total</Badge>
+          </div>
+
+          {applications.length === 0 ? (
+            <div className="m-4 rounded-[22px] border border-dashed border-slate-200 bg-slate-50/60 px-4 py-8 text-center text-sm text-slate-500">
+              Add your first application to connect the role, resume version, and next step in one place.
+            </div>
+          ) : (
+            <div className="flex h-[calc(100%-78px)] min-h-0 flex-col">
+              <div className="hidden grid-cols-[minmax(0,1.35fr)_1fr_0.8fr_0.85fr_0.3fr] gap-4 border-b border-slate-200 px-4 py-3 text-[0.7rem] font-semibold uppercase tracking-[0.18em] text-slate-500 lg:grid">
+                <span>Role</span>
+                <span>Resume version</span>
+                <span>Status</span>
+                <span>Next step</span>
+                <span />
+              </div>
+              <ScrollArea className="min-h-0 flex-1">
+                <div className="divide-y divide-slate-200">
+                  {applications.map((application) => (
+                    <div key={application.id} className="px-4 py-3">
+                      <div className="flex flex-col gap-3 lg:grid lg:grid-cols-[minmax(0,1.35fr)_1fr_0.8fr_0.85fr_0.3fr] lg:items-center lg:gap-4">
+                        <div className="min-w-0">
+                          <p className="truncate text-sm font-semibold text-slate-950">{application.role}</p>
+                          <p className="truncate text-xs text-slate-400">
+                            {application.company} • {application.location || application.country || "No location"}
+                          </p>
+                          {application.notes ? <p className="mt-1 line-clamp-2 text-xs text-slate-500">{application.notes}</p> : null}
                         </div>
-                        <Badge variant="outline">{application.status}</Badge>
+
+                        <div>
+                          <p className="truncate text-sm text-slate-700">{application.resumeVersionLabel || "No version attached"}</p>
+                          {application.source ? <p className="truncate text-xs text-slate-400">{application.source}</p> : null}
+                        </div>
+
+                        <div>
+                          <Select value={application.status} onValueChange={(value) => updateStatus(application.id, value as Application["status"])}>
+                            <SelectTrigger className="h-9">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {STATUSES.map((option) => (
+                                <SelectItem key={option} value={option}>
+                                  {option}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+
+                        <div className="text-sm text-slate-600">
+                          {application.nextStepAt ? formatDate(application.nextStepAt, "MMM d, yyyy") : "Not scheduled"}
+                        </div>
+
+                        <div className="flex justify-start lg:justify-end">
+                          {application.jobUrl ? (
+                            <Link href={application.jobUrl} target="_blank" className="text-slate-400 transition hover:text-slate-700">
+                              <ExternalLink className="h-4 w-4" />
+                            </Link>
+                          ) : (
+                            <span className="h-4 w-4" />
+                          )}
+                        </div>
                       </div>
-                      <p className="mt-2 text-xs text-slate-500">
-                        Next step: {formatDate(application.nextStepAt, "EEE, MMM d")}
-                      </p>
-                      {application.resumeVersionLabel ? (
-                        <p className="mt-1 text-[0.68rem] uppercase tracking-[0.18em] text-slate-400">
-                          {application.resumeVersionLabel}
-                        </p>
-                      ) : null}
                     </div>
                   ))}
                 </div>
               </ScrollArea>
-            ) : (
-              <div className="rounded-[20px] bg-slate-50 px-4 py-4 text-sm text-slate-500">
+            </div>
+          )}
+        </section>
+
+        <div className="grid min-h-0 gap-3 xl:grid-rows-[auto_minmax(0,1fr)]">
+          <section className="rounded-[26px] border border-white/75 bg-white/92 shadow-[0_12px_34px_rgba(15,23,42,0.05)]">
+            <div className="flex items-center gap-3 border-b border-slate-200 px-4 py-3.5">
+              <div className="flex h-8 w-8 items-center justify-center rounded-[12px] bg-slate-950 text-white">
+                <CalendarClock className="h-4 w-4" />
+              </div>
+              <div>
+                <p className="section-label">Upcoming</p>
+                <h2 className="mt-1 text-[1.05rem] font-semibold text-slate-950">Follow-ups</h2>
+              </div>
+            </div>
+
+            {upcomingFollowUps.length === 0 ? (
+              <div className="m-4 rounded-[20px] bg-slate-50 px-4 py-4 text-sm text-slate-500">
                 No follow-up dates scheduled yet.
               </div>
+            ) : (
+              <div className="divide-y divide-slate-200">
+                {upcomingFollowUps.map((application) => (
+                  <div key={application.id} className="grid gap-3 px-4 py-3 md:grid-cols-[minmax(0,1.2fr)_0.8fr_0.8fr] md:items-center">
+                    <div className="min-w-0">
+                      <p className="truncate text-sm font-semibold text-slate-950">{application.role}</p>
+                      <p className="truncate text-xs text-slate-400">{application.company}</p>
+                    </div>
+                    <p className="text-sm text-slate-600">{formatDate(application.nextStepAt, "EEE, MMM d")}</p>
+                    <div className="md:text-right">
+                      <span className="inline-flex rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1 text-[0.66rem] font-semibold text-slate-500">
+                        {application.status}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
             )}
-          </CardContent>
-        </Card>
-      </div>
+          </section>
 
-      <Card className="min-h-0 rounded-[28px] bg-white">
-        <CardContent className="flex h-full min-h-0 flex-col p-4">
-          <div className="mb-4 flex items-center justify-between gap-3">
-            <div>
-              <p className="section-label">Pipeline</p>
-              <h2 className="mt-1 text-[1.2rem] font-semibold text-slate-950">Stage view</h2>
+          <section className="min-h-0 rounded-[26px] border border-white/75 bg-white/92 shadow-[0_12px_34px_rgba(15,23,42,0.05)]">
+            <div className="flex items-center justify-between gap-3 border-b border-slate-200 px-4 py-3.5">
+              <div>
+                <p className="section-label">Stage mix</p>
+                <h2 className="mt-1 text-[1.05rem] font-semibold text-slate-950">Pipeline counts</h2>
+              </div>
             </div>
-            <Badge variant="outline">{applications.length} total</Badge>
-          </div>
-          <ScrollArea className="min-h-0 flex-1 pr-3">
-            <div className="grid gap-4 xl:grid-cols-2 2xl:grid-cols-3">
-              {STATUSES.map((status) => {
-                const items = applications.filter((item) => item.status === status);
-                return (
-                  <section key={status} className="rounded-[22px] border border-slate-200 bg-slate-50/40 p-4">
-                    <div className="flex items-center justify-between gap-3">
-                      <div>
-                        <p className="section-label">{status}</p>
-                        <h3 className="mt-1 text-sm font-semibold text-slate-950">
-                          {items.length} item{items.length === 1 ? "" : "s"}
-                        </h3>
-                      </div>
-                      <Badge variant="outline">{items.length}</Badge>
-                    </div>
-                    <div className="mt-3 space-y-3">
-                      {items.length === 0 ? (
-                        <div className="rounded-[18px] border border-dashed border-slate-200 bg-white px-3 py-4 text-sm text-slate-400">
-                          No applications here yet.
-                        </div>
-                      ) : (
-                        items.map((application) => (
-                          <div key={application.id} className="rounded-[18px] border border-slate-200 bg-white px-3.5 py-3">
-                            <div className="flex items-start justify-between gap-3">
-                              <div className="min-w-0">
-                                <h4 className="truncate text-sm font-semibold text-slate-950">{application.role}</h4>
-                                <p className="truncate text-xs text-slate-500">{application.company}</p>
-                              </div>
-                              {application.jobUrl ? (
-                                <Link href={application.jobUrl} target="_blank" className="shrink-0 text-slate-400 transition hover:text-slate-700">
-                                  <ExternalLink className="h-4 w-4" />
-                                </Link>
-                              ) : null}
-                            </div>
-                            <p className="mt-2 text-[0.7rem] uppercase tracking-[0.16em] text-slate-400">
-                              {application.location || application.country || "No location"}
-                            </p>
-                            {application.resumeVersionLabel ? (
-                              <p className="mt-2 text-xs text-slate-500">{application.resumeVersionLabel}</p>
-                            ) : null}
-                            {application.nextStepAt ? (
-                              <p className="mt-1 text-xs text-slate-500">Next step: {formatDate(application.nextStepAt, "MMM d")}</p>
-                            ) : null}
-                            {application.notes ? (
-                              <p className="mt-2 line-clamp-3 text-sm leading-6 text-slate-600">{application.notes}</p>
-                            ) : null}
-                            <div className="mt-3">
-                              <Select value={application.status} onValueChange={(value) => updateStatus(application.id, value as Application["status"])}>
-                                <SelectTrigger className="h-9">
-                                  <SelectValue />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  {STATUSES.map((option) => (
-                                    <SelectItem key={option} value={option}>
-                                      {option}
-                                    </SelectItem>
-                                  ))}
-                                </SelectContent>
-                              </Select>
-                            </div>
-                          </div>
-                        ))
-                      )}
-                    </div>
-                  </section>
-                );
-              })}
-            </div>
-          </ScrollArea>
-        </CardContent>
-      </Card>
+            <ScrollArea className="h-[calc(100%-78px)]">
+              <div className="grid gap-2 p-4 sm:grid-cols-2">
+                {counts.map((item) => (
+                  <div key={item.status} className="rounded-[18px] border border-slate-200 bg-slate-50/70 px-3 py-3">
+                    <p className="text-[0.62rem] font-semibold uppercase tracking-[0.18em] text-slate-400">{item.status}</p>
+                    <p className="mt-1 text-lg font-semibold text-slate-950">{item.count}</p>
+                  </div>
+                ))}
+              </div>
+            </ScrollArea>
+          </section>
+        </div>
+      </div>
     </div>
   );
 }
