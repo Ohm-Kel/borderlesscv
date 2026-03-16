@@ -1,3 +1,5 @@
+import { hasPasswordResetEmailConfig, isProductionEnvironment, serverEnv } from "@/lib/env";
+
 type ResetEmailInput = {
   email: string;
   name?: string | null;
@@ -5,21 +7,22 @@ type ResetEmailInput = {
 };
 
 export async function sendPasswordResetEmail({ email, name, resetUrl }: ResetEmailInput) {
-  if (!process.env.RESEND_API_KEY || !process.env.MAIL_FROM) {
+  if (!hasPasswordResetEmailConfig()) {
     return {
       delivered: false,
-      previewUrl: resetUrl,
+      previewUrl: isProductionEnvironment() ? undefined : resetUrl,
+      unavailableReason: "Password reset email delivery is not configured yet.",
     };
   }
 
   const response = await fetch("https://api.resend.com/emails", {
     method: "POST",
     headers: {
-      Authorization: `Bearer ${process.env.RESEND_API_KEY}`,
+      Authorization: `Bearer ${serverEnv.resendApiKey}`,
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      from: process.env.MAIL_FROM,
+      from: serverEnv.mailFrom,
       to: email,
       subject: "Reset your BorderlessCV password",
       html: `
@@ -50,5 +53,6 @@ export async function sendPasswordResetEmail({ email, name, resetUrl }: ResetEma
   return {
     delivered: true,
     previewUrl: undefined,
+    unavailableReason: undefined,
   };
 }

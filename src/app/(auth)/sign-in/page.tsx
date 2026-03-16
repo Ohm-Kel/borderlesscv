@@ -1,5 +1,6 @@
 import { AuthCard, AuthFooterLink } from "@/components/auth/auth-card";
 import { SignInForm } from "@/components/auth/sign-in-form";
+import { hasGoogleOAuthConfig } from "@/lib/env";
 
 export default async function SignInPage({
   searchParams,
@@ -14,7 +15,7 @@ export default async function SignInPage({
       description="Sign in to continue tailoring resumes, exporting polished PDFs, and tracking global applications from one recruiter-trustworthy workspace."
       footer={<AuthFooterLink text="New to BorderlessCV?" href="/sign-up" label="Create an account" />}
     >
-      <SignInForm callbackUrl={callbackUrl} googleEnabled={Boolean(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET)} />
+      <SignInForm callbackUrl={callbackUrl} googleEnabled={hasGoogleOAuthConfig()} />
     </AuthCard>
   );
 }

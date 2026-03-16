@@ -47,6 +47,10 @@ Set this to the exact public URL for the environment:
 
 For OAuth, fixed URLs are better than random preview URLs.
 
+### `NEXTAUTH_SECRET`
+
+Use a long random secret. A 32+ character value is a practical minimum for production.
+
 ### Google OAuth
 
 Google sign-in should only be enabled after its callback URLs are configured in Google Cloud. Add one callback URL per stable environment:
@@ -64,6 +68,7 @@ Password reset email delivery requires:
 - `MAIL_FROM`
 
 Without them, the forgot-password flow will not send production email.
+In production, the API now returns a clear configuration error instead of pretending the email was sent.
 
 ## Database deployment
 

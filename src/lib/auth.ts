@@ -6,6 +6,7 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
 import { z } from "zod";
 
+import { hasGoogleOAuthConfig, serverEnv } from "@/lib/env";
 import { prisma } from "@/lib/prisma";
 
 const credentialsSchema = z.object({
@@ -51,18 +52,18 @@ const providers: NextAuthOptions["providers"] = [
   }),
 ];
 
-if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
+if (hasGoogleOAuthConfig()) {
   providers.push(
     GoogleProvider({
-      clientId: process.env.GOOGLE_CLIENT_ID,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+      clientId: serverEnv.googleClientId!,
+      clientSecret: serverEnv.googleClientSecret!,
     }),
   );
 }
 
 export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma),
-  secret: process.env.NEXTAUTH_SECRET,
+  secret: serverEnv.nextAuthSecret,
   session: {
     strategy: "jwt",
   },
@@ -77,19 +78,23 @@ export const authOptions: NextAuthOptions = {
       }
 
       if (token.email) {
-        const dbUser = await prisma.user.findUnique({
-          where: { email: token.email },
-          select: {
-            id: true,
-            onboardedAt: true,
-            experienceLevel: true,
-          },
-        });
+        try {
+          const dbUser = await prisma.user.findUnique({
+            where: { email: token.email },
+            select: {
+              id: true,
+              onboardedAt: true,
+              experienceLevel: true,
+            },
+          });
 
-        if (dbUser) {
-          token.id = dbUser.id;
-          token.onboardedAt = dbUser.onboardedAt?.toISOString() ?? null;
-          token.experienceLevel = dbUser.experienceLevel;
+          if (dbUser) {
+            token.id = dbUser.id;
+            token.onboardedAt = dbUser.onboardedAt?.toISOString() ?? null;
+            token.experienceLevel = dbUser.experienceLevel;
+          }
+        } catch (error) {
+          console.error("Could not refresh session metadata", error);
         }
       }
 

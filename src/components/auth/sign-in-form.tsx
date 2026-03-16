@@ -15,6 +15,20 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { fadeUp, staggerContainer } from "@/lib/motion";
 
+function getSignInErrorDescription(error: string | undefined) {
+  switch (error) {
+    case "CredentialsSignin":
+      return "Check your email and password and try again.";
+    case "Configuration":
+    case "CallbackRouteError":
+      return "BorderlessCV auth is not fully configured for this deployment yet.";
+    case "AccessDenied":
+      return "This sign-in attempt was blocked. Please try again or use email/password.";
+    default:
+      return "Sign-in could not be completed. Please try again.";
+  }
+}
+
 export function SignInForm({
   callbackUrl,
   googleEnabled,
@@ -31,26 +45,33 @@ export function SignInForm({
     event.preventDefault();
     setPending(true);
 
-    const result = await signIn("credentials", {
-      email,
-      password,
-      redirect: false,
-      callbackUrl: callbackUrl || "/dashboard",
-    });
-
-    setPending(false);
-
-    if (result?.error) {
-      toast.error("Sign in failed", {
-        description: "Check your email and password and try again.",
+    try {
+      const result = await signIn("credentials", {
+        email,
+        password,
+        redirect: false,
+        callbackUrl: callbackUrl || "/dashboard",
       });
-      return;
-    }
 
-    startTransition(() => {
-      router.push(result?.url || callbackUrl || "/dashboard");
-      router.refresh();
-    });
+      setPending(false);
+
+      if (result?.error) {
+        toast.error("Sign in failed", {
+          description: getSignInErrorDescription(result.error),
+        });
+        return;
+      }
+
+      startTransition(() => {
+        router.push(result?.url || callbackUrl || "/dashboard");
+        router.refresh();
+      });
+    } catch {
+      setPending(false);
+      toast.error("Sign in failed", {
+        description: "The request failed before the server returned a usable response. Please try again.",
+      });
+    }
   }
 
   return (

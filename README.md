@@ -27,10 +27,10 @@ It combines:
 
 1. Copy `.env.example` to `.env`.
 2. Set a PostgreSQL `DATABASE_URL`.
-3. Set `NEXTAUTH_SECRET`.
+3. Set `NEXTAUTH_SECRET` to a long random value.
 4. Add Google OAuth credentials if you want Google sign-in.
 5. Add `OPENAI_API_KEY` for AI features.
-6. Optionally add `RESEND_API_KEY` and `MAIL_FROM` for password reset email delivery.
+6. Add `RESEND_API_KEY` and `MAIL_FROM` if you want production password reset email delivery.
 
 ## Scripts
 
@@ -81,4 +81,5 @@ npm run db:deploy
 - Vercel is the recommended hosting target for this repo.
 - Add `DATABASE_URL`, `NEXTAUTH_SECRET`, and `NEXTAUTH_URL` before the app is expected to work.
 - Add `OPENAI_API_KEY`, Google OAuth values, and email values to enable AI, Google sign-in, and reset emails.
+- In production, forgot-password will return a clear configuration error until email delivery is configured.
 - Deployment checklist: `docs/vercel-deployment.md`

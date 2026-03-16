@@ -13,6 +13,15 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { fadeUp, staggerContainer } from "@/lib/motion";
+import { getErrorDescription } from "@/lib/request-errors";
+
+function getPostSignUpSignInErrorDescription(error: string | undefined) {
+  if (error === "Configuration" || error === "CallbackRouteError") {
+    return "Your account was created, but auth is not fully configured for this deployment yet.";
+  }
+
+  return "Use your email and password on the sign-in screen.";
+}
 
 export function SignUpForm({ googleEnabled }: { googleEnabled: boolean }) {
   const router = useRouter();
@@ -39,13 +48,8 @@ export function SignUpForm({ googleEnabled }: { googleEnabled: boolean }) {
       const payload = await response.json().catch(() => null);
 
       if (!response.ok) {
-        const description =
-          payload && typeof payload === "object" && "error" in payload && typeof payload.error === "string"
-            ? payload.error
-            : "Please review your details and try again.";
-
         toast.error("Could not create account", {
-          description,
+          description: getErrorDescription(payload, "Please review your details and try again."),
         });
         return;
       }
@@ -59,7 +63,7 @@ export function SignUpForm({ googleEnabled }: { googleEnabled: boolean }) {
 
       if (result?.error) {
         toast.error("Account created, but sign-in failed", {
-          description: "Use your email and password on the sign-in screen.",
+          description: getPostSignUpSignInErrorDescription(result.error),
         });
         router.push("/sign-in");
         return;

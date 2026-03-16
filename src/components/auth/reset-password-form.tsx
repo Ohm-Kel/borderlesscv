@@ -8,6 +8,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { getErrorDescription } from "@/lib/request-errors";
 
 export function ResetPasswordForm({ token }: { token: string }) {
   const router = useRouter();
@@ -19,26 +20,33 @@ export function ResetPasswordForm({ token }: { token: string }) {
     event.preventDefault();
     setPending(true);
 
-    const response = await fetch("/api/auth/reset-password", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ token, password, confirmPassword }),
-    });
-
-    const payload = await response.json();
-    setPending(false);
-
-    if (!response.ok) {
-      toast.error("Could not reset password", {
-        description: payload.error || "Please try again.",
+    try {
+      const response = await fetch("/api/auth/reset-password", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ token, password, confirmPassword }),
       });
-      return;
-    }
 
-    toast.success("Password updated");
-    router.push("/sign-in");
+      const payload = await response.json().catch(() => null);
+      setPending(false);
+
+      if (!response.ok) {
+        toast.error("Could not reset password", {
+          description: getErrorDescription(payload, "Please try again."),
+        });
+        return;
+      }
+
+      toast.success("Password updated");
+      router.push("/sign-in");
+    } catch {
+      setPending(false);
+      toast.error("Could not reset password", {
+        description: "The request failed before the server returned a usable response. Please try again.",
+      });
+    }
   }
 
   return (

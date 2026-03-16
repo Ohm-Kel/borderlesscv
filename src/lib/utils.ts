@@ -2,6 +2,8 @@ import { type ClassValue, clsx } from "clsx";
 import { format } from "date-fns";
 import { twMerge } from "tailwind-merge";
 
+import { getServerBaseUrl } from "@/lib/env";
+
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
@@ -42,8 +44,7 @@ export function uniqueBy<T>(items: T[], getKey: (item: T) => string) {
 }
 
 export function buildAbsoluteUrl(path: string) {
-  const vercelUrl = process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : undefined;
-  const baseUrl = process.env.NEXTAUTH_URL ?? vercelUrl ?? "http://localhost:3000";
+  const baseUrl = getServerBaseUrl();
   return new URL(path, baseUrl).toString();
 }
 

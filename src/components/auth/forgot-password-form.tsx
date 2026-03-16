@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { getErrorDescription } from "@/lib/request-errors";
 
 export function ForgotPasswordForm() {
   const [email, setEmail] = useState("");
@@ -16,32 +17,39 @@ export function ForgotPasswordForm() {
     event.preventDefault();
     setPending(true);
 
-    const response = await fetch("/api/auth/forgot-password", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ email }),
-    });
+    try {
+      const response = await fetch("/api/auth/forgot-password", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email }),
+      });
 
-    const payload = await response.json();
-    setPending(false);
+      const payload = await response.json().catch(() => null);
+      setPending(false);
 
-    if (!response.ok) {
+      if (!response.ok) {
+        toast.error("Could not send reset link", {
+          description: getErrorDescription(payload, "Please try again."),
+        });
+        return;
+      }
+
+      if (payload?.developmentResetUrl) {
+        toast.success("Reset link generated", {
+          description: payload.developmentResetUrl,
+        });
+        return;
+      }
+
+      toast.success("If an account exists for that email, a reset link has been sent.");
+    } catch {
+      setPending(false);
       toast.error("Could not send reset link", {
-        description: "Please try again.",
+        description: "The request failed before the server returned a usable response. Please try again.",
       });
-      return;
     }
-
-    if (payload.developmentResetUrl) {
-      toast.success("Reset link generated", {
-        description: payload.developmentResetUrl,
-      });
-      return;
-    }
-
-    toast.success("If an account exists for that email, a reset link has been sent.");
   }
 
   return (
