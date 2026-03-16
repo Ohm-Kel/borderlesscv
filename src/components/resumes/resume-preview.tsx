@@ -31,33 +31,69 @@ type PreviewMode = "full" | "builder";
 
 function getPreviewTuning(previewMode: PreviewMode, density: ResumeDensityMode) {
   const isBuilder = previewMode === "builder";
+  const isCompact = density === "compact";
   const isCompressed = density === "compressed";
 
   return {
     shell: isBuilder ? "h-full min-h-0 rounded-[24px]" : "min-h-[1122px] rounded-[32px]",
-    atlasPadding: isBuilder ? (isCompressed ? "p-5" : "p-6") : "p-8 lg:p-10",
-    emberPadding: isBuilder ? (isCompressed ? "p-4" : "p-5") : "p-6 lg:p-8",
-    horizonSidebarPadding: isBuilder ? (isCompressed ? "px-5 py-5" : "px-6 py-6") : "px-7 py-8 lg:px-8 lg:py-10",
-    horizonMainPadding: isBuilder ? (isCompressed ? "px-5 py-5" : "px-6 py-6") : "px-7 py-8 lg:px-10 lg:py-10",
+    atlasPadding: isBuilder ? (isCompressed ? "p-4" : isCompact ? "p-5" : "p-6") : "p-8 lg:p-10",
+    emberPadding: isBuilder ? (isCompressed ? "p-3.5" : isCompact ? "p-[1.125rem]" : "p-5") : "p-6 lg:p-8",
+    horizonSidebarPadding: isBuilder ? (isCompressed ? "px-4 py-4" : isCompact ? "px-5 py-5" : "px-6 py-6") : "px-7 py-8 lg:px-8 lg:py-10",
+    horizonMainPadding: isBuilder ? (isCompressed ? "px-4 py-4" : isCompact ? "px-5 py-5" : "px-6 py-6") : "px-7 py-8 lg:px-10 lg:py-10",
+    horizonColumns: isBuilder
+      ? isCompressed
+        ? "lg:grid-cols-[252px_minmax(0,1fr)]"
+        : isCompact
+          ? "lg:grid-cols-[278px_minmax(0,1fr)]"
+          : "lg:grid-cols-[320px_minmax(0,1fr)]"
+      : "lg:grid-cols-[320px_minmax(0,1fr)]",
+    emberColumns: isBuilder
+      ? isCompressed
+        ? "lg:grid-cols-[minmax(0,1.66fr)_minmax(210px,0.74fr)]"
+        : isCompact
+          ? "lg:grid-cols-[minmax(0,1.6fr)_minmax(224px,0.8fr)]"
+          : "lg:grid-cols-[minmax(0,1.55fr)_minmax(240px,0.85fr)]"
+      : "lg:grid-cols-[minmax(0,1.55fr)_minmax(240px,0.85fr)]",
     headerPadding: isBuilder ? "px-5 py-5" : "px-6 py-7 lg:px-8",
-    title: isBuilder ? (isCompressed ? "text-[2rem] leading-tight" : "text-[2.15rem] leading-tight") : "text-4xl font-semibold tracking-tight",
-    headline: isBuilder ? (isCompressed ? "mt-2 text-[0.84rem] leading-[1.55]" : "mt-2.5 text-[0.92rem] leading-[1.65]") : "mt-3 text-base leading-7",
-    meta: isBuilder ? "text-[0.76rem] leading-[1.5]" : "text-sm leading-6",
-    summaryCard: isBuilder ? "rounded-[22px] p-4" : "rounded-[28px] p-5 lg:p-6",
-    summaryText: isBuilder ? (isCompressed ? "mt-2 text-[0.76rem] leading-[1.55]" : "mt-2.5 text-[0.8rem] leading-[1.65]") : "mt-3 text-sm leading-7",
-    sectionCard: isBuilder ? "rounded-[22px] p-4" : "rounded-[28px] p-5",
-    sectionStack: isBuilder ? (isCompressed ? "space-y-4" : "space-y-5") : "space-y-8",
+    title: isBuilder
+      ? isCompressed
+        ? "text-[1.82rem] leading-tight"
+        : isCompact
+          ? "text-[1.96rem] leading-tight"
+          : "text-[2.15rem] leading-tight"
+      : "text-4xl font-semibold tracking-tight",
+    headline: isBuilder
+      ? isCompressed
+        ? "mt-1.5 text-[0.78rem] leading-[1.45]"
+        : isCompact
+          ? "mt-2 text-[0.84rem] leading-[1.52]"
+          : "mt-2.5 text-[0.92rem] leading-[1.65]"
+      : "mt-3 text-base leading-7",
+    meta: isBuilder ? (isCompressed ? "text-[0.7rem] leading-[1.4]" : isCompact ? "text-[0.74rem] leading-[1.44]" : "text-[0.76rem] leading-[1.5]") : "text-sm leading-6",
+    summaryCard: isBuilder ? (isCompressed ? "rounded-[20px] p-3.5" : isCompact ? "rounded-[21px] p-3.5" : "rounded-[22px] p-4") : "rounded-[28px] p-5 lg:p-6",
+    summaryText: isBuilder
+      ? isCompressed
+        ? "mt-2 text-[0.72rem] leading-[1.48]"
+        : isCompact
+          ? "mt-2 text-[0.76rem] leading-[1.54]"
+          : "mt-2.5 text-[0.8rem] leading-[1.65]"
+      : "mt-3 text-sm leading-7",
+    sectionCard: isBuilder ? (isCompressed ? "rounded-[20px] p-3.5" : isCompact ? "rounded-[21px] p-3.5" : "rounded-[22px] p-4") : "rounded-[28px] p-5",
+    sectionStack: isBuilder ? (isCompressed ? "space-y-3.5" : isCompact ? "space-y-4" : "space-y-5") : "space-y-8",
     atlasHeading: isBuilder ? "text-[0.62rem] font-semibold uppercase tracking-[0.22em] text-slate-500" : "text-xs font-semibold uppercase tracking-[0.24em] text-slate-500",
-    otherHeading: isBuilder ? "mt-2.5 text-[0.72rem] font-semibold uppercase tracking-[0.22em] text-slate-700" : "mt-3 text-sm font-semibold uppercase tracking-[0.22em] text-slate-700",
-    sectionBody: isBuilder ? "mt-3" : "mt-4",
-    entryStack: isBuilder ? "space-y-3.5" : "space-y-4",
-    entryMeta: isBuilder ? "text-[0.76rem] leading-[1.5] text-slate-500" : "text-sm leading-6 text-slate-500",
-    entryDescription: isBuilder ? "mt-1.5 text-[0.78rem] leading-[1.55] text-slate-700" : "mt-2 text-sm leading-6 text-slate-700",
-    bulletList: isBuilder ? "mt-2 space-y-1 pl-4 text-[0.78rem] leading-[1.55] text-slate-700" : "mt-2 space-y-1.5 pl-5 text-sm leading-6 text-slate-700",
-    chip: isBuilder ? "rounded-full border px-2.5 py-1 text-[0.72rem] font-medium" : "rounded-full border px-3 py-1.5 text-xs font-medium",
-    statText: isBuilder ? "text-[0.78rem] text-slate-700" : "text-sm text-slate-700",
-    linkText: isBuilder ? "block text-[0.78rem] leading-[1.5] text-slate-700 underline-offset-4 hover:underline" : "block text-sm leading-6 text-slate-700 underline-offset-4 hover:underline",
-    linkMeta: isBuilder ? "block text-[0.7rem] text-slate-500" : "block text-xs text-slate-500",
+    otherHeading: isBuilder ? (isCompressed ? "mt-2 text-[0.68rem] font-semibold uppercase tracking-[0.22em] text-slate-700" : "mt-2.5 text-[0.72rem] font-semibold uppercase tracking-[0.22em] text-slate-700") : "mt-3 text-sm font-semibold uppercase tracking-[0.22em] text-slate-700",
+    sectionBody: isBuilder ? (isCompressed ? "mt-2.5" : "mt-3") : "mt-4",
+    entryStack: isBuilder ? (isCompressed ? "space-y-3" : isCompact ? "space-y-3.5" : "space-y-3.5") : "space-y-4",
+    entryHeader: isBuilder ? "grid grid-cols-[minmax(0,1fr)_auto] items-start gap-x-3 gap-y-1" : "grid grid-cols-[minmax(0,1fr)_auto] items-start gap-x-4 gap-y-1.5",
+    titleText: isBuilder ? (isCompressed ? "text-[0.82rem] leading-[1.35]" : isCompact ? "text-[0.85rem] leading-[1.38]" : "text-[0.88rem] leading-[1.4]") : "text-base leading-6",
+    dateText: isBuilder ? (isCompressed ? "pt-0.5 text-[0.7rem] leading-[1.35] text-right text-slate-500" : "pt-0.5 text-[0.74rem] leading-[1.4] text-right text-slate-500") : "text-sm leading-6 text-right text-slate-500",
+    entryMeta: isBuilder ? (isCompressed ? "text-[0.7rem] leading-[1.38] text-slate-500" : isCompact ? "text-[0.74rem] leading-[1.42] text-slate-500" : "text-[0.76rem] leading-[1.5] text-slate-500") : "text-sm leading-6 text-slate-500",
+    entryDescription: isBuilder ? (isCompressed ? "mt-1 text-[0.72rem] leading-[1.45] text-slate-700" : isCompact ? "mt-1.5 text-[0.75rem] leading-[1.48] text-slate-700" : "mt-1.5 text-[0.78rem] leading-[1.55] text-slate-700") : "mt-2 text-sm leading-6 text-slate-700",
+    bulletList: isBuilder ? (isCompressed ? "mt-1.5 space-y-0.5 pl-4 text-[0.72rem] leading-[1.42] text-slate-700" : isCompact ? "mt-2 space-y-0.5 pl-4 text-[0.75rem] leading-[1.48] text-slate-700" : "mt-2 space-y-1 pl-4 text-[0.78rem] leading-[1.55] text-slate-700") : "mt-2 space-y-1.5 pl-5 text-sm leading-6 text-slate-700",
+    chip: isBuilder ? (isCompressed ? "rounded-full border px-2 py-0.5 text-[0.68rem] font-medium" : isCompact ? "rounded-full border px-2.5 py-0.5 text-[0.7rem] font-medium" : "rounded-full border px-2.5 py-1 text-[0.72rem] font-medium") : "rounded-full border px-3 py-1.5 text-xs font-medium",
+    statText: isBuilder ? (isCompressed ? "text-[0.72rem] text-slate-700" : isCompact ? "text-[0.75rem] text-slate-700" : "text-[0.78rem] text-slate-700") : "text-sm text-slate-700",
+    linkText: isBuilder ? (isCompressed ? "block text-[0.72rem] leading-[1.42] text-slate-700 underline-offset-4 hover:underline" : isCompact ? "block text-[0.75rem] leading-[1.45] text-slate-700 underline-offset-4 hover:underline" : "block text-[0.78rem] leading-[1.5] text-slate-700 underline-offset-4 hover:underline") : "block text-sm leading-6 text-slate-700 underline-offset-4 hover:underline",
+    linkMeta: isBuilder ? (isCompressed ? "block text-[0.64rem] text-slate-500" : isCompact ? "block text-[0.67rem] text-slate-500" : "block text-[0.7rem] text-slate-500") : "block text-xs text-slate-500",
   };
 }
 
@@ -83,7 +119,7 @@ export function ResumePreview({
   if (templateKey === "HORIZON") {
     return (
       <div className={cn("surface-card h-full overflow-hidden border", tuning.shell, theme.preview.shell)}>
-        <div className="grid h-full min-h-full lg:grid-cols-[320px_minmax(0,1fr)]">
+        <div className={cn("grid h-full min-h-full", tuning.horizonColumns)}>
           <aside className={cn("flex flex-col gap-5", tuning.horizonSidebarPadding, theme.preview.sidebar)}>
             <div>
               <h1 className={cn("font-semibold tracking-tight", tuning.title, theme.preview.title)}>{personalDetails.name || "Your Name"}</h1>
@@ -159,7 +195,7 @@ export function ResumePreview({
           </p>
         </header>
 
-          <div className="mt-5 grid gap-5 lg:grid-cols-[minmax(0,1.55fr)_minmax(240px,0.85fr)]">
+          <div className={cn("mt-5 grid gap-5", tuning.emberColumns)}>
           <div className={tuning.sectionStack}>
             {document.summary ? (
               <section className={cn("border", tuning.summaryCard, theme.preview.badge)}>
@@ -417,12 +453,12 @@ function EntryCard({
 
   return (
     <article className={cn(layout === "ember" ? "border-b border-stone-200 pb-5 last:border-b-0 last:pb-0" : "")}>
-      <div className="flex flex-wrap items-start justify-between gap-3">
-        <div>
-          <p className="font-semibold text-slate-900">{item.title}</p>
+      <div className={tuning.entryHeader}>
+        <div className="min-w-0">
+          <p className={cn("font-semibold text-slate-900", tuning.titleText)}>{item.title}</p>
           <p className={tuning.entryMeta}>{formatMetaPieces([item.organization, item.location])}</p>
         </div>
-        <p className={cn("font-medium", tuning.entryMeta)}>{item.date}</p>
+        <p className={cn("font-medium whitespace-nowrap", tuning.dateText)}>{item.date}</p>
       </div>
       {item.description ? <p className={tuning.entryDescription}>{item.description}</p> : null}
       {item.bullets.filter(Boolean).length ? (

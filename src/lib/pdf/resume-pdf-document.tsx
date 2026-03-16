@@ -299,6 +299,7 @@ type PdfTuning = {
   bulletSize: number;
   bulletLineHeight: number;
   bulletMarginLeft: number;
+  dateColumnWidth: number;
   chipRadius: number;
   chipPaddingX: number;
   chipPaddingY: number;
@@ -345,6 +346,7 @@ function getPdfTuning(density: ResumeDensityMode): PdfTuning {
       bulletSize: 8.5,
       bulletLineHeight: 1.33,
       bulletMarginLeft: 6,
+      dateColumnWidth: 88,
       chipRadius: 999,
       chipPaddingX: 6,
       chipPaddingY: 2,
@@ -391,6 +393,7 @@ function getPdfTuning(density: ResumeDensityMode): PdfTuning {
       bulletSize: 8.8,
       bulletLineHeight: 1.38,
       bulletMarginLeft: 7,
+      dateColumnWidth: 94,
       chipRadius: 999,
       chipPaddingX: 7,
       chipPaddingY: 2.5,
@@ -436,6 +439,7 @@ function getPdfTuning(density: ResumeDensityMode): PdfTuning {
     bulletSize: 9.5,
     bulletLineHeight: 1.5,
     bulletMarginLeft: 8,
+    dateColumnWidth: 100,
     chipRadius: 999,
     chipPaddingX: 8,
     chipPaddingY: 3,
@@ -795,11 +799,24 @@ function PdfEntry({
       ]}
     >
       <View style={styles.itemRow}>
-        <View style={{ maxWidth: "73%" }}>
+        <View style={{ flexGrow: 1, flexShrink: 1, paddingRight: 12 }}>
           <Text style={[styles.itemTitle, { color: theme.title, fontSize: tuning.paragraphSize }]}>{item.title}</Text>
           <Text style={[styles.itemMeta, { color: theme.muted, fontSize: tuning.itemMetaSize, lineHeight: tuning.itemMetaLineHeight }]}>{formatMetaPieces([item.organization, item.location])}</Text>
         </View>
-        <Text style={[styles.itemMeta, { color: theme.muted, fontSize: tuning.itemMetaSize, lineHeight: tuning.itemMetaLineHeight }]}>{item.date}</Text>
+        <Text
+          style={[
+            styles.itemMeta,
+            {
+              width: tuning.dateColumnWidth,
+              color: theme.muted,
+              fontSize: tuning.itemMetaSize,
+              lineHeight: tuning.itemMetaLineHeight,
+              textAlign: "right",
+            },
+          ]}
+        >
+          {item.date}
+        </Text>
       </View>
       {item.description ? <Text style={[styles.paragraph, { color: theme.text, fontSize: tuning.paragraphSize, lineHeight: tuning.paragraphLineHeight }]}>{item.description}</Text> : null}
       {item.bullets.filter(Boolean).map((bullet, index) => (
