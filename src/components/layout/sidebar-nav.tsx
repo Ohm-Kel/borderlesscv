@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { BriefcaseBusiness, ChevronDown, FileText, LayoutDashboard, Menu, Settings, Sparkles, UserSquare2 } from "lucide-react";
+import { BriefcaseBusiness, ChevronDown, FileText, LayoutDashboard, Menu, Sparkles, UserSquare2 } from "lucide-react";
 import { usePathname } from "next/navigation";
 
 import { Logo } from "@/components/shared/logo";
@@ -13,7 +13,6 @@ const navigation = [
   { href: "/resumes", label: "Resumes", icon: FileText },
   { href: "/applications", label: "Applications", icon: BriefcaseBusiness },
   { href: "/cover-letters", label: "Cover Letters", icon: Sparkles },
-  { href: "/settings", label: "Settings", icon: Settings },
 ];
 
 export function SidebarNav({
