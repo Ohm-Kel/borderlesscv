@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowRight, BriefcaseBusiness, CalendarClock, FileText, Plus, Sparkles, Target } from "lucide-react";
+import { BriefcaseBusiness, CalendarClock, FileText, Plus, Sparkles, Target } from "lucide-react";
 
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
@@ -44,7 +44,7 @@ export default async function DashboardPage() {
     prisma.resume.findMany({
       where: { userId: user.id },
       orderBy: { updatedAt: "desc" },
-      take: 4,
+      take: 5,
       include: {
         versions: { orderBy: { versionNumber: "desc" }, take: 1 },
       },
@@ -99,18 +99,14 @@ export default async function DashboardPage() {
   ];
 
   return (
-    <div className="flex h-full min-h-0 flex-col gap-4">
-      <section className="surface-card flex flex-col gap-3 rounded-[26px] border border-white/75 px-5 py-4 shadow-[0_12px_32px_rgba(15,23,42,0.06)] lg:flex-row lg:items-center lg:justify-between">
-        <div>
-          <p className="section-label">Overview</p>
-          <h1 className="mt-1 text-[1.35rem] font-semibold tracking-[-0.03em] text-slate-950">
-            Welcome back, {firstName}
-          </h1>
-          <p className="mt-1 text-sm text-slate-500">
-            Keep your profile verified, tailor targeted versions, and track what is moving.
+    <div className="flex h-full min-h-0 flex-col gap-3">
+      <section className="surface-card flex h-[58px] items-center justify-between gap-4 rounded-[24px] border border-white/75 px-4 shadow-[0_10px_26px_rgba(15,23,42,0.05)]">
+        <div className="min-w-0">
+          <p className="truncate text-sm font-medium text-slate-700">
+            Welcome back, {firstName}. Keep your profile verified and track what is moving.
           </p>
         </div>
-        <Button asChild className="w-fit shrink-0">
+        <Button asChild size="sm" className="shrink-0">
           <Link href="/resumes">
             <Plus className="h-4 w-4" />
             New resume
@@ -118,37 +114,38 @@ export default async function DashboardPage() {
         </Button>
       </section>
 
-      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="grid gap-3 lg:grid-cols-4">
         {stats.map((stat) => {
           const Icon = stat.icon;
           return (
             <Link
               key={stat.label}
               href={stat.href}
-              className="group rounded-[24px] border border-white/75 bg-white/92 px-4 py-3.5 shadow-[0_8px_24px_rgba(15,23,42,0.05)] transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_14px_34px_rgba(15,23,42,0.08)]"
+              className="rounded-[22px] border border-white/75 bg-white/92 px-4 py-3 shadow-[0_8px_22px_rgba(15,23,42,0.05)] transition hover:border-slate-200 hover:shadow-[0_12px_30px_rgba(15,23,42,0.07)]"
             >
-              <div className="flex items-center justify-between gap-3">
-                <div className="flex h-9 w-9 items-center justify-center rounded-[14px] bg-slate-950 text-white">
+              <div className="flex items-center gap-3">
+                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[14px] bg-slate-950 text-white">
                   <Icon className="h-4 w-4" />
                 </div>
-                <ArrowRight className="h-4 w-4 text-slate-300 transition group-hover:translate-x-0.5 group-hover:text-slate-500" />
-              </div>
-              <div className="mt-3">
-                <p className="text-[1.55rem] font-semibold tracking-[-0.04em] text-slate-950">{stat.value}</p>
-                <p className="text-[0.8rem] font-medium text-slate-500">{stat.label}</p>
-                <p className="mt-0.5 text-[0.72rem] text-slate-400">{stat.subtext}</p>
+                <div className="min-w-0">
+                  <div className="flex items-end gap-2">
+                    <p className="text-[1.35rem] font-semibold tracking-[-0.04em] text-slate-950">{stat.value}</p>
+                    <p className="pb-0.5 text-[0.76rem] font-medium text-slate-500">{stat.label}</p>
+                  </div>
+                  <p className="truncate text-[0.72rem] text-slate-400">{stat.subtext}</p>
+                </div>
               </div>
             </Link>
           );
         })}
       </div>
 
-      <div className="grid min-h-0 flex-1 gap-4 xl:grid-cols-[1.02fr_0.98fr]">
-        <section className="min-h-0 rounded-[28px] border border-white/75 bg-white/92 p-4 shadow-[0_12px_36px_rgba(15,23,42,0.06)]">
-          <div className="mb-4 flex items-center justify-between gap-3">
+      <div className="grid min-h-0 flex-1 gap-3 xl:grid-cols-[1.15fr_0.85fr]">
+        <section className="min-h-0 rounded-[26px] border border-white/75 bg-white/92 shadow-[0_12px_34px_rgba(15,23,42,0.05)]">
+          <div className="flex items-center justify-between gap-3 border-b border-slate-200 px-4 py-3.5">
             <div>
               <p className="section-label">Recent resumes</p>
-              <h2 className="mt-1 text-lg font-semibold text-slate-950">Library activity</h2>
+              <h2 className="mt-1 text-[1.05rem] font-semibold text-slate-950">Library activity</h2>
             </div>
             <Button asChild size="sm" variant="secondary">
               <Link href="/resumes">Open library</Link>
@@ -156,43 +153,56 @@ export default async function DashboardPage() {
           </div>
 
           {resumes.length === 0 ? (
-            <div className="rounded-[22px] border border-dashed border-slate-200 bg-slate-50/60 px-4 py-8 text-center text-sm text-slate-500">
+            <div className="m-4 rounded-[22px] border border-dashed border-slate-200 bg-slate-50/60 px-4 py-8 text-center text-sm text-slate-500">
               Start your first base resume to see versions, exports, and fit guidance here.
             </div>
           ) : (
-            <ScrollArea className="h-[calc(100%-68px)] pr-3">
-              <div className="space-y-3">
-                {resumes.map((resume) => (
-                  <Link
-                    key={resume.id}
-                    href={`/resumes/${resume.id}`}
-                    className="group flex items-center justify-between rounded-[20px] border border-slate-200/80 px-4 py-3 transition-all duration-200 hover:border-slate-300 hover:bg-slate-50/80"
-                  >
-                    <div className="min-w-0">
-                      <div className="flex items-center gap-2">
-                        <span className="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-[0.66rem] font-semibold tracking-[0.18em] text-slate-500">
-                          {countryCodes[resume.targetCountry ?? ""] ?? "CV"}
-                        </span>
-                        <h3 className="truncate text-sm font-semibold text-slate-950">{resume.title}</h3>
-                      </div>
-                      <p className="mt-1 text-xs text-slate-400">Updated {formatDate(resume.updatedAt)}</p>
-                    </div>
-                    <span className="ml-3 shrink-0 rounded-full border border-slate-200 bg-white px-2.5 py-0.5 text-[0.68rem] font-semibold text-slate-500">
-                      v{resume.versions[0]?.versionNumber ?? 1}
-                    </span>
-                  </Link>
-                ))}
+            <div className="flex h-[calc(100%-78px)] min-h-0 flex-col">
+              <div className="hidden grid-cols-[minmax(0,1.7fr)_0.7fr_0.8fr_0.7fr] gap-4 border-b border-slate-200 px-4 py-3 text-[0.7rem] font-semibold uppercase tracking-[0.18em] text-slate-500 md:grid">
+                <span>Resume</span>
+                <span>Country</span>
+                <span>Updated</span>
+                <span className="text-right">Version</span>
               </div>
-            </ScrollArea>
+              <ScrollArea className="min-h-0 flex-1">
+                <div className="divide-y divide-slate-200">
+                  {resumes.map((resume) => (
+                    <Link
+                      key={resume.id}
+                      href={`/resumes/${resume.id}`}
+                      className="block px-4 py-3 transition hover:bg-slate-50/70"
+                    >
+                      <div className="flex flex-col gap-3 md:grid md:grid-cols-[minmax(0,1.7fr)_0.7fr_0.8fr_0.7fr] md:items-center md:gap-4">
+                        <div className="min-w-0">
+                          <p className="truncate text-sm font-semibold text-slate-950">{resume.title}</p>
+                          <p className="truncate text-xs text-slate-400">{resume.targetRole || "No target role set"}</p>
+                        </div>
+                        <div>
+                          <span className="inline-flex rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1 text-[0.66rem] font-semibold text-slate-600">
+                            {countryCodes[resume.targetCountry ?? ""] ?? "CV"}
+                          </span>
+                        </div>
+                        <p className="text-sm text-slate-600">{formatDate(resume.updatedAt, "MMM d, yyyy")}</p>
+                        <div className="text-left md:text-right">
+                          <span className="inline-flex rounded-full border border-slate-200 bg-white px-2.5 py-1 text-[0.66rem] font-semibold text-slate-500">
+                            v{resume.versions[0]?.versionNumber ?? 1}
+                          </span>
+                        </div>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              </ScrollArea>
+            </div>
           )}
         </section>
 
-        <div className="grid min-h-0 gap-4 xl:grid-rows-[1fr_auto]">
-          <section className="min-h-0 rounded-[28px] border border-white/75 bg-white/92 p-4 shadow-[0_12px_36px_rgba(15,23,42,0.06)]">
-            <div className="mb-4 flex items-center justify-between gap-3">
+        <div className="grid min-h-0 gap-3 xl:grid-rows-[minmax(0,1fr)_minmax(220px,auto)]">
+          <section className="min-h-0 rounded-[26px] border border-white/75 bg-white/92 shadow-[0_12px_34px_rgba(15,23,42,0.05)]">
+            <div className="flex items-center justify-between gap-3 border-b border-slate-200 px-4 py-3.5">
               <div>
                 <p className="section-label">Applications</p>
-                <h2 className="mt-1 text-lg font-semibold text-slate-950">Latest movement</h2>
+                <h2 className="mt-1 text-[1.05rem] font-semibold text-slate-950">Latest movement</h2>
               </div>
               <Button asChild size="sm" variant="secondary">
                 <Link href="/applications">Open tracker</Link>
@@ -200,62 +210,72 @@ export default async function DashboardPage() {
             </div>
 
             {applications.length === 0 ? (
-              <div className="rounded-[22px] border border-dashed border-slate-200 bg-slate-50/60 px-4 py-8 text-center text-sm text-slate-500">
+              <div className="m-4 rounded-[22px] border border-dashed border-slate-200 bg-slate-50/60 px-4 py-8 text-center text-sm text-slate-500">
                 Add applications once you start submitting so the exact resume version stays attached.
               </div>
             ) : (
-              <ScrollArea className="h-[calc(100%-68px)] pr-3">
-                <div className="space-y-2.5">
-                  {applications.map((application) => (
-                    <div key={application.id} className="rounded-[20px] border border-slate-200/80 px-4 py-3">
-                      <div className="flex items-start justify-between gap-3">
-                        <div className="min-w-0">
-                          <p className="truncate text-sm font-semibold text-slate-950">{application.role}</p>
-                          <p className="truncate text-xs text-slate-400">{application.company}</p>
-                        </div>
-                        <span className={`shrink-0 rounded-full border px-2.5 py-0.5 text-[0.66rem] font-semibold ${statusStyles[application.status] ?? statusStyles.APPLIED}`}>
-                          {application.status}
-                        </span>
-                      </div>
-                      <p className="mt-2 text-[0.72rem] text-slate-500">
-                        {application.location || application.country || "Location not set"}
-                      </p>
-                    </div>
-                  ))}
+              <div className="flex h-[calc(100%-78px)] min-h-0 flex-col">
+                <div className="hidden grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)_0.8fr_0.85fr] gap-4 border-b border-slate-200 px-4 py-3 text-[0.7rem] font-semibold uppercase tracking-[0.18em] text-slate-500 md:grid">
+                  <span>Role</span>
+                  <span>Company</span>
+                  <span>Status</span>
+                  <span>Location</span>
                 </div>
-              </ScrollArea>
+                <ScrollArea className="min-h-0 flex-1">
+                  <div className="divide-y divide-slate-200">
+                    {applications.map((application) => (
+                      <div key={application.id} className="px-4 py-3">
+                        <div className="flex flex-col gap-3 md:grid md:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)_0.8fr_0.85fr] md:items-center md:gap-4">
+                          <p className="truncate text-sm font-semibold text-slate-950">{application.role}</p>
+                          <p className="truncate text-sm text-slate-600">{application.company}</p>
+                          <div>
+                            <span className={`inline-flex rounded-full border px-2.5 py-1 text-[0.66rem] font-semibold ${statusStyles[application.status] ?? statusStyles.APPLIED}`}>
+                              {application.status}
+                            </span>
+                          </div>
+                          <p className="truncate text-sm text-slate-500">{application.location || application.country || "No location"}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </ScrollArea>
+              </div>
             )}
           </section>
 
-          <section className="rounded-[28px] border border-white/75 bg-white/92 p-4 shadow-[0_12px_36px_rgba(15,23,42,0.06)]">
-            <div className="mb-3 flex items-center gap-3">
-              <div className="flex h-9 w-9 items-center justify-center rounded-[14px] bg-slate-950 text-white">
-                <CalendarClock className="h-4 w-4" />
-              </div>
-              <div>
-                <p className="section-label">Next up</p>
-                <h2 className="mt-1 text-lg font-semibold text-slate-950">Follow-ups</h2>
+          <section className="rounded-[26px] border border-white/75 bg-white/92 shadow-[0_12px_34px_rgba(15,23,42,0.05)]">
+            <div className="flex items-center justify-between gap-3 border-b border-slate-200 px-4 py-3.5">
+              <div className="flex items-center gap-3">
+                <div className="flex h-8 w-8 items-center justify-center rounded-[12px] bg-slate-950 text-white">
+                  <CalendarClock className="h-4 w-4" />
+                </div>
+                <div>
+                  <p className="section-label">Next up</p>
+                  <h2 className="mt-1 text-[1.05rem] font-semibold text-slate-950">Follow-ups</h2>
+                </div>
               </div>
             </div>
 
             {upcomingFollowUps.length === 0 ? (
-              <p className="rounded-[20px] bg-slate-50 px-4 py-4 text-sm text-slate-500">
+              <div className="m-4 rounded-[20px] bg-slate-50 px-4 py-4 text-sm text-slate-500">
                 No follow-up dates scheduled yet.
-              </p>
+              </div>
             ) : (
-              <div className="grid gap-3 sm:grid-cols-2">
+              <div className="divide-y divide-slate-200">
                 {upcomingFollowUps.map((application) => {
                   const urgent = isUrgentFollowUp(application.nextStepAt);
                   return (
-                    <div
-                      key={application.id}
-                      className={`rounded-[20px] border px-4 py-3 ${urgent ? "border-amber-200 bg-amber-50/70" : "border-slate-200 bg-white"}`}
-                    >
-                      <p className="text-sm font-semibold text-slate-950">{application.role}</p>
-                      <p className="text-xs text-slate-400">{application.company}</p>
-                      <p className={`mt-2 text-[0.74rem] font-medium ${urgent ? "text-amber-700" : "text-slate-500"}`}>
-                        {formatDate(application.nextStepAt, "EEE, MMM d")}
-                      </p>
+                    <div key={application.id} className="grid gap-3 px-4 py-3 md:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)_0.8fr] md:items-center">
+                      <div className="min-w-0">
+                        <p className="truncate text-sm font-semibold text-slate-950">{application.role}</p>
+                        <p className="truncate text-xs text-slate-400">{application.company}</p>
+                      </div>
+                      <p className="text-sm text-slate-600">{formatDate(application.nextStepAt, "EEE, MMM d")}</p>
+                      <div className="md:text-right">
+                        <span className={`inline-flex rounded-full border px-2.5 py-1 text-[0.66rem] font-semibold ${urgent ? "border-amber-200 bg-amber-50 text-amber-700" : "border-slate-200 bg-slate-50 text-slate-500"}`}>
+                          {urgent ? "Soon" : "Scheduled"}
+                        </span>
+                      </div>
                     </div>
                   );
                 })}
