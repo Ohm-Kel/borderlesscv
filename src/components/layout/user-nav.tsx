@@ -24,7 +24,7 @@ export function UserNav({
   return (
     <DropdownMenu>
       <DropdownMenuTrigger className="rounded-2xl focus:outline-none focus:ring-2 focus:ring-slate-900">
-        <Avatar className="h-11 w-11 ring-1 ring-slate-200">
+        <Avatar className="h-10 w-10 ring-1 ring-slate-200">
           <AvatarImage src={image ?? undefined} alt={name ?? "User avatar"} />
           <AvatarFallback>{initials}</AvatarFallback>
         </Avatar>
