@@ -230,6 +230,14 @@ export function ResumeBuilder({
   const fitDeltaLabel =
     fitSummary.remainingLines >= 0 ? `${fitSummary.remainingLines} lines left` : `${Math.abs(fitSummary.remainingLines)} lines over`;
   const countryCode = COUNTRY_FLAGS[resume.targetCountry];
+  const lowSignalSectionCandidates = activeVersion.content.sectionOrder.filter(
+    (section) =>
+      !activeVersion.content.hiddenSections.includes(section) &&
+      sectionLineMap[section] > 0 &&
+      sectionKeywordMap[section].length === 0 &&
+      ["leadership", "volunteer", "certifications", "awards", "languages", "links"].includes(section),
+  ) as SectionKey[];
+  const lowSignalLines = lowSignalSectionCandidates.reduce((total, section) => total + (sectionLineMap[section] ?? 0), 0);
   const snapshot = JSON.stringify({ resume, activeVersion });
 
   useEffect(() => {
@@ -482,6 +490,42 @@ export function ResumeBuilder({
     toast.success("Relevant sections moved higher");
   }
 
+  async function tightenLongestBullet() {
+    const candidate = fitSummary.longBullets[0];
+
+    if (!candidate) {
+      toast.error("No long bullet needs tightening right now");
+      return;
+    }
+
+    const entries = activeVersion.content.sections[candidate.section] as ProfileListEntry[];
+    const entryIndex = entries.findIndex((entry) => entry.id === candidate.entryId);
+
+    if (entryIndex === -1) {
+      toast.error("Could not locate the bullet to tighten");
+      return;
+    }
+
+    await rewriteBullet(candidate.section, entryIndex, candidate.bulletIndex, candidate.text, `${candidate.entryId}-${candidate.bulletIndex}`);
+    toast.success(`Shortened a long bullet in ${candidate.sectionLabel}`);
+  }
+
+  function hideLowSignalSections() {
+    if (!lowSignalSectionCandidates.length) {
+      toast.error("No low-signal sections to hide");
+      return;
+    }
+
+    updateActiveVersion((current) => ({
+      ...current,
+      content: {
+        ...current.content,
+        hiddenSections: [...new Set([...current.content.hiddenSections, ...lowSignalSectionCandidates])],
+      },
+    }));
+    toast.success(`${lowSignalSectionCandidates.length} low-signal section${lowSignalSectionCandidates.length === 1 ? "" : "s"} hidden`);
+  }
+
   return (
     <div className="grid gap-5 xl:grid-cols-[minmax(0,1.18fr)_minmax(360px,0.82fr)] 2xl:grid-cols-[minmax(0,1.24fr)_430px]">
       <div className="space-y-5">
@@ -567,6 +611,12 @@ export function ResumeBuilder({
         guidance={guidance}
         fitSummary={fitSummary}
         fitTone={fitTone}
+        lowSignalSectionCandidates={lowSignalSectionCandidates}
+        lowSignalLines={lowSignalLines}
+        hasTailoring={Boolean(activeVersion.aiGuidance)}
+        onTightenLongestBullet={tightenLongestBullet}
+        onHideLowSignalSections={hideLowSignalSections}
+        onPrioritizeMatchedEvidence={prioritizeMatchedEvidence}
       />
     </div>
   );
@@ -1338,6 +1388,12 @@ function PreviewCard({
   guidance,
   fitSummary,
   fitTone,
+  lowSignalSectionCandidates,
+  lowSignalLines,
+  hasTailoring,
+  onTightenLongestBullet,
+  onHideLowSignalSections,
+  onPrioritizeMatchedEvidence,
 }: {
   personalDetails: { name: string; headline: string; location: string; phone: string };
   document: ResumeDocument;
@@ -1346,6 +1402,12 @@ function PreviewCard({
   guidance: CountryGuidance;
   fitSummary: ResumeFitSummary;
   fitTone: FitTone;
+  lowSignalSectionCandidates: SectionKey[];
+  lowSignalLines: number;
+  hasTailoring: boolean;
+  onTightenLongestBullet: () => void;
+  onHideLowSignalSections: () => void;
+  onPrioritizeMatchedEvidence: () => void;
 }) {
   return (
     <div className="xl:sticky xl:top-6 xl:self-start">
@@ -1388,6 +1450,16 @@ function PreviewCard({
             </div>
           </div>
 
+          <PageFitAssistantCard
+            fitSummary={fitSummary}
+            lowSignalSectionCandidates={lowSignalSectionCandidates}
+            lowSignalLines={lowSignalLines}
+            hasTailoring={hasTailoring}
+            onTightenLongestBullet={onTightenLongestBullet}
+            onHideLowSignalSections={onHideLowSignalSections}
+            onPrioritizeMatchedEvidence={onPrioritizeMatchedEvidence}
+          />
+
           <div className="rounded-[30px] bg-[radial-gradient(circle_at_top,_rgba(148,163,184,0.18),_transparent_62%),linear-gradient(180deg,#f8fafc_0%,#eef2f7_100%)] p-3">
             <div className="mx-auto aspect-[210/297] w-full max-w-[420px] overflow-hidden rounded-[24px] border border-slate-200 bg-white shadow-[0_18px_40px_rgba(15,23,42,0.12)]">
               <ResumePreview personalDetails={personalDetails} document={document} templateKey={templateKey} density={fitSummary.density} previewMode="builder" />
@@ -1395,6 +1467,92 @@ function PreviewCard({
           </div>
         </CardContent>
       </Card>
+    </div>
+  );
+}
+
+function PageFitAssistantCard({
+  fitSummary,
+  lowSignalSectionCandidates,
+  lowSignalLines,
+  hasTailoring,
+  onTightenLongestBullet,
+  onHideLowSignalSections,
+  onPrioritizeMatchedEvidence,
+}: {
+  fitSummary: ResumeFitSummary;
+  lowSignalSectionCandidates: SectionKey[];
+  lowSignalLines: number;
+  hasTailoring: boolean;
+  onTightenLongestBullet: () => void;
+  onHideLowSignalSections: () => void;
+  onPrioritizeMatchedEvidence: () => void;
+}) {
+  const longestBullet = fitSummary.longBullets[0];
+
+  return (
+    <div className="rounded-[24px] border border-slate-200 bg-slate-50/90 p-4">
+      <div className="flex items-start justify-between gap-3">
+        <div>
+          <p className="section-label">Page-fit assistant</p>
+          <h4 className="mt-2 text-base font-semibold text-slate-950">What to tighten next</h4>
+        </div>
+        <span className={cn("rounded-full border px-2.5 py-1 text-[0.66rem] font-semibold", fitSummary.status === "overflow" ? "border-rose-200 bg-rose-50 text-rose-700" : fitSummary.status === "tight" ? "border-amber-200 bg-amber-50 text-amber-700" : "border-emerald-200 bg-emerald-50 text-emerald-700")}>
+          {fitSummary.status}
+        </span>
+      </div>
+
+      <div className="mt-4 space-y-3">
+        {fitSummary.summaryLines > 4 ? (
+          <div className="rounded-[18px] border border-slate-200 bg-white px-3 py-3">
+            <p className="text-sm font-medium text-slate-800">Summary is taking {fitSummary.summaryLines} lines.</p>
+            <p className="mt-1 text-xs leading-5 text-slate-500">Keep it direct and recruiter-readable. Aim for 3 to 4 lines.</p>
+          </div>
+        ) : null}
+
+        {longestBullet ? (
+          <div className="rounded-[18px] border border-slate-200 bg-white px-3 py-3">
+            <p className="text-sm font-medium text-slate-800">
+              Longest bullet: {longestBullet.sectionLabel} / {longestBullet.entryTitle}
+            </p>
+            <p className="mt-1 text-xs leading-5 text-slate-500">
+              {longestBullet.estimatedLines} lines. Tighten this first before trimming good evidence elsewhere.
+            </p>
+            <Button variant="secondary" size="sm" className="mt-3" onClick={onTightenLongestBullet}>
+              <Sparkles className="h-4 w-4" />
+              Shorten longest bullet
+            </Button>
+          </div>
+        ) : null}
+
+        {lowSignalSectionCandidates.length ? (
+          <div className="rounded-[18px] border border-slate-200 bg-white px-3 py-3">
+            <p className="text-sm font-medium text-slate-800">
+              Low-signal sections are using {lowSignalLines} line{lowSignalLines === 1 ? "" : "s"}.
+            </p>
+            <p className="mt-1 text-xs leading-5 text-slate-500">{lowSignalSectionCandidates.map((section) => SECTION_LABELS[section]).join(", ")}</p>
+            <Button variant="secondary" size="sm" className="mt-3" onClick={onHideLowSignalSections}>
+              Hide low-signal sections
+            </Button>
+          </div>
+        ) : null}
+
+        {hasTailoring ? (
+          <div className="rounded-[18px] border border-slate-200 bg-white px-3 py-3">
+            <p className="text-sm font-medium text-slate-800">Use matched evidence to earn space.</p>
+            <p className="mt-1 text-xs leading-5 text-slate-500">Move sections with explicit job evidence higher so the first half of the page carries the strongest proof.</p>
+            <Button variant="secondary" size="sm" className="mt-3" onClick={onPrioritizeMatchedEvidence}>
+              Prioritize matched evidence
+            </Button>
+          </div>
+        ) : null}
+
+        {!longestBullet && !lowSignalSectionCandidates.length && fitSummary.summaryLines <= 4 ? (
+          <div className="rounded-[18px] border border-emerald-200 bg-emerald-50 px-3 py-3 text-sm text-emerald-800">
+            The draft is already in a clean one-page shape. Focus on evidence quality rather than cutting more.
+          </div>
+        ) : null}
+      </div>
     </div>
   );
 }

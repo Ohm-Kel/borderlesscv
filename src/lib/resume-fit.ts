@@ -20,6 +20,17 @@ export type ResumeSectionFit = {
   visible: boolean;
 };
 
+export type ResumeBulletFit = {
+  section: SectionKey;
+  sectionLabel: string;
+  entryId: string;
+  entryTitle: string;
+  bulletIndex: number;
+  text: string;
+  estimatedLines: number;
+  characters: number;
+};
+
 export type ResumeFitSummary = {
   rawLines: number;
   adjustedLines: number;
@@ -30,6 +41,8 @@ export type ResumeFitSummary = {
   densityLabel: string;
   status: ResumeFitStatus;
   guidance: string;
+  summaryLines: number;
+  longBullets: ResumeBulletFit[];
   sectionLines: ResumeSectionFit[];
   topSections: ResumeSectionFit[];
 };
@@ -153,8 +166,48 @@ function getGuidance(status: ResumeFitStatus, remainingLines: number, topSection
   return `You are about ${Math.abs(remainingLines)} lines over a clean one-page target. Shorten the heaviest sections or hide lower-signal content.`;
 }
 
+function getLongBullets(content: ProfileContent) {
+  const sectionsWithBullets: SectionKey[] = [
+    "education",
+    "experience",
+    "internships",
+    "projects",
+    "leadership",
+    "volunteer",
+  ];
+
+  return sectionsWithBullets
+    .flatMap((section) =>
+      (content[section] as ProfileListEntry[]).flatMap((item) =>
+        item.bullets
+          .map((bullet, bulletIndex) => {
+            const trimmed = bullet.trim();
+            if (!trimmed) {
+              return null;
+            }
+
+            return {
+              section,
+              sectionLabel: SECTION_LABELS[section],
+              entryId: item.id,
+              entryTitle: item.title || "Entry",
+              bulletIndex,
+              text: trimmed,
+              estimatedLines: estimateTextLines(trimmed, 84),
+              characters: trimmed.length,
+            } satisfies ResumeBulletFit;
+          })
+          .filter((bullet): bullet is ResumeBulletFit => Boolean(bullet)),
+      ),
+    )
+    .filter((bullet) => bullet.estimatedLines >= 2 || bullet.characters >= 130)
+    .sort((left, right) => right.estimatedLines - left.estimatedLines || right.characters - left.characters)
+    .slice(0, 3);
+}
+
 export function estimateResumeFit(document: ResumeDocument): ResumeFitSummary {
   const visibleSections = new Set(getVisibleSections(document));
+  const summaryLines = estimateTextLines(document.summary, 98);
   const rawSectionLines = (Object.keys(SECTION_LABELS) as SectionKey[]).map((section) => ({
     section,
     label: SECTION_LABELS[section],
@@ -194,6 +247,8 @@ export function estimateResumeFit(document: ResumeDocument): ResumeFitSummary {
       density === "balanced" ? "Balanced spacing" : density === "compact" ? "Compact spacing" : "Compressed spacing",
     status,
     guidance: getGuidance(status, remainingLines, topSections),
+    summaryLines: Math.max(0, Math.round(summaryLines * densityFactor)),
+    longBullets: getLongBullets(document.sections),
     sectionLines,
     topSections,
   };
