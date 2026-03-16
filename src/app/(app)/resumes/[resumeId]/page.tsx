@@ -40,7 +40,7 @@ export default async function ResumeBuilderPage({
   }
 
   return (
-    <div className="h-full min-h-0 overflow-auto pr-1">
+    <div className="h-full min-h-0 overflow-hidden">
       <ResumeBuilder
         resume={{
           id: resume.id,

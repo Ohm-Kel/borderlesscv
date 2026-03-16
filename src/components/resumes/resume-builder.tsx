@@ -18,6 +18,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -527,8 +528,8 @@ export function ResumeBuilder({
   }
 
   return (
-    <div className="grid gap-5 xl:grid-cols-[minmax(0,1.18fr)_minmax(360px,0.82fr)] 2xl:grid-cols-[minmax(0,1.24fr)_430px]">
-      <div className="space-y-5">
+    <div className="grid h-full min-h-0 gap-5 xl:grid-cols-[minmax(0,1.18fr)_minmax(360px,0.82fr)] 2xl:grid-cols-[minmax(0,1.24fr)_430px]">
+      <div className="flex min-h-0 flex-col gap-5 overflow-hidden">
         <BuilderHeaderCard
           resume={resume}
           activeVersion={activeVersion}
@@ -545,62 +546,64 @@ export function ResumeBuilder({
           onApplyEmphasisMode={applyEmphasisMode}
         />
 
-        <div className="grid gap-5 xl:grid-cols-[250px_minmax(0,1fr)]">
-          <div className="space-y-5">
-            <VersionsRail versions={versions} activeVersionId={activeVersion.id} onSelect={setActiveVersionId} />
-            <CountryNotesCard targetCountry={resume.targetCountry} countryCode={countryCode} guidance={guidance} />
-          </div>
-
-          <div className="space-y-5">
-            <div className="grid gap-5 xl:grid-cols-[minmax(0,0.94fr)_minmax(0,1.06fr)]">
-              <VersionDetailsCard activeVersion={activeVersion} onRefreshSummary={refreshSummary} onChange={updateActiveVersion} />
-              <TailoringCard
-                activeVersion={activeVersion}
-                countryCode={countryCode}
-                matchedSectionEntries={matchedSectionEntries}
-                analyzingTailoring={analyzingTailoring}
-                onAnalyze={analyzeTailoring}
-                onApplySummary={() =>
-                  updateActiveVersion((current) => ({
-                    ...current,
-                    content: {
-                      ...current.content,
-                      summary: current.aiGuidance?.tailoredSummary || current.content.summary,
-                    },
-                  }))
-                }
-                onApplyCountryOrder={applyCountrySectionOrder}
-                onPrioritizeMatchedEvidence={prioritizeMatchedEvidence}
-              />
+        <ScrollArea className="min-h-0 flex-1 pr-3">
+          <div className="grid gap-5 pb-2 xl:grid-cols-[250px_minmax(0,1fr)]">
+            <div className="space-y-5">
+              <VersionsRail versions={versions} activeVersionId={activeVersion.id} onSelect={setActiveVersionId} />
+              <CountryNotesCard targetCountry={resume.targetCountry} countryCode={countryCode} guidance={guidance} />
             </div>
 
-            <div className="grid gap-5 xl:grid-cols-[280px_minmax(0,1fr)]">
-              <SectionMapCard
-                activeVersion={activeVersion}
-                countryCode={countryCode}
-                sectionKeywordMap={sectionKeywordMap}
-                sectionLineMap={sectionLineMap}
-                recommendedSectionOrder={recommendedSectionOrder}
-                sensors={sensors}
-                onDragEnd={handleDragEnd}
-                onApplyCountryOrder={applyCountrySectionOrder}
-                onPrioritizeMatchedEvidence={prioritizeMatchedEvidence}
-                onToggleHidden={(section) =>
-                  updateActiveVersion((current) => ({
-                    ...current,
-                    content: {
-                      ...current.content,
-                      hiddenSections: current.content.hiddenSections.includes(section)
-                        ? current.content.hiddenSections.filter((item) => item !== section)
-                        : [...current.content.hiddenSections, section],
-                    },
-                  }))
-                }
-              />
-              <SectionEditorCard activeVersion={activeVersion} pendingBulletKey={pendingBulletKey} onUpdateSection={updateSection} onRewriteBullet={rewriteBullet} />
+            <div className="space-y-5">
+              <div className="grid gap-5 xl:grid-cols-[minmax(0,0.94fr)_minmax(0,1.06fr)]">
+                <VersionDetailsCard activeVersion={activeVersion} onRefreshSummary={refreshSummary} onChange={updateActiveVersion} />
+                <TailoringCard
+                  activeVersion={activeVersion}
+                  countryCode={countryCode}
+                  matchedSectionEntries={matchedSectionEntries}
+                  analyzingTailoring={analyzingTailoring}
+                  onAnalyze={analyzeTailoring}
+                  onApplySummary={() =>
+                    updateActiveVersion((current) => ({
+                      ...current,
+                      content: {
+                        ...current.content,
+                        summary: current.aiGuidance?.tailoredSummary || current.content.summary,
+                      },
+                    }))
+                  }
+                  onApplyCountryOrder={applyCountrySectionOrder}
+                  onPrioritizeMatchedEvidence={prioritizeMatchedEvidence}
+                />
+              </div>
+
+              <div className="grid gap-5 xl:grid-cols-[280px_minmax(0,1fr)]">
+                <SectionMapCard
+                  activeVersion={activeVersion}
+                  countryCode={countryCode}
+                  sectionKeywordMap={sectionKeywordMap}
+                  sectionLineMap={sectionLineMap}
+                  recommendedSectionOrder={recommendedSectionOrder}
+                  sensors={sensors}
+                  onDragEnd={handleDragEnd}
+                  onApplyCountryOrder={applyCountrySectionOrder}
+                  onPrioritizeMatchedEvidence={prioritizeMatchedEvidence}
+                  onToggleHidden={(section) =>
+                    updateActiveVersion((current) => ({
+                      ...current,
+                      content: {
+                        ...current.content,
+                        hiddenSections: current.content.hiddenSections.includes(section)
+                          ? current.content.hiddenSections.filter((item) => item !== section)
+                          : [...current.content.hiddenSections, section],
+                      },
+                    }))
+                  }
+                />
+                <SectionEditorCard activeVersion={activeVersion} pendingBulletKey={pendingBulletKey} onUpdateSection={updateSection} onRewriteBullet={rewriteBullet} />
+              </div>
             </div>
           </div>
-        </div>
+        </ScrollArea>
       </div>
 
       <PreviewCard
@@ -1276,13 +1279,13 @@ function SectionEditorCard({
 }) {
   return (
     <Card className="rounded-[32px] border-white/80 bg-white/95 shadow-[0_16px_40px_rgba(15,23,42,0.05)]">
-      <CardContent className="p-4 sm:p-5">
+      <CardContent className="flex h-full min-h-0 flex-col p-4 sm:p-5">
         <div className="mb-4">
           <p className="section-label">Section editor</p>
           <h3 className="mt-2 text-base font-semibold text-slate-950">Tighten content, not just formatting</h3>
         </div>
 
-        <Tabs defaultValue="experience">
+        <Tabs defaultValue="experience" className="flex min-h-0 flex-1 flex-col">
           <TabsList className="grid w-full grid-cols-3 rounded-[18px] bg-slate-100 p-1">
             <TabsTrigger value="experience" className="rounded-[14px]">
               Experience
@@ -1295,88 +1298,150 @@ function SectionEditorCard({
             </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="experience" className="mt-5 space-y-5">
-            <ListSectionEditor
-              title="Education"
-              description="Coursework and academic evidence can lead for early-career roles."
-              items={activeVersion.content.sections.education}
-              onChange={(education) => onUpdateSection("education", education)}
-              onRewriteBullet={(entryIndex, bulletIndex, bullet) =>
-                onRewriteBullet("education", entryIndex, bulletIndex, bullet, `${activeVersion.content.sections.education[entryIndex]?.id}-${bulletIndex}`)
-              }
-              pendingBulletKey={pendingBulletKey}
-            />
-            <ListSectionEditor
-              title="Work experience"
-              description="Improve clarity without overstating outcomes."
-              items={activeVersion.content.sections.experience}
-              onChange={(experience) => onUpdateSection("experience", experience)}
-              onRewriteBullet={(entryIndex, bulletIndex, bullet) =>
-                onRewriteBullet("experience", entryIndex, bulletIndex, bullet, `${activeVersion.content.sections.experience[entryIndex]?.id}-${bulletIndex}`)
-              }
-              pendingBulletKey={pendingBulletKey}
-            />
-            <ListSectionEditor
-              title="Internships"
-              description="Surface tools, ownership, and real results."
-              items={activeVersion.content.sections.internships}
-              onChange={(internships) => onUpdateSection("internships", internships)}
-              onRewriteBullet={(entryIndex, bulletIndex, bullet) =>
-                onRewriteBullet("internships", entryIndex, bulletIndex, bullet, `${activeVersion.content.sections.internships[entryIndex]?.id}-${bulletIndex}`)
-              }
-              pendingBulletKey={pendingBulletKey}
-            />
+          <TabsContent value="experience" className="mt-5 min-h-0 flex-1">
+            <ScrollArea className="h-full pr-2">
+              <div className="space-y-5 pb-2">
+                <ListSectionEditor
+                  title="Education"
+                  description="Coursework and academic evidence can lead for early-career roles."
+                  items={activeVersion.content.sections.education}
+                  onChange={(education) => onUpdateSection("education", education)}
+                  onRewriteBullet={(entryIndex, bulletIndex, bullet) =>
+                    onRewriteBullet("education", entryIndex, bulletIndex, bullet, `${activeVersion.content.sections.education[entryIndex]?.id}-${bulletIndex}`)
+                  }
+                  pendingBulletKey={pendingBulletKey}
+                  compact
+                  defaultOpen
+                />
+                <ListSectionEditor
+                  title="Work experience"
+                  description="Improve clarity without overstating outcomes."
+                  items={activeVersion.content.sections.experience}
+                  onChange={(experience) => onUpdateSection("experience", experience)}
+                  onRewriteBullet={(entryIndex, bulletIndex, bullet) =>
+                    onRewriteBullet("experience", entryIndex, bulletIndex, bullet, `${activeVersion.content.sections.experience[entryIndex]?.id}-${bulletIndex}`)
+                  }
+                  pendingBulletKey={pendingBulletKey}
+                  compact
+                />
+                <ListSectionEditor
+                  title="Internships"
+                  description="Surface tools, ownership, and real results."
+                  items={activeVersion.content.sections.internships}
+                  onChange={(internships) => onUpdateSection("internships", internships)}
+                  onRewriteBullet={(entryIndex, bulletIndex, bullet) =>
+                    onRewriteBullet("internships", entryIndex, bulletIndex, bullet, `${activeVersion.content.sections.internships[entryIndex]?.id}-${bulletIndex}`)
+                  }
+                  pendingBulletKey={pendingBulletKey}
+                  compact
+                />
+              </div>
+            </ScrollArea>
           </TabsContent>
 
-          <TabsContent value="projects" className="mt-5 space-y-5">
-            <ListSectionEditor
-              title="Projects"
-              description="Projects are often your strongest proof at this stage."
-              items={activeVersion.content.sections.projects}
-              onChange={(projects) => onUpdateSection("projects", projects)}
-              onRewriteBullet={(entryIndex, bulletIndex, bullet) =>
-                onRewriteBullet("projects", entryIndex, bulletIndex, bullet, `${activeVersion.content.sections.projects[entryIndex]?.id}-${bulletIndex}`)
-              }
-              pendingBulletKey={pendingBulletKey}
-            />
-            <ListSectionEditor
-              title="Leadership & activities"
-              description="Keep this practical and evidence-backed."
-              items={activeVersion.content.sections.leadership}
-              onChange={(leadership) => onUpdateSection("leadership", leadership)}
-              onRewriteBullet={(entryIndex, bulletIndex, bullet) =>
-                onRewriteBullet("leadership", entryIndex, bulletIndex, bullet, `${activeVersion.content.sections.leadership[entryIndex]?.id}-${bulletIndex}`)
-              }
-              pendingBulletKey={pendingBulletKey}
-            />
-            <ListSectionEditor
-              title="Volunteer experience"
-              description="Volunteer work can support employability when it shows responsibility."
-              items={activeVersion.content.sections.volunteer}
-              onChange={(volunteer) => onUpdateSection("volunteer", volunteer)}
-              onRewriteBullet={(entryIndex, bulletIndex, bullet) =>
-                onRewriteBullet("volunteer", entryIndex, bulletIndex, bullet, `${activeVersion.content.sections.volunteer[entryIndex]?.id}-${bulletIndex}`)
-              }
-              pendingBulletKey={pendingBulletKey}
-            />
+          <TabsContent value="projects" className="mt-5 min-h-0 flex-1">
+            <ScrollArea className="h-full pr-2">
+              <div className="space-y-5 pb-2">
+                <ListSectionEditor
+                  title="Projects"
+                  description="Projects are often your strongest proof at this stage."
+                  items={activeVersion.content.sections.projects}
+                  onChange={(projects) => onUpdateSection("projects", projects)}
+                  onRewriteBullet={(entryIndex, bulletIndex, bullet) =>
+                    onRewriteBullet("projects", entryIndex, bulletIndex, bullet, `${activeVersion.content.sections.projects[entryIndex]?.id}-${bulletIndex}`)
+                  }
+                  pendingBulletKey={pendingBulletKey}
+                  compact
+                  defaultOpen
+                />
+                <ListSectionEditor
+                  title="Leadership & activities"
+                  description="Keep this practical and evidence-backed."
+                  items={activeVersion.content.sections.leadership}
+                  onChange={(leadership) => onUpdateSection("leadership", leadership)}
+                  onRewriteBullet={(entryIndex, bulletIndex, bullet) =>
+                    onRewriteBullet("leadership", entryIndex, bulletIndex, bullet, `${activeVersion.content.sections.leadership[entryIndex]?.id}-${bulletIndex}`)
+                  }
+                  pendingBulletKey={pendingBulletKey}
+                  compact
+                />
+                <ListSectionEditor
+                  title="Volunteer experience"
+                  description="Volunteer work can support employability when it shows responsibility."
+                  items={activeVersion.content.sections.volunteer}
+                  onChange={(volunteer) => onUpdateSection("volunteer", volunteer)}
+                  onRewriteBullet={(entryIndex, bulletIndex, bullet) =>
+                    onRewriteBullet("volunteer", entryIndex, bulletIndex, bullet, `${activeVersion.content.sections.volunteer[entryIndex]?.id}-${bulletIndex}`)
+                  }
+                  pendingBulletKey={pendingBulletKey}
+                  compact
+                />
+              </div>
+            </ScrollArea>
           </TabsContent>
 
-          <TabsContent value="extras" className="mt-5 space-y-5">
-            <TagEditor
-              label="Skills"
-              values={activeVersion.content.sections.skills}
-              onChange={(skills) => onUpdateSection("skills", skills)}
-              placeholder="SQL, Excel, Figma..."
-              helperText="Only keep skills supported by your real experience."
-            />
-            <LanguageEditor items={activeVersion.content.sections.languages} onChange={(languages) => onUpdateSection("languages", languages)} />
-            <CertificationEditor items={activeVersion.content.sections.certifications} onChange={(certifications) => onUpdateSection("certifications", certifications)} />
-            <AwardEditor items={activeVersion.content.sections.awards} onChange={(awards) => onUpdateSection("awards", awards)} />
-            <LinkEditor items={activeVersion.content.sections.links} onChange={(links) => onUpdateSection("links", links)} />
+          <TabsContent value="extras" className="mt-5 min-h-0 flex-1">
+            <ScrollArea className="h-full pr-2">
+              <div className="space-y-5 pb-2">
+                <CompactEditorSection title="Skills" description="Only keep skills supported by your real experience." count={activeVersion.content.sections.skills.length} defaultOpen>
+                  <TagEditor
+                    label="Skills"
+                    values={activeVersion.content.sections.skills}
+                    onChange={(skills) => onUpdateSection("skills", skills)}
+                    placeholder="SQL, Excel, Figma..."
+                    helperText="Only keep skills supported by your real experience."
+                  />
+                </CompactEditorSection>
+                <CompactEditorSection title="Languages" description="Show useful working proficiency only." count={activeVersion.content.sections.languages.length}>
+                  <LanguageEditor items={activeVersion.content.sections.languages} onChange={(languages) => onUpdateSection("languages", languages)} />
+                </CompactEditorSection>
+                <CompactEditorSection title="Certifications" description="Keep only relevant credentials." count={activeVersion.content.sections.certifications.length}>
+                  <CertificationEditor items={activeVersion.content.sections.certifications} onChange={(certifications) => onUpdateSection("certifications", certifications)} />
+                </CompactEditorSection>
+                <CompactEditorSection title="Awards" description="Use awards that add hiring signal." count={activeVersion.content.sections.awards.length}>
+                  <AwardEditor items={activeVersion.content.sections.awards} onChange={(awards) => onUpdateSection("awards", awards)} />
+                </CompactEditorSection>
+                <CompactEditorSection title="Links" description="Link only to high-trust destinations." count={activeVersion.content.sections.links.length}>
+                  <LinkEditor items={activeVersion.content.sections.links} onChange={(links) => onUpdateSection("links", links)} />
+                </CompactEditorSection>
+              </div>
+            </ScrollArea>
           </TabsContent>
         </Tabs>
       </CardContent>
     </Card>
+  );
+}
+
+function CompactEditorSection({
+  title,
+  description,
+  count,
+  children,
+  defaultOpen = false,
+}: {
+  title: string;
+  description: string;
+  count: number;
+  children: ReactNode;
+  defaultOpen?: boolean;
+}) {
+  return (
+    <details className="group overflow-hidden rounded-[28px] border border-slate-200/80 bg-white" open={defaultOpen || count === 0}>
+      <summary className="flex cursor-pointer list-none items-start justify-between gap-4 px-4 py-4 [&::-webkit-details-marker]:hidden">
+        <div>
+          <h4 className="text-[1rem] font-semibold text-slate-950">{title}</h4>
+          <p className="mt-1 text-[0.8rem] leading-[1.65] text-slate-500">{description}</p>
+        </div>
+        <div className="flex shrink-0 items-center gap-2">
+          <span className="rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1 text-[0.68rem] font-semibold text-slate-500">
+            {count}
+          </span>
+          <span className="text-slate-400 transition-transform duration-200 group-open:rotate-180">+</span>
+        </div>
+      </summary>
+      <div className="border-t border-slate-100 p-4">{children}</div>
+    </details>
   );
 }
 
@@ -1410,61 +1475,65 @@ function PreviewCard({
   onPrioritizeMatchedEvidence: () => void;
 }) {
   return (
-    <div className="xl:sticky xl:top-6 xl:self-start">
-      <Card className="rounded-[34px] border-white/80 bg-white/95 shadow-[0_22px_48px_rgba(15,23,42,0.08)]">
-        <CardContent className="space-y-4 p-4 sm:p-5">
-          <div className="flex items-start justify-between gap-4">
-            <div>
-              <p className="section-label">One-page preview</p>
-              <h3 className="mt-2 text-lg font-semibold text-slate-950">Recruiter view</h3>
-              <p className="mt-1 text-sm leading-6 text-slate-500">
-                The live preview tightens spacing automatically to stay close to a single exportable page.
-              </p>
-            </div>
-            <div className="rounded-[20px] border border-slate-200 bg-slate-50 px-3 py-2 text-right">
-              <div className="text-[0.68rem] font-semibold uppercase tracking-[0.18em] text-slate-500">{countryCode}</div>
-              <div className="mt-1 text-sm font-semibold text-slate-900">1 page target</div>
-            </div>
-          </div>
-
-          <div className="rounded-[24px] border border-slate-200 bg-slate-50/90 p-4">
-            <div className="flex items-center justify-between gap-3">
-              <div>
-                <div className="text-[0.72rem] font-semibold uppercase tracking-[0.18em] text-slate-500">Line budget</div>
-                <div className="mt-2 text-[1.5rem] font-semibold tracking-[-0.03em] text-slate-950">
-                  {fitSummary.adjustedLines}/{TARGET_RESUME_LINES}
+    <div className="min-h-0 xl:sticky xl:top-0 xl:h-[calc(100vh-116px)]">
+      <Card className="h-full rounded-[34px] border-white/80 bg-white/95 shadow-[0_22px_48px_rgba(15,23,42,0.08)]">
+        <CardContent className="flex h-full min-h-0 flex-col p-4 sm:p-5">
+          <ScrollArea className="min-h-0 flex-1 pr-2">
+            <div className="space-y-4">
+              <div className="flex items-start justify-between gap-4">
+                <div>
+                  <p className="section-label">One-page preview</p>
+                  <h3 className="mt-2 text-lg font-semibold text-slate-950">Recruiter view</h3>
+                  <p className="mt-1 text-sm leading-6 text-slate-500">
+                    The live preview tightens spacing automatically to stay close to a single exportable page.
+                  </p>
+                </div>
+                <div className="rounded-[20px] border border-slate-200 bg-slate-50 px-3 py-2 text-right">
+                  <div className="text-[0.68rem] font-semibold uppercase tracking-[0.18em] text-slate-500">{countryCode}</div>
+                  <div className="mt-1 text-sm font-semibold text-slate-900">1 page target</div>
                 </div>
               </div>
-              <span className={cn("rounded-full border px-3 py-1.5 text-[0.68rem] font-semibold", fitTone.badgeClass)}>{fitSummary.densityLabel}</span>
-            </div>
-            <div className="mt-4 h-2.5 overflow-hidden rounded-full bg-slate-200">
-              <div className={cn("h-full rounded-full transition-all duration-300", fitTone.meterClass)} style={{ width: `${fitSummary.fillPercentage}%` }} />
-            </div>
-            <div className="mt-3 grid gap-2 text-[0.78rem] leading-5 text-slate-600">
-              <div>
-                <span className="font-semibold text-slate-700">ATS priority:</span> {guidance.atsPriority}
-              </div>
-              <div>
-                <span className="font-semibold text-slate-700">Page target:</span> {guidance.pageTarget}
-              </div>
-            </div>
-          </div>
 
-          <PageFitAssistantCard
-            fitSummary={fitSummary}
-            lowSignalSectionCandidates={lowSignalSectionCandidates}
-            lowSignalLines={lowSignalLines}
-            hasTailoring={hasTailoring}
-            onTightenLongestBullet={onTightenLongestBullet}
-            onHideLowSignalSections={onHideLowSignalSections}
-            onPrioritizeMatchedEvidence={onPrioritizeMatchedEvidence}
-          />
+              <div className="rounded-[24px] border border-slate-200 bg-slate-50/90 p-4">
+                <div className="flex items-center justify-between gap-3">
+                  <div>
+                    <div className="text-[0.72rem] font-semibold uppercase tracking-[0.18em] text-slate-500">Line budget</div>
+                    <div className="mt-2 text-[1.5rem] font-semibold tracking-[-0.03em] text-slate-950">
+                      {fitSummary.adjustedLines}/{TARGET_RESUME_LINES}
+                    </div>
+                  </div>
+                  <span className={cn("rounded-full border px-3 py-1.5 text-[0.68rem] font-semibold", fitTone.badgeClass)}>{fitSummary.densityLabel}</span>
+                </div>
+                <div className="mt-4 h-2.5 overflow-hidden rounded-full bg-slate-200">
+                  <div className={cn("h-full rounded-full transition-all duration-300", fitTone.meterClass)} style={{ width: `${fitSummary.fillPercentage}%` }} />
+                </div>
+                <div className="mt-3 grid gap-2 text-[0.78rem] leading-5 text-slate-600">
+                  <div>
+                    <span className="font-semibold text-slate-700">ATS priority:</span> {guidance.atsPriority}
+                  </div>
+                  <div>
+                    <span className="font-semibold text-slate-700">Page target:</span> {guidance.pageTarget}
+                  </div>
+                </div>
+              </div>
 
-          <div className="rounded-[30px] bg-[radial-gradient(circle_at_top,_rgba(148,163,184,0.18),_transparent_62%),linear-gradient(180deg,#f8fafc_0%,#eef2f7_100%)] p-3">
-            <div className="mx-auto aspect-[210/297] w-full max-w-[420px] overflow-hidden rounded-[24px] border border-slate-200 bg-white shadow-[0_18px_40px_rgba(15,23,42,0.12)]">
-              <ResumePreview personalDetails={personalDetails} document={document} templateKey={templateKey} density={fitSummary.density} previewMode="builder" />
+              <PageFitAssistantCard
+                fitSummary={fitSummary}
+                lowSignalSectionCandidates={lowSignalSectionCandidates}
+                lowSignalLines={lowSignalLines}
+                hasTailoring={hasTailoring}
+                onTightenLongestBullet={onTightenLongestBullet}
+                onHideLowSignalSections={onHideLowSignalSections}
+                onPrioritizeMatchedEvidence={onPrioritizeMatchedEvidence}
+              />
+
+              <div className="rounded-[30px] bg-[radial-gradient(circle_at_top,_rgba(148,163,184,0.18),_transparent_62%),linear-gradient(180deg,#f8fafc_0%,#eef2f7_100%)] p-3">
+                <div className="mx-auto aspect-[210/297] w-full max-w-[420px] overflow-hidden rounded-[24px] border border-slate-200 bg-white shadow-[0_18px_40px_rgba(15,23,42,0.12)]">
+                  <ResumePreview personalDetails={personalDetails} document={document} templateKey={templateKey} density={fitSummary.density} previewMode="builder" />
+                </div>
+              </div>
             </div>
-          </div>
+          </ScrollArea>
         </CardContent>
       </Card>
     </div>
