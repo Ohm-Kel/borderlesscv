@@ -1,4 +1,3 @@
-import { PageHeader } from "@/components/shared/page-header";
 import { CoverLetterWorkspace } from "@/components/cover-letters/cover-letter-workspace";
 import { parseResumeDocument } from "@/lib/serializers";
 import { prisma } from "@/lib/prisma";
@@ -23,12 +22,7 @@ export default async function CoverLettersPage() {
   ]);
 
   return (
-    <div className="space-y-6">
-      <PageHeader
-        eyebrow="Cover Letters"
-        title="Cover letter workspace"
-        description="Generate and save cover letters from the same verified facts that power each resume version."
-      />
+    <div className="h-full min-h-0">
       <CoverLetterWorkspace
         initialLetters={letters.map((letter) => ({
           id: letter.id,

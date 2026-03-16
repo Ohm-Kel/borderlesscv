@@ -1,4 +1,3 @@
-import { PageHeader } from "@/components/shared/page-header";
 import { SettingsForm } from "@/components/settings/settings-form";
 import { prisma } from "@/lib/prisma";
 import { requireOnboardedUser } from "@/lib/session";
@@ -15,12 +14,7 @@ export default async function SettingsPage() {
   });
 
   return (
-    <div className="space-y-6">
-      <PageHeader
-        eyebrow="Settings"
-        title="Workspace settings"
-        description="Control public profile visibility and keep your account private by default."
-      />
+    <div className="h-full min-h-0">
       <SettingsForm initialEnabled={currentUser?.publicProfileEnabled ?? false} initialSlug={currentUser?.publicProfileSlug ?? ""} />
     </div>
   );

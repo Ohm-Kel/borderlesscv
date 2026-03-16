@@ -1,4 +1,3 @@
-import { PageHeader } from "@/components/shared/page-header";
 import { ApplicationBoard } from "@/components/applications/application-board";
 import { prisma } from "@/lib/prisma";
 import { requireOnboardedUser } from "@/lib/session";
@@ -43,12 +42,7 @@ export default async function ApplicationsPage() {
   ]);
 
   return (
-    <div className="space-y-6">
-      <PageHeader
-        eyebrow="Applications"
-        title="Application tracker"
-        description="Keep jobs, resume versions, and next steps in the same workspace so you can see what is working across markets."
-      />
+    <div className="h-full min-h-0">
       <ApplicationBoard
         initialApplications={applications.map((application) => ({
           id: application.id,

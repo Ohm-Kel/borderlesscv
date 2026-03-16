@@ -24,17 +24,19 @@ export default async function ResumesPage() {
   ]);
 
   return (
-    <ResumeLibrary
-      defaultCountry={(currentUser?.targetCountries[0] || "REMOTE") as "GHANA" | "UK" | "USA" | "CANADA" | "EUROPE" | "REMOTE"}
-      initialResumes={resumes.map((resume) => ({
-        id: resume.id,
-        title: resume.title,
-        targetRole: resume.targetRole,
-        targetCountry: resume.targetCountry,
-        templateKey: resume.templateKey,
-        updatedAt: resume.updatedAt.toISOString(),
-        versionCount: resume.versions.length,
-      }))}
-    />
+    <div className="h-full min-h-0">
+      <ResumeLibrary
+        defaultCountry={(currentUser?.targetCountries[0] || "REMOTE") as "GHANA" | "UK" | "USA" | "CANADA" | "EUROPE" | "REMOTE"}
+        initialResumes={resumes.map((resume) => ({
+          id: resume.id,
+          title: resume.title,
+          targetRole: resume.targetRole,
+          targetCountry: resume.targetCountry,
+          templateKey: resume.templateKey,
+          updatedAt: resume.updatedAt.toISOString(),
+          versionCount: resume.versions.length,
+        }))}
+      />
+    </div>
   );
 }

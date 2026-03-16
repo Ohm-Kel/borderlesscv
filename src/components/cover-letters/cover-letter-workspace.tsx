@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import type { ResumeDocument } from "@/lib/validations/resume";
@@ -119,10 +120,14 @@ export function CoverLetterWorkspace({
   }
 
   return (
-    <div className="grid gap-6 xl:grid-cols-[1fr_0.9fr]">
-      <Card className="rounded-[32px] bg-white">
-        <CardContent className="space-y-4 p-6">
-          <div className="grid gap-4 md:grid-cols-2">
+    <div className="grid h-full min-h-0 gap-4 xl:grid-cols-[1fr_0.92fr]">
+      <Card className="min-h-0 rounded-[28px] bg-white">
+        <CardContent className="flex h-full min-h-0 flex-col p-4">
+          <div className="mb-4">
+            <p className="section-label">Cover letters</p>
+            <h2 className="mt-1 text-[1.2rem] font-semibold text-slate-950">Draft from verified facts</h2>
+          </div>
+          <div className="grid gap-3 md:grid-cols-2">
             <Field label="Resume version">
               <Select value={form.resumeVersionId} onValueChange={(value) => setForm((current) => ({ ...current, resumeVersionId: value }))}>
                 <SelectTrigger>
@@ -147,10 +152,23 @@ export function CoverLetterWorkspace({
               <Input value={form.jobTitle} onChange={(event) => setForm((current) => ({ ...current, jobTitle: event.target.value }))} />
             </Field>
           </div>
-          <Field label="Job description">
-            <Textarea value={form.jobDescription} onChange={(event) => setForm((current) => ({ ...current, jobDescription: event.target.value }))} className="min-h-[180px]" />
-          </Field>
-          <div className="flex flex-wrap items-center gap-3">
+
+          <details className="mt-3 overflow-hidden rounded-[22px] border border-slate-200 bg-slate-50/60">
+            <summary className="cursor-pointer list-none px-4 py-3 text-sm font-medium text-slate-700">
+              Job description
+            </summary>
+            <div className="border-t border-slate-200 px-4 pb-4 pt-3">
+              <Field label="Paste the role requirements">
+                <Textarea
+                  value={form.jobDescription}
+                  onChange={(event) => setForm((current) => ({ ...current, jobDescription: event.target.value }))}
+                  className="min-h-[140px]"
+                />
+              </Field>
+            </div>
+          </details>
+
+          <div className="mt-3 flex flex-wrap items-center gap-3">
             <Button variant="secondary" onClick={generateLetter} disabled={generating}>
               {generating ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
               Generate from verified facts
@@ -160,27 +178,49 @@ export function CoverLetterWorkspace({
               Save cover letter
             </Button>
           </div>
-          <Field label="Content">
-            <Textarea value={form.content} onChange={(event) => setForm((current) => ({ ...current, content: event.target.value }))} className="min-h-[420px]" />
-          </Field>
+
+          <div className="mt-4 min-h-0 flex-1">
+            <Field label="Content">
+              <Textarea
+                value={form.content}
+                onChange={(event) => setForm((current) => ({ ...current, content: event.target.value }))}
+                className="h-[calc(100vh-360px)] min-h-[260px]"
+              />
+            </Field>
+          </div>
         </CardContent>
       </Card>
 
-      <div className="space-y-4">
-        {letters.map((letter) => (
-          <Card key={letter.id} className="rounded-[28px] bg-white">
-            <CardContent className="space-y-3 p-5">
-              <div>
-                <h3 className="text-lg font-semibold text-slate-950">{letter.title}</h3>
-                <p className="text-sm text-slate-500">
-                  {letter.jobTitle || "Role not set"} {letter.companyName ? `• ${letter.companyName}` : ""}
-                </p>
-              </div>
-              <p className="line-clamp-6 text-sm leading-7 text-slate-600 whitespace-pre-wrap">{letter.content}</p>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+      <Card className="min-h-0 rounded-[28px] bg-white">
+        <CardContent className="flex h-full min-h-0 flex-col p-4">
+          <div className="mb-4 flex items-center justify-between gap-3">
+            <div>
+              <p className="section-label">Saved drafts</p>
+              <h3 className="mt-1 text-[1.05rem] font-semibold text-slate-950">Reusable letters</h3>
+            </div>
+            <span className="rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1 text-xs font-semibold text-slate-500">
+              {letters.length}
+            </span>
+          </div>
+          <ScrollArea className="min-h-0 flex-1 pr-3">
+            <div className="space-y-3">
+              {letters.map((letter) => (
+                <Card key={letter.id} className="rounded-[22px] bg-slate-50/70 shadow-none">
+                  <CardContent className="space-y-2.5 p-4">
+                    <div>
+                      <h3 className="text-base font-semibold text-slate-950">{letter.title}</h3>
+                      <p className="text-sm text-slate-500">
+                        {letter.jobTitle || "Role not set"} {letter.companyName ? `- ${letter.companyName}` : ""}
+                      </p>
+                    </div>
+                    <p className="line-clamp-6 whitespace-pre-wrap text-sm leading-6 text-slate-600">{letter.content}</p>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </ScrollArea>
+        </CardContent>
+      </Card>
     </div>
   );
 }

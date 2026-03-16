@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { formatDate } from "@/lib/utils";
@@ -193,19 +194,19 @@ export function MasterProfileEditor({
   }
 
   return (
-    <div className="space-y-6">
-      <Card className="rounded-[30px] bg-white">
-        <CardContent className="flex flex-col gap-4 p-6 lg:flex-row lg:items-center lg:justify-between">
+    <div className="flex h-full min-h-0 flex-col gap-4">
+      <Card className="rounded-[28px] bg-white">
+        <CardContent className="flex flex-col gap-4 p-4 lg:flex-row lg:items-center lg:justify-between">
           <div>
             <p className="section-label">Verified source of truth</p>
-            <h2 className="mt-2 text-2xl font-semibold text-slate-950">Master Profile</h2>
-            <p className="mt-2 max-w-2xl text-sm leading-7 text-slate-500">
-              Everything here powers resume versions, cover letters, and AI rewriting. Keep it factual and recruiter-trustworthy.
+            <h2 className="mt-1.5 text-[1.35rem] font-semibold text-slate-950">Master profile</h2>
+            <p className="mt-1 text-sm text-slate-500">
+              Verified facts only. Everything here powers resumes, cover letters, and tailoring.
             </p>
-            <div className="mt-3 flex flex-wrap items-center gap-3 text-sm text-slate-500">
-              <span>Completeness: {profileCompleteness || initialProfileCompleteness}%</span>
+            <div className="mt-2 flex flex-wrap items-center gap-2.5 text-[0.76rem] text-slate-500">
+              <span>Complete: {profileCompleteness || initialProfileCompleteness}%</span>
               <span>Autosave: {saveState}</span>
-              {lastSavedAt ? <span>Last saved: {formatDate(lastSavedAt, "MMM d, yyyy h:mm a")}</span> : null}
+              {lastSavedAt ? <span>Saved {formatDate(lastSavedAt, "MMM d, h:mm a")}</span> : null}
             </div>
           </div>
           <div className="flex flex-wrap items-center gap-3">
@@ -223,123 +224,139 @@ export function MasterProfileEditor({
         </CardContent>
       </Card>
 
-      <Tabs defaultValue="core">
-        <TabsList>
+      <Tabs defaultValue="core" className="flex min-h-0 flex-1 flex-col gap-3">
+        <TabsList className="h-10 self-start">
           <TabsTrigger value="core">Core</TabsTrigger>
           <TabsTrigger value="experience">Experience</TabsTrigger>
           <TabsTrigger value="projects">Projects & leadership</TabsTrigger>
           <TabsTrigger value="credentials">Credentials</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="core" className="space-y-6">
-          <Card className="rounded-[30px] bg-white">
-            <CardContent className="grid gap-4 p-6 md:grid-cols-2">
-              <div className="space-y-2">
-                <Label>Full name</Label>
-                <Input value={form.personalDetails.name} onChange={(event) => setForm((current) => ({ ...current, personalDetails: { ...current.personalDetails, name: event.target.value } }))} />
-              </div>
-              <div className="space-y-2">
-                <Label>Headline</Label>
-                <Input value={form.personalDetails.headline} onChange={(event) => setForm((current) => ({ ...current, personalDetails: { ...current.personalDetails, headline: event.target.value } }))} />
-              </div>
-              <div className="space-y-2">
-                <Label>Location</Label>
-                <Input value={form.personalDetails.location} onChange={(event) => setForm((current) => ({ ...current, personalDetails: { ...current.personalDetails, location: event.target.value } }))} />
-              </div>
-              <div className="space-y-2">
-                <Label>Phone</Label>
-                <Input value={form.personalDetails.phone} onChange={(event) => setForm((current) => ({ ...current, personalDetails: { ...current.personalDetails, phone: event.target.value } }))} />
-              </div>
-            </CardContent>
-          </Card>
+        <TabsContent value="core" className="mt-0 min-h-0 flex-1">
+          <ScrollArea className="h-full pr-3">
+            <div className="space-y-4">
+              <Card className="rounded-[28px] bg-white">
+                <CardContent className="grid gap-4 p-5 md:grid-cols-2">
+                  <div className="space-y-2">
+                    <Label>Full name</Label>
+                    <Input value={form.personalDetails.name} onChange={(event) => setForm((current) => ({ ...current, personalDetails: { ...current.personalDetails, name: event.target.value } }))} />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Headline</Label>
+                    <Input value={form.personalDetails.headline} onChange={(event) => setForm((current) => ({ ...current, personalDetails: { ...current.personalDetails, headline: event.target.value } }))} />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Location</Label>
+                    <Input value={form.personalDetails.location} onChange={(event) => setForm((current) => ({ ...current, personalDetails: { ...current.personalDetails, location: event.target.value } }))} />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Phone</Label>
+                    <Input value={form.personalDetails.phone} onChange={(event) => setForm((current) => ({ ...current, personalDetails: { ...current.personalDetails, phone: event.target.value } }))} />
+                  </div>
+                </CardContent>
+              </Card>
 
-          <Card className="rounded-[30px] bg-white">
-            <CardContent className="space-y-4 p-6">
-              <div className="flex items-start justify-between gap-4">
-                <div>
-                  <h3 className="text-lg font-semibold text-slate-950">Professional summary</h3>
-                  <p className="text-sm leading-7 text-slate-500">
-                    Keep this grounded in facts. BorderlessCV will not invent outcomes or qualifications.
-                  </p>
-                </div>
-                <Button type="button" variant="secondary" onClick={handleGenerateSummary} disabled={summaryPending}>
-                  {summaryPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
-                  Generate from profile facts
-                </Button>
-              </div>
-              <Textarea value={form.professionalSummary} onChange={(event) => setForm((current) => ({ ...current, professionalSummary: event.target.value }))} className="min-h-[180px]" />
-            </CardContent>
-          </Card>
+              <Card className="rounded-[28px] bg-white">
+                <CardContent className="space-y-4 p-5">
+                  <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
+                    <div>
+                      <h3 className="text-base font-semibold text-slate-950">Professional summary</h3>
+                      <p className="text-sm text-slate-500">
+                        Keep it grounded in facts you can defend.
+                      </p>
+                    </div>
+                    <Button type="button" variant="secondary" onClick={handleGenerateSummary} disabled={summaryPending}>
+                      {summaryPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
+                      Generate from profile facts
+                    </Button>
+                  </div>
+                  <Textarea value={form.professionalSummary} onChange={(event) => setForm((current) => ({ ...current, professionalSummary: event.target.value }))} className="min-h-[150px]" />
+                </CardContent>
+              </Card>
 
-          <Card className="rounded-[30px] bg-white">
-            <CardContent className="space-y-6 p-6">
-              <TagEditor
-                label="Skills"
-                values={form.content.skills}
-                onChange={(skills) => setForm((current) => ({ ...current, content: { ...current.content, skills } }))}
-                placeholder="SQL, stakeholder communication, Canva..."
-                helperText="Only list skills you can confidently defend in an interview."
+              <Card className="rounded-[28px] bg-white">
+                <CardContent className="space-y-5 p-5">
+                  <TagEditor
+                    label="Skills"
+                    values={form.content.skills}
+                    onChange={(skills) => setForm((current) => ({ ...current, content: { ...current.content, skills } }))}
+                    placeholder="SQL, stakeholder communication, Canva..."
+                    helperText="Only list skills you can confidently defend in an interview."
+                  />
+                  <LanguageEditor
+                    items={form.content.languages}
+                    onChange={(languages) => setForm((current) => ({ ...current, content: { ...current.content, languages } }))}
+                  />
+                  <LinkEditor items={form.content.links} onChange={(links) => setForm((current) => ({ ...current, content: { ...current.content, links } }))} />
+                </CardContent>
+              </Card>
+            </div>
+          </ScrollArea>
+        </TabsContent>
+
+        <TabsContent value="experience" className="mt-0 min-h-0 flex-1">
+          <ScrollArea className="h-full pr-3">
+            <div className="space-y-4">
+              <ListSectionEditor
+                title="Education"
+                description="Include degree, institution, coursework, thesis, or academic proof when relevant."
+                items={form.content.education}
+                onChange={(education) => setForm((current) => ({ ...current, content: { ...current.content, education } }))}
               />
-              <LanguageEditor
-                items={form.content.languages}
-                onChange={(languages) => setForm((current) => ({ ...current, content: { ...current.content, languages } }))}
+              <ListSectionEditor
+                title="Work experience"
+                description="Focus on facts, scope, and defensible outcomes."
+                items={form.content.experience}
+                onChange={(experience) => setForm((current) => ({ ...current, content: { ...current.content, experience } }))}
               />
-              <LinkEditor items={form.content.links} onChange={(links) => setForm((current) => ({ ...current, content: { ...current.content, links } }))} />
-            </CardContent>
-          </Card>
+              <ListSectionEditor
+                title="Internships"
+                description="Internships matter strongly for low-experience candidates."
+                items={form.content.internships}
+                onChange={(internships) => setForm((current) => ({ ...current, content: { ...current.content, internships } }))}
+              />
+            </div>
+          </ScrollArea>
         </TabsContent>
 
-        <TabsContent value="experience" className="space-y-6">
-          <ListSectionEditor
-            title="Education"
-            description="Include degree, institution, key coursework, thesis, or academic proof when relevant."
-            items={form.content.education}
-            onChange={(education) => setForm((current) => ({ ...current, content: { ...current.content, education } }))}
-          />
-          <ListSectionEditor
-            title="Work experience"
-            description="Focus on facts, scope, and results. If metrics are missing, note the result without inventing numbers."
-            items={form.content.experience}
-            onChange={(experience) => setForm((current) => ({ ...current, content: { ...current.content, experience } }))}
-          />
-          <ListSectionEditor
-            title="Internships"
-            description="Internships matter strongly for low-experience candidates, especially when tied to tools or outcomes."
-            items={form.content.internships}
-            onChange={(internships) => setForm((current) => ({ ...current, content: { ...current.content, internships } }))}
-          />
+        <TabsContent value="projects" className="mt-0 min-h-0 flex-1">
+          <ScrollArea className="h-full pr-3">
+            <div className="space-y-4">
+              <ListSectionEditor
+                title="Projects"
+                description="Be explicit about scope, stack, and outcome."
+                items={form.content.projects}
+                onChange={(projects) => setForm((current) => ({ ...current, content: { ...current.content, projects } }))}
+              />
+              <ListSectionEditor
+                title="Leadership & activities"
+                description="Student clubs and leadership can strengthen hiring confidence."
+                items={form.content.leadership}
+                onChange={(leadership) => setForm((current) => ({ ...current, content: { ...current.content, leadership } }))}
+              />
+              <ListSectionEditor
+                title="Volunteer experience"
+                description="Use volunteer work that demonstrates ownership or initiative."
+                items={form.content.volunteer}
+                onChange={(volunteer) => setForm((current) => ({ ...current, content: { ...current.content, volunteer } }))}
+              />
+            </div>
+          </ScrollArea>
         </TabsContent>
 
-        <TabsContent value="projects" className="space-y-6">
-          <ListSectionEditor
-            title="Projects"
-            description="Projects are often your strongest proof early on. Be explicit about scope, stack, and outcome."
-            items={form.content.projects}
-            onChange={(projects) => setForm((current) => ({ ...current, content: { ...current.content, projects } }))}
-          />
-          <ListSectionEditor
-            title="Leadership & activities"
-            description="Student clubs, campus leadership, and community work can strengthen hiring confidence when framed well."
-            items={form.content.leadership}
-            onChange={(leadership) => setForm((current) => ({ ...current, content: { ...current.content, leadership } }))}
-          />
-          <ListSectionEditor
-            title="Volunteer experience"
-            description="Volunteer work is especially helpful for early-career candidates when it demonstrates responsibility or initiative."
-            items={form.content.volunteer}
-            onChange={(volunteer) => setForm((current) => ({ ...current, content: { ...current.content, volunteer } }))}
-          />
-        </TabsContent>
-
-        <TabsContent value="credentials" className="space-y-6">
-          <CertificationEditor
-            items={form.content.certifications}
-            onChange={(certifications) => setForm((current) => ({ ...current, content: { ...current.content, certifications } }))}
-          />
-          <AwardEditor
-            items={form.content.awards}
-            onChange={(awards) => setForm((current) => ({ ...current, content: { ...current.content, awards } }))}
-          />
+        <TabsContent value="credentials" className="mt-0 min-h-0 flex-1">
+          <ScrollArea className="h-full pr-3">
+            <div className="space-y-4">
+              <CertificationEditor
+                items={form.content.certifications}
+                onChange={(certifications) => setForm((current) => ({ ...current, content: { ...current.content, certifications } }))}
+              />
+              <AwardEditor
+                items={form.content.awards}
+                onChange={(awards) => setForm((current) => ({ ...current, content: { ...current.content, awards } }))}
+              />
+            </div>
+          </ScrollArea>
         </TabsContent>
       </Tabs>
     </div>

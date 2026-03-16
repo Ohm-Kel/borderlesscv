@@ -1,4 +1,3 @@
-import { PageHeader } from "@/components/shared/page-header";
 import { MasterProfileEditor } from "@/components/profile/master-profile-editor";
 import { createEmptyProfileContent } from "@/lib/defaults";
 import { parseProfileContent } from "@/lib/serializers";
@@ -18,12 +17,7 @@ export default async function ProfilePage() {
   const profileContent = user?.masterProfile ? parseProfileContent(user.masterProfile) : createEmptyProfileContent();
 
   return (
-    <div className="space-y-6">
-      <PageHeader
-        eyebrow="Profile"
-        title="Master profile"
-        description="Capture your verified experience once, then reuse it for country-aware resumes, cover letters, and job tracking."
-      />
+    <div className="h-full min-h-0">
       <MasterProfileEditor
         initialProfileCompleteness={user?.masterProfile?.profileCompleteness ?? 0}
         initialLastAutosavedAt={user?.masterProfile?.lastAutosavedAt?.toISOString() ?? null}

@@ -40,35 +40,37 @@ export default async function ResumeBuilderPage({
   }
 
   return (
-    <ResumeBuilder
-      resume={{
-        id: resume.id,
-        title: resume.title,
-        targetRole: resume.targetRole,
-        targetCountry: resume.targetCountry,
-        templateKey: resume.templateKey,
-        emphasisMode: resume.emphasisMode,
-        visibility: resume.visibility,
-      }}
-      versions={resume.versions.map((version) => ({
-        id: version.id,
-        versionNumber: version.versionNumber,
-        title: version.title,
-        jobTitle: version.jobTitle,
-        companyName: version.companyName,
-        jobDescription: version.jobDescription,
-        changeSummary: version.changeSummary,
-        tone: version.tone,
-        aiGuidance: parseTailoringGuidance(version),
-        content: parseResumeDocument(version),
-        createdAt: version.createdAt.toISOString(),
-      }))}
-      personalDetails={{
-        name: resume.user.name || "",
-        headline: resume.user.headline || "",
-        location: resume.user.location || "",
-        phone: resume.user.phone || "",
-      }}
-    />
+    <div className="h-full min-h-0 overflow-auto pr-1">
+      <ResumeBuilder
+        resume={{
+          id: resume.id,
+          title: resume.title,
+          targetRole: resume.targetRole,
+          targetCountry: resume.targetCountry,
+          templateKey: resume.templateKey,
+          emphasisMode: resume.emphasisMode,
+          visibility: resume.visibility,
+        }}
+        versions={resume.versions.map((version) => ({
+          id: version.id,
+          versionNumber: version.versionNumber,
+          title: version.title,
+          jobTitle: version.jobTitle,
+          companyName: version.companyName,
+          jobDescription: version.jobDescription,
+          changeSummary: version.changeSummary,
+          tone: version.tone,
+          aiGuidance: parseTailoringGuidance(version),
+          content: parseResumeDocument(version),
+          createdAt: version.createdAt.toISOString(),
+        }))}
+        personalDetails={{
+          name: resume.user.name || "",
+          headline: resume.user.headline || "",
+          location: resume.user.location || "",
+          phone: resume.user.phone || "",
+        }}
+      />
+    </div>
   );
 }

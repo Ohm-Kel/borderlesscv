@@ -44,12 +44,17 @@ export function SettingsForm({
   }
 
   return (
-    <Card className="rounded-[32px] bg-white">
-      <CardContent className="space-y-6 p-6">
-        <div className="flex items-center justify-between gap-4 rounded-[24px] bg-slate-100 p-5">
+    <Card className="max-w-3xl rounded-[28px] bg-white">
+      <CardContent className="space-y-5 p-5">
+        <div>
+          <p className="section-label">Settings</p>
+          <h2 className="mt-1 text-[1.2rem] font-semibold text-slate-950">Workspace privacy</h2>
+        </div>
+
+        <div className="flex items-center justify-between gap-4 rounded-[22px] bg-slate-100 p-4">
           <div>
-            <h3 className="text-lg font-semibold text-slate-950">Public profile</h3>
-            <p className="text-sm leading-7 text-slate-500">
+            <h3 className="text-base font-semibold text-slate-950">Public profile</h3>
+            <p className="text-sm text-slate-500">
               Disabled by default. Turn it on only if you want a public BorderlessCV page.
             </p>
           </div>
