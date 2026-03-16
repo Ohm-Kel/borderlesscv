@@ -197,6 +197,7 @@ export function ResumeBuilder({
   const [pendingBulletKey, setPendingBulletKey] = useState<string | null>(null);
   const [analyzingTailoring, setAnalyzingTailoring] = useState(false);
   const [creatingVersion, setCreatingVersion] = useState(false);
+  const [compactPane, setCompactPane] = useState<"editor" | "preview">("editor");
   const [versionForm, setVersionForm] = useState<VersionFormState>({
     title: `${initialResume.title} Tailored`,
     jobTitle: "",
@@ -528,8 +529,16 @@ export function ResumeBuilder({
   }
 
   return (
-    <div className="grid h-full min-h-0 gap-5 xl:grid-cols-[minmax(0,1.18fr)_minmax(360px,0.82fr)] 2xl:grid-cols-[minmax(0,1.24fr)_430px]">
-      <div className="flex min-h-0 flex-col gap-5 overflow-hidden">
+    <div className="flex h-full min-h-0 flex-col gap-4 xl:grid xl:grid-cols-[minmax(0,1.18fr)_minmax(360px,0.82fr)] xl:gap-5 2xl:grid-cols-[minmax(0,1.24fr)_430px]">
+      <CompactWorkspaceToggle
+        activePane={compactPane}
+        fitSummary={fitSummary}
+        fitTone={fitTone}
+        fitDeltaLabel={fitDeltaLabel}
+        onChange={setCompactPane}
+      />
+
+      <div className={cn("flex min-h-0 flex-1 flex-col gap-5 overflow-hidden", compactPane === "preview" ? "hidden xl:flex" : "flex")}>
         <BuilderHeaderCard
           resume={resume}
           activeVersion={activeVersion}
@@ -546,9 +555,9 @@ export function ResumeBuilder({
           onApplyEmphasisMode={applyEmphasisMode}
         />
 
-        <ScrollArea className="min-h-0 flex-1 pr-3">
+        <ScrollArea className="min-h-0 flex-1 pr-1 sm:pr-3">
           <div className="grid gap-5 pb-2 xl:grid-cols-[250px_minmax(0,1fr)]">
-            <div className="space-y-5">
+            <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-1">
               <VersionsRail versions={versions} activeVersionId={activeVersion.id} onSelect={setActiveVersionId} />
               <CountryNotesCard targetCountry={resume.targetCountry} countryCode={countryCode} guidance={guidance} />
             </div>
@@ -606,21 +615,24 @@ export function ResumeBuilder({
         </ScrollArea>
       </div>
 
-      <PreviewCard
-        personalDetails={personalDetails}
-        document={activeVersion.content}
-        templateKey={resume.templateKey}
-        countryCode={countryCode}
-        guidance={guidance}
-        fitSummary={fitSummary}
-        fitTone={fitTone}
-        lowSignalSectionCandidates={lowSignalSectionCandidates}
-        lowSignalLines={lowSignalLines}
-        hasTailoring={Boolean(activeVersion.aiGuidance)}
-        onTightenLongestBullet={tightenLongestBullet}
-        onHideLowSignalSections={hideLowSignalSections}
-        onPrioritizeMatchedEvidence={prioritizeMatchedEvidence}
-      />
+      <div className={cn("min-h-0 flex-1", compactPane === "editor" ? "hidden xl:block" : "block")}>
+        <PreviewCard
+          className="h-full"
+          personalDetails={personalDetails}
+          document={activeVersion.content}
+          templateKey={resume.templateKey}
+          countryCode={countryCode}
+          guidance={guidance}
+          fitSummary={fitSummary}
+          fitTone={fitTone}
+          lowSignalSectionCandidates={lowSignalSectionCandidates}
+          lowSignalLines={lowSignalLines}
+          hasTailoring={Boolean(activeVersion.aiGuidance)}
+          onTightenLongestBullet={tightenLongestBullet}
+          onHideLowSignalSections={hideLowSignalSections}
+          onPrioritizeMatchedEvidence={prioritizeMatchedEvidence}
+        />
+      </div>
     </div>
   );
 }
@@ -630,6 +642,59 @@ function Field({ label, children }: { label: string; children: ReactNode }) {
     <div className="space-y-2">
       <Label>{label}</Label>
       {children}
+    </div>
+  );
+}
+
+function CompactWorkspaceToggle({
+  activePane,
+  fitSummary,
+  fitTone,
+  fitDeltaLabel,
+  onChange,
+}: {
+  activePane: "editor" | "preview";
+  fitSummary: ResumeFitSummary;
+  fitTone: FitTone;
+  fitDeltaLabel: string;
+  onChange: Dispatch<SetStateAction<"editor" | "preview">>;
+}) {
+  return (
+    <div className="rounded-[28px] border border-white/80 bg-white/95 p-3 shadow-[0_14px_34px_rgba(15,23,42,0.06)] xl:hidden">
+      <div className="flex items-center justify-between gap-3">
+        <div className="grid grid-cols-2 rounded-[18px] bg-slate-100 p-1">
+          <button
+            type="button"
+            onClick={() => onChange("editor")}
+            className={cn(
+              "rounded-[14px] px-4 py-2 text-sm font-semibold transition-colors",
+              activePane === "editor" ? "bg-white text-slate-950 shadow-sm" : "text-slate-500",
+            )}
+          >
+            Edit
+          </button>
+          <button
+            type="button"
+            onClick={() => onChange("preview")}
+            className={cn(
+              "rounded-[14px] px-4 py-2 text-sm font-semibold transition-colors",
+              activePane === "preview" ? "bg-white text-slate-950 shadow-sm" : "text-slate-500",
+            )}
+          >
+            Preview
+          </button>
+        </div>
+        <div className="text-right">
+          <div className="text-[0.65rem] font-semibold uppercase tracking-[0.18em] text-slate-500">Line fit</div>
+          <div className="mt-1 text-sm font-semibold text-slate-950">
+            {fitSummary.adjustedLines}/{TARGET_RESUME_LINES}
+          </div>
+        </div>
+      </div>
+      <div className="mt-3 flex items-center justify-between gap-3">
+        <span className={cn("rounded-full border px-2.5 py-1 text-[0.68rem] font-semibold", fitTone.badgeClass)}>{fitTone.caption}</span>
+        <span className="text-[0.76rem] font-medium text-slate-500">{fitDeltaLabel}</span>
+      </div>
     </div>
   );
 }
@@ -665,12 +730,12 @@ function BuilderHeaderCard({
 }) {
   return (
     <Card className="rounded-[34px] border-white/80 bg-white/95 shadow-[0_18px_45px_rgba(15,23,42,0.06)]">
-      <CardContent className="space-y-5 p-5 sm:p-6">
+      <CardContent className="space-y-4 p-4 sm:p-5 xl:p-6">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div className="space-y-3">
             <div>
               <p className="section-label">Resume workspace</p>
-              <h2 className="mt-2 text-[1.65rem] font-semibold tracking-[-0.03em] text-slate-950">{resume.title}</h2>
+              <h2 className="mt-2 text-[1.4rem] font-semibold tracking-[-0.03em] text-slate-950 sm:text-[1.65rem]">{resume.title}</h2>
               <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-500">
                 Tighten structure, control density, and keep this version on a strong one-page target before you export.
               </p>
@@ -1446,6 +1511,7 @@ function CompactEditorSection({
 }
 
 function PreviewCard({
+  className,
   personalDetails,
   document,
   templateKey,
@@ -1460,6 +1526,7 @@ function PreviewCard({
   onHideLowSignalSections,
   onPrioritizeMatchedEvidence,
 }: {
+  className?: string;
   personalDetails: { name: string; headline: string; location: string; phone: string };
   document: ResumeDocument;
   templateKey: ResumeMeta["templateKey"];
@@ -1475,9 +1542,9 @@ function PreviewCard({
   onPrioritizeMatchedEvidence: () => void;
 }) {
   return (
-    <div className="min-h-0 xl:sticky xl:top-0 xl:h-[calc(100vh-116px)]">
-      <Card className="h-full rounded-[34px] border-white/80 bg-white/95 shadow-[0_22px_48px_rgba(15,23,42,0.08)]">
-        <CardContent className="flex h-full min-h-0 flex-col p-4 sm:p-5">
+    <div className={cn("min-h-0 xl:sticky xl:top-0 xl:h-[calc(100vh-116px)]", className)}>
+      <Card className="rounded-[34px] border-white/80 bg-white/95 shadow-[0_22px_48px_rgba(15,23,42,0.08)] xl:h-full">
+        <CardContent className="flex min-h-0 flex-col p-4 sm:p-5 xl:h-full">
           <ScrollArea className="min-h-0 flex-1 pr-2">
             <div className="space-y-4">
               <div className="flex items-start justify-between gap-4">
