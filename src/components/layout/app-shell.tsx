@@ -14,7 +14,6 @@ export function AppShell({
   user: { name?: string | null; email?: string | null; image?: string | null };
   children: ReactNode;
 }) {
-  const firstName = user.name?.split(" ")[0] ?? null;
   const [sidebarExpanded, setSidebarExpanded] = useState(() => {
     if (typeof window === "undefined") {
       return false;
@@ -42,14 +41,10 @@ export function AppShell({
         >
           <SidebarNav expanded={sidebarExpanded} onToggle={toggleSidebar} />
         </div>
-        <div className="flex min-w-0 flex-1 flex-col gap-3 overflow-hidden">
-          <header className="surface-card relative flex h-[58px] items-center justify-between rounded-[24px] border border-white/75 px-4 lg:px-5">
-            <div className="absolute inset-x-10 top-0 h-px bg-gradient-to-r from-transparent via-slate-200/70 to-transparent" />
-            <p className="text-sm font-medium text-slate-600">
-              {firstName ? `${firstName}'s workspace` : "BorderlessCV workspace"}
-            </p>
+        <div className="flex min-w-0 flex-1 flex-col overflow-hidden">
+          <div className="flex items-center justify-end px-1 pb-2">
             <UserNav name={user.name} email={user.email} image={user.image} />
-          </header>
+          </div>
           <main className="min-h-0 min-w-0 flex-1 overflow-hidden">{children}</main>
         </div>
       </div>
