@@ -4,6 +4,7 @@ import { renderToBuffer } from "@react-pdf/renderer";
 
 import { requireApiUser, unauthorizedResponse } from "@/lib/api-auth";
 import { ResumePdfDocument } from "@/lib/pdf/resume-pdf-document";
+import { estimateResumeFit } from "@/lib/resume-fit";
 import { parseResumeDocument } from "@/lib/serializers";
 import { prisma } from "@/lib/prisma";
 
@@ -45,25 +46,29 @@ export async function GET(
 
   const version = resume.versions[0];
   const document = parseResumeDocument(version);
+  const fitSummary = estimateResumeFit(document);
+  const exportTitle = version.title || resume.title;
+  const downloadFileName = exportTitle.replace(/\s+/g, "-").toLowerCase();
 
   const pdfBuffer = await renderToBuffer(
     createElement(ResumePdfDocument, {
-      title: resume.title,
+      title: exportTitle,
       person: {
         name: resume.user.name || "",
-        headline: resume.user.headline || resume.targetRole || "",
+        headline: resume.user.headline || version.jobTitle || resume.targetRole || "",
         location: resume.user.location || "",
         phone: resume.user.phone || "",
       },
       document,
       templateKey: resume.templateKey,
+      density: fitSummary.density,
     }),
   );
 
   return new NextResponse(new Uint8Array(pdfBuffer), {
     headers: {
       "Content-Type": "application/pdf",
-      "Content-Disposition": `attachment; filename="${resume.title.replace(/\s+/g, "-").toLowerCase()}.pdf"`,
+      "Content-Disposition": `attachment; filename="${downloadFileName}.pdf"`,
     },
   });
 }
