@@ -134,7 +134,7 @@ export function SignInForm({
                 </Label>
                 <Link
                   href="/forgot-password"
-                  className="text-[0.78rem] font-medium text-slate-400 transition-colors duration-200 hover:text-slate-950"
+                  className="text-[0.78rem] font-medium text-[var(--accent)] hover:underline underline-offset-2 transition hover:text-[var(--accent-dark)]"
                 >
                   Forgot password?
                 </Link>
@@ -155,7 +155,7 @@ export function SignInForm({
         <MotionButtonWrap>
           <Button
             type="submit"
-            className="h-12 w-full rounded-[22px] bg-slate-950 text-[0.9rem] font-semibold shadow-[0_18px_36px_rgba(15,23,42,0.18)] hover:shadow-[0_24px_48px_rgba(15,23,42,0.26)]"
+            className="h-12 w-full rounded-[12px] bg-[var(--accent)] text-white text-[0.9rem] font-bold shadow-sm hover:bg-[var(--accent-dark)]"
             disabled={pending}
           >
             {pending ? <Loader2 className="h-4 w-4 animate-spin" /> : <MoveRight className="h-4 w-4" />}
@@ -163,10 +163,6 @@ export function SignInForm({
           </Button>
         </MotionButtonWrap>
       </motion.form>
-
-      <motion.p className="text-[0.8rem] leading-[1.8] text-slate-400" variants={fadeUp(12)}>
-        Continue where you left off — tailor a resume, export a polished PDF, or review your application pipeline without rebuilding your profile.
-      </motion.p>
     </motion.div>
   );
 }

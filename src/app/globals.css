@@ -1,16 +1,40 @@
 @import "tailwindcss";
 
 :root {
-  --background: #f2f4f8;
-  --foreground: #0c1629;
-  --surface: #ffffff;
-  --surface-muted: #edf0f5;
-  --border: #dce2eb;
-  --ring: #0c1629;
-  --accent: #134e4a;
-  --accent-soft: #d9f0ed;
-  --muted-foreground: #64748b;
-  --serif-accent: #1f2937;
+  /* Light mode palette only for now */
+  --background: #F8F9FA;
+  --foreground: #0D1B2A;
+  
+  --surface: #FFFFFF;
+  --surface-muted: #F3F4F6;
+  
+  --border: #E5E7EB;
+  --ring: #00C9A7;
+  
+  /* Accent: electric teal */
+  --accent: #00C9A7;
+  --accent-dark: #00A98A;
+  --accent-soft: #F0FDF9;
+  
+  /* Deep Navy */
+  --navy: #0D1B2A;
+  
+  --muted-foreground: #6B7280;
+  
+  /* 8pt grid spacing system (1 = 4px, 2 = 8px, etc) */
+  --space-0: 0px;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+  --space-20: 80px;
+  --space-24: 96px;
 }
 
 @theme inline {
@@ -20,10 +44,14 @@
   --color-surface-muted: var(--surface-muted);
   --color-border: var(--border);
   --color-accent: var(--accent);
+  --color-accent-dark: var(--accent-dark);
   --color-accent-soft: var(--accent-soft);
+  --color-navy: var(--navy);
   --color-muted-foreground: var(--muted-foreground);
-  --font-sans: "Aptos", "Segoe UI", "Trebuchet MS", sans-serif;
-  --font-serif: "Palatino Linotype", "Book Antiqua", Georgia, serif;
+  
+  /* Map fonts configured via next/font/google */
+  --font-sans: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-serif: var(--font-serif), ui-serif, Georgia, serif;
 }
 
 * {
@@ -45,57 +73,63 @@ a {
 }
 
 ::selection {
-  background: rgba(19, 78, 74, 0.12);
+  background: rgba(0, 201, 167, 0.2); 
+  color: var(--navy);
 }
 
 /* ─── Surface card ──────────────────────────────────────── */
 .surface-card {
-  background: linear-gradient(160deg, rgba(255, 255, 255, 0.98) 0%, rgba(255, 255, 255, 0.91) 100%);
-  box-shadow:
-    0 1px 2px rgba(15, 23, 42, 0.04),
-    0 20px 50px rgba(15, 23, 42, 0.07),
-    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  box-shadow: 0 1px 4px rgba(13, 27, 42, 0.06);
+  border-radius: 16px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.surface-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px rgba(13, 27, 42, 0.08);
 }
 
 /* ─── Landing mesh background ───────────────────────────── */
 .mesh-bg {
   background:
-    radial-gradient(ellipse 70% 45% at 4% 0%, rgba(15, 23, 42, 0.08), transparent),
-    radial-gradient(ellipse 55% 38% at 96% 6%, rgba(15, 23, 42, 0.05), transparent),
-    radial-gradient(ellipse 45% 32% at 50% 102%, rgba(100, 116, 139, 0.07), transparent),
-    linear-gradient(180deg, #fafbfd 0%, #f2f4f8 52%, #e9edf3 100%);
+    radial-gradient(ellipse 70% 45% at 4% 0%, rgba(0, 201, 167, 0.12), transparent auto),
+    radial-gradient(ellipse 55% 38% at 96% 6%, rgba(13, 27, 42, 0.08), transparent auto),
+    radial-gradient(ellipse 45% 32% at 50% 102%, rgba(0, 201, 167, 0.05), transparent auto),
+    linear-gradient(180deg, #FFFFFF 0%, #F8F9FA 50%, #F3F4F6 100%);
 }
 
-/* ─── Auth panel card (dark left side benefit cards) ─────── */
+/* ─── Auth panel card (dark left side) ──────────────────── */
 .auth-panel-card {
-  background: rgba(255, 255, 255, 0.058);
-  border: 1px solid rgba(255, 255, 255, 0.10);
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
   box-shadow:
-    0 24px 60px rgba(3, 8, 20, 0.14),
-    inset 0 1px 0 rgba(255, 255, 255, 0.07);
+    0 24px 60px rgba(13, 27, 42, 0.14),
+    inset 0 1px 0 rgba(255, 255, 255, 0.10);
   transition: background 0.22s ease, border-color 0.22s ease, box-shadow 0.22s ease;
 }
 
 .auth-panel-card:hover {
-  background: rgba(255, 255, 255, 0.09);
-  border-color: rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.25);
   box-shadow:
-    0 28px 70px rgba(3, 8, 20, 0.18),
-    inset 0 1px 0 rgba(255, 255, 255, 0.10);
+    0 28px 70px rgba(13, 27, 42, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12);
 }
 
 /* ─── Dot grid (subtle pattern for dark panel background) ── */
 .dot-grid {
-  background-image: radial-gradient(circle, rgba(255, 255, 255, 0.10) 1px, transparent 1px);
+  background-image: radial-gradient(circle, rgba(255, 255, 255, 0.12) 1px, transparent 1px);
   background-size: 26px 26px;
 }
 
 /* ─── Editor grid ───────────────────────────────────────── */
 .editor-grid {
   background-image:
-    linear-gradient(rgba(255, 255, 255, 0.5) 0 0),
-    linear-gradient(90deg, rgba(15, 23, 42, 0.04) 1px, transparent 1px),
-    linear-gradient(rgba(15, 23, 42, 0.04) 1px, transparent 1px);
+    linear-gradient(var(--surface) 0 0),
+    linear-gradient(90deg, rgba(13, 27, 42, 0.04) 1px, transparent 1px),
+    linear-gradient(rgba(13, 27, 42, 0.04) 1px, transparent 1px);
   background-size:
     100% 100%,
     24px 24px,
@@ -108,31 +142,43 @@ a {
 }
 
 .section-label {
-  font-size: 0.67rem;
-  letter-spacing: 0.22em;
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
   font-weight: 600;
   color: var(--muted-foreground);
 }
 
 .serif-display {
-  font-family: var(--font-serif), Georgia, serif;
+  font-family: var(--font-serif);
 }
 
 /* ─── Input field wrapper (focus-within lift) ───────────── */
 .field-card {
-  border-radius: 28px;
-  border: 1px solid rgba(203, 213, 225, 0.85);
-  background: rgba(248, 250, 252, 0.85);
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: var(--surface);
   padding: 1rem;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.75);
-  transition: border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 1px 2px rgba(13, 27, 42, 0.04);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .field-card:focus-within {
-  border-color: rgb(148, 163, 184);
-  background: rgba(255, 255, 255, 1);
+  border-color: var(--accent);
   box-shadow:
-    0 12px 28px rgba(15, 23, 42, 0.07),
-    inset 0 1px 0 rgba(255, 255, 255, 1);
+    0 4px 12px rgba(0, 201, 167, 0.08),
+    0 0 0 2px rgba(0, 201, 167, 0.2);
+}
+
+/* ─── Skeleton Pulse ────────────────────────────────────── */
+@keyframes pulse-shimmer {
+  0% { opacity: 1; }
+  50% { opacity: 0.5; }
+  100% { opacity: 1; }
+}
+
+.skeleton {
+  animation: pulse-shimmer 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  background-color: var(--surface-muted);
+  border-radius: 6px;
 }

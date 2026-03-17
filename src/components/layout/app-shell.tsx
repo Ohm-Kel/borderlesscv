@@ -35,8 +35,8 @@ export function AppShell({
   }
 
   return (
-    <div className="mesh-bg h-screen overflow-hidden">
-      <div className="mx-auto flex h-screen max-w-[1540px] gap-3 px-3 py-3 lg:px-4 lg:py-4">
+    <div className="h-screen w-full overflow-hidden bg-[var(--background)] text-[var(--foreground)]">
+      <div className="mx-auto flex h-full w-full gap-3 px-3 py-3 lg:px-4 lg:py-4">
         <Dialog open={mobileNavOpen} onOpenChange={setMobileNavOpen}>
           <DialogContent
             className="left-0 top-0 h-full max-w-[296px] translate-x-0 translate-y-0 gap-0 rounded-none rounded-r-[30px] border-l-0 p-0 sm:max-w-[320px]"

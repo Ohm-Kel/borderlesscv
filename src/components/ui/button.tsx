@@ -5,22 +5,24 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-2xl text-sm font-semibold transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] disabled:pointer-events-none disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--background)] motion-safe:hover:-translate-y-0.5 motion-safe:active:translate-y-0",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-xl text-sm font-semibold transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] disabled:pointer-events-none disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--background)] motion-safe:hover:-translate-y-0.5 motion-safe:active:scale-[0.98]",
   {
     variants: {
       variant: {
-        default: "bg-slate-950 text-white shadow-[0_1px_2px_rgba(15,23,42,0.12),0_8px_16px_rgba(15,23,42,0.08),0_16px_32px_-8px_rgba(15,23,42,0.16)] ring-1 ring-white/10 hover:bg-slate-900",
-        secondary: "bg-white text-slate-900 ring-1 ring-slate-200 shadow-[0_12px_24px_rgba(15,23,42,0.06)] hover:bg-slate-50",
-        ghost: "text-slate-700 hover:bg-slate-100",
-        accent: "bg-[var(--accent)] text-white shadow-[0_1px_2px_rgba(19,78,74,0.14),0_8px_16px_rgba(19,78,74,0.10),0_16px_32px_-8px_rgba(19,78,74,0.18)] ring-1 ring-white/10 hover:brightness-95",
-        outline: "bg-transparent text-slate-800 ring-1 ring-slate-300 hover:bg-white",
+        default: "bg-[var(--accent)] text-white shadow-[0_1px_2px_rgba(0,201,167,0.14),0_8px_16px_rgba(0,201,167,0.10)] ring-1 ring-white/10 hover:bg-[var(--accent-dark)]",
+        secondary: "bg-white text-[var(--navy)] ring-1 ring-[var(--border)] shadow-[0_4px_12px_rgba(13,27,42,0.04)] hover:bg-slate-50",
+        ghost: "text-slate-600 hover:text-[var(--accent)] hover:bg-[var(--accent-soft)] hover:underline decoration-2 underline-offset-4",
+        navy: "bg-[var(--navy)] text-white shadow-[0_1px_2px_rgba(13,27,42,0.14),0_8px_16px_rgba(13,27,42,0.10)] ring-1 ring-white/10 hover:brightness-110",
+        outline: "bg-transparent text-[var(--navy)] ring-1 ring-slate-300 hover:bg-white",
         danger: "bg-rose-600 text-white shadow-sm hover:bg-rose-500",
+        // Backward-compatible alias
+        accent: "bg-[var(--accent)] text-white shadow-[0_1px_2px_rgba(0,201,167,0.14),0_8px_16px_rgba(0,201,167,0.10)] ring-1 ring-white/10 hover:bg-[var(--accent-dark)]",
       },
       size: {
-        default: "h-11 px-4 py-2",
-        sm: "h-9 rounded-xl px-3 text-xs",
-        lg: "h-12 px-5 text-sm",
-        icon: "h-10 w-10 rounded-xl",
+        default: "h-11 px-6 py-2",
+        sm: "h-9 rounded-lg px-4 text-xs",
+        lg: "h-12 rounded-xl px-8 text-sm",
+        icon: "h-10 w-10 rounded-lg",
       },
     },
     defaultVariants: {

@@ -32,10 +32,10 @@ export function SidebarNav({
   return (
     <aside
       className={cn(
-        "flex h-full flex-col bg-white/92 py-4 backdrop-blur-sm transition-all duration-200",
+        "flex h-full flex-col bg-white py-4 backdrop-blur-sm transition-all duration-200",
         isMobile
-          ? "gap-5 rounded-r-[28px] border-r border-slate-200/80 px-4 shadow-[0_18px_48px_rgba(15,23,42,0.08)]"
-          : "rounded-[28px] border border-white/75 shadow-[0_18px_48px_rgba(15,23,42,0.08)]",
+          ? "gap-5 border-r border-[var(--border)] px-4 shadow-sm"
+          : "border-r border-[var(--border)] shadow-sm",
         !isMobile && (expanded ? "gap-5 px-3" : "items-center gap-4 px-2.5"),
       )}
     >
@@ -49,7 +49,7 @@ export function SidebarNav({
           type="button"
           onClick={onToggle}
           aria-label={isMobile ? "Close navigation" : expanded ? "Collapse sidebar" : "Expand sidebar"}
-          className="flex h-11 w-11 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-700 shadow-[0_8px_22px_rgba(15,23,42,0.08)] transition hover:border-slate-300 hover:text-slate-950"
+          className="flex h-11 w-11 items-center justify-center rounded-[12px] border border-[var(--border)] bg-white text-slate-600 shadow-sm transition hover:border-[var(--accent)] hover:text-[var(--accent)]"
         >
           <Menu className="h-5 w-5" />
         </button>
@@ -68,18 +68,18 @@ export function SidebarNav({
               onClick={onNavigate}
               className={cn(
                 "relative flex items-center text-[0.845rem] font-medium transition-all duration-200",
-                expanded || isMobile ? "gap-3 rounded-[16px] px-3.5 py-2.5" : "justify-center rounded-[18px] px-0 py-3",
+                expanded || isMobile ? "gap-3 rounded-[12px] px-3.5 py-2.5" : "justify-center rounded-[12px] px-0 py-3",
                 active
-                  ? "bg-slate-950 text-white shadow-[0_8px_22px_rgba(15,23,42,0.20)]"
-                  : "text-slate-500 hover:bg-slate-100/80 hover:text-slate-950",
+                  ? "bg-[var(--accent-soft)] text-[var(--navy)]"
+                  : "text-slate-500 hover:bg-slate-50 hover:text-[var(--navy)]",
               )}
             >
               {active && (
                 <span
                   className={cn(
-                    "absolute top-1/2 -translate-y-1/2 bg-white/30",
+                    "absolute top-1/2 -translate-y-1/2 bg-[var(--accent)]",
                     expanded || isMobile
-                      ? "left-0 h-4.5 w-[3px] rounded-r-full"
+                      ? "left-0 h-5 w-[3px] rounded-r-full"
                       : "left-1/2 top-0 h-[3px] w-5 -translate-x-1/2 translate-y-0 rounded-b-full",
                   )}
                 />
@@ -92,10 +92,10 @@ export function SidebarNav({
       </nav>
 
       {expanded && !isMobile ? (
-        <details className="mt-auto overflow-hidden rounded-[22px] bg-[linear-gradient(150deg,#0c1629_0%,#1e293b_100%)] text-white shadow-[0_12px_32px_rgba(15,23,42,0.22)] group">
+        <details className="mt-auto overflow-hidden rounded-[16px] bg-[linear-gradient(150deg,var(--accent)_0%,var(--navy)_100%)] text-white shadow-sm group">
           <summary className="flex cursor-pointer list-none items-center justify-between gap-3 px-4 py-3">
             <div>
-              <p className="text-[0.58rem] font-semibold uppercase tracking-[0.22em] text-slate-400">
+              <p className="text-[0.58rem] font-semibold uppercase tracking-[0.22em] text-[var(--accent-soft)] opacity-90">
                 Guidance
               </p>
               <p className="mt-1 text-[0.82rem] font-semibold leading-snug">

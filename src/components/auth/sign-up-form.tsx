@@ -173,9 +173,9 @@ export function SignUpForm({ googleEnabled }: { googleEnabled: boolean }) {
         </div>
 
         {/* Value prop hint */}
-        <div className="flex items-start gap-3 rounded-[18px] border border-emerald-200/70 bg-emerald-50/80 px-4 py-3.5">
-          <Sparkles className="mt-0.5 h-4 w-4 shrink-0 text-emerald-600" />
-          <p className="text-[0.8rem] leading-[1.75] text-emerald-900">
+        <div className="flex items-start gap-3 rounded-[12px] border border-[var(--accent)]/20 bg-[var(--accent-soft)] px-4 py-3.5">
+          <Sparkles className="mt-0.5 h-4 w-4 shrink-0 text-[var(--accent)]" />
+          <p className="text-[0.8rem] leading-[1.75] text-[var(--accent-dark)]">
             You will start with a reusable master profile, then tailor resume versions, cover letters, and applications from the same factual source.
           </p>
         </div>
@@ -183,7 +183,7 @@ export function SignUpForm({ googleEnabled }: { googleEnabled: boolean }) {
         <MotionButtonWrap>
           <Button
             type="submit"
-            className="h-12 w-full rounded-[22px] bg-slate-950 text-[0.9rem] font-semibold shadow-[0_18px_36px_rgba(15,23,42,0.18)] hover:shadow-[0_24px_48px_rgba(15,23,42,0.26)]"
+            className="h-12 w-full rounded-[12px] bg-[var(--accent)] text-white text-[0.9rem] font-bold shadow-sm hover:bg-[var(--accent-dark)]"
             disabled={pending}
           >
             {pending ? <Loader2 className="h-4 w-4 animate-spin" /> : <MoveRight className="h-4 w-4" />}

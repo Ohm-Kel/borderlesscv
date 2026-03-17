@@ -3,29 +3,26 @@ import type { Transition, Variants } from "framer-motion";
 export const smoothEase: [number, number, number, number] = [0.22, 1, 0.36, 1];
 
 export const pageTransition: Transition = {
-  duration: 0.32,
-  ease: smoothEase,
+  duration: 0.2,
+  ease: "easeOut",
 };
 
 export const pageTransitionVariants: Variants = {
   initial: {
     opacity: 0,
-    y: 14,
-    filter: "blur(6px)",
+    y: 12,
   },
   animate: {
     opacity: 1,
     y: 0,
-    filter: "blur(0px)",
     transition: pageTransition,
   },
   exit: {
     opacity: 0,
-    y: -10,
-    filter: "blur(6px)",
+    y: -8,
     transition: {
-      duration: 0.22,
-      ease: smoothEase,
+      duration: 0.15,
+      ease: "easeIn",
     },
   },
 };

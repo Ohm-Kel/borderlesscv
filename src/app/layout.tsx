@@ -1,8 +1,20 @@
 import type { Metadata } from "next";
+import { DM_Sans, DM_Serif_Display } from "next/font/google";
 
 import { AppProviders } from "@/app/providers";
 
 import "./globals.css";
+
+const fontSans = DM_Sans({
+  subsets: ["latin"],
+  variable: "--font-sans",
+});
+
+const fontSerif = DM_Serif_Display({
+  subsets: ["latin"],
+  weight: "400",
+  variable: "--font-serif",
+});
 
 export const metadata: Metadata = {
   title: {
@@ -20,7 +32,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className="min-h-screen bg-[var(--background)] font-sans text-[var(--foreground)] antialiased">
+      <body className={`${fontSans.variable} ${fontSerif.variable} min-h-screen bg-[var(--background)] font-sans text-[var(--foreground)] antialiased`}>
         <AppProviders>{children}</AppProviders>
       </body>
     </html>

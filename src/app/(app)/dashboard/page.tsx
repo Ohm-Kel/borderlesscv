@@ -100,7 +100,7 @@ export default async function DashboardPage() {
 
   return (
     <div className="flex h-full min-h-0 flex-col gap-3">
-      <section className="surface-card flex h-[58px] items-center justify-between gap-4 rounded-[24px] border border-white/75 px-4 shadow-[0_10px_26px_rgba(15,23,42,0.05)]">
+      <section className="surface-card flex min-h-[58px] items-center justify-between gap-4 px-4 py-2">
         <div className="min-w-0">
           <p className="truncate text-sm font-medium text-slate-700">
             Welcome back, {firstName}. Keep your profile verified and track what is moving.
@@ -121,15 +121,15 @@ export default async function DashboardPage() {
             <Link
               key={stat.label}
               href={stat.href}
-              className="rounded-[22px] border border-white/75 bg-white/92 px-4 py-3 shadow-[0_8px_22px_rgba(15,23,42,0.05)] transition hover:border-slate-200 hover:shadow-[0_12px_30px_rgba(15,23,42,0.07)]"
+              className="rounded-[16px] border border-[var(--border)] bg-white px-4 py-3 shadow-sm transition hover:border-[var(--accent)] hover:shadow-md"
             >
               <div className="flex items-center gap-3">
-                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[14px] bg-slate-950 text-white">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[12px] bg-[var(--accent-soft)] text-[var(--accent)]">
                   <Icon className="h-4 w-4" />
                 </div>
                 <div className="min-w-0">
                   <div className="flex items-end gap-2">
-                    <p className="text-[1.35rem] font-semibold tracking-[-0.04em] text-slate-950">{stat.value}</p>
+                    <p className="text-[1.35rem] font-semibold tracking-[-0.04em] text-[var(--navy)]">{stat.value}</p>
                     <p className="pb-0.5 text-[0.76rem] font-medium text-slate-500">{stat.label}</p>
                   </div>
                   <p className="truncate text-[0.72rem] text-slate-400">{stat.subtext}</p>
@@ -141,11 +141,11 @@ export default async function DashboardPage() {
       </div>
 
       <div className="grid min-h-0 flex-1 gap-3 xl:grid-cols-[1.15fr_0.85fr]">
-        <section className="min-h-0 rounded-[26px] border border-white/75 bg-white/92 shadow-[0_12px_34px_rgba(15,23,42,0.05)]">
-          <div className="flex items-center justify-between gap-3 border-b border-slate-200 px-4 py-3.5">
+        <section className="min-h-0 rounded-[16px] border border-[var(--border)] bg-white shadow-sm">
+          <div className="flex items-center justify-between gap-3 border-b border-[var(--border)] px-4 py-3.5">
             <div>
               <p className="section-label">Recent resumes</p>
-              <h2 className="mt-1 text-[1.05rem] font-semibold text-slate-950">Library activity</h2>
+              <h2 className="mt-1 text-[1.05rem] font-semibold text-[var(--navy)]">Library activity</h2>
             </div>
             <Button asChild size="sm" variant="secondary">
               <Link href="/resumes">Open library</Link>
@@ -153,7 +153,7 @@ export default async function DashboardPage() {
           </div>
 
           {resumes.length === 0 ? (
-            <div className="m-4 rounded-[22px] border border-dashed border-slate-200 bg-slate-50/60 px-4 py-8 text-center text-sm text-slate-500">
+            <div className="m-4 rounded-[12px] border border-dashed border-[var(--accent)]/30 bg-[var(--accent-soft)] px-4 py-8 text-center text-sm text-[var(--accent-dark)]">
               Start your first base resume to see versions, exports, and fit guidance here.
             </div>
           ) : (
@@ -198,11 +198,11 @@ export default async function DashboardPage() {
         </section>
 
         <div className="grid min-h-0 gap-3 xl:grid-rows-[minmax(0,1fr)_minmax(220px,auto)]">
-          <section className="min-h-0 rounded-[26px] border border-white/75 bg-white/92 shadow-[0_12px_34px_rgba(15,23,42,0.05)]">
-            <div className="flex items-center justify-between gap-3 border-b border-slate-200 px-4 py-3.5">
+          <section className="min-h-0 rounded-[16px] border border-[var(--border)] bg-white shadow-sm">
+            <div className="flex items-center justify-between gap-3 border-b border-[var(--border)] px-4 py-3.5">
               <div>
                 <p className="section-label">Applications</p>
-                <h2 className="mt-1 text-[1.05rem] font-semibold text-slate-950">Latest movement</h2>
+                <h2 className="mt-1 text-[1.05rem] font-semibold text-[var(--navy)]">Latest movement</h2>
               </div>
               <Button asChild size="sm" variant="secondary">
                 <Link href="/applications">Open tracker</Link>
@@ -210,7 +210,7 @@ export default async function DashboardPage() {
             </div>
 
             {applications.length === 0 ? (
-              <div className="m-4 rounded-[22px] border border-dashed border-slate-200 bg-slate-50/60 px-4 py-8 text-center text-sm text-slate-500">
+              <div className="m-4 rounded-[12px] border border-dashed border-slate-200 bg-slate-50 px-4 py-8 text-center text-sm text-slate-500">
                 Add applications once you start submitting so the exact resume version stays attached.
               </div>
             ) : (
@@ -243,21 +243,21 @@ export default async function DashboardPage() {
             )}
           </section>
 
-          <section className="rounded-[26px] border border-white/75 bg-white/92 shadow-[0_12px_34px_rgba(15,23,42,0.05)]">
-            <div className="flex items-center justify-between gap-3 border-b border-slate-200 px-4 py-3.5">
+          <section className="rounded-[16px] border border-[var(--border)] bg-white shadow-sm">
+            <div className="flex items-center justify-between gap-3 border-b border-[var(--border)] px-4 py-3.5">
               <div className="flex items-center gap-3">
-                <div className="flex h-8 w-8 items-center justify-center rounded-[12px] bg-slate-950 text-white">
+                <div className="flex h-9 w-9 items-center justify-center rounded-[10px] bg-[var(--accent-soft)] text-[var(--accent)]">
                   <CalendarClock className="h-4 w-4" />
                 </div>
                 <div>
                   <p className="section-label">Next up</p>
-                  <h2 className="mt-1 text-[1.05rem] font-semibold text-slate-950">Follow-ups</h2>
+                  <h2 className="mt-1 text-[1.05rem] font-semibold text-[var(--navy)]">Follow-ups</h2>
                 </div>
               </div>
             </div>
 
             {upcomingFollowUps.length === 0 ? (
-              <div className="m-4 rounded-[20px] bg-slate-50 px-4 py-4 text-sm text-slate-500">
+              <div className="m-4 rounded-[12px] bg-slate-50 px-4 py-4 text-sm text-slate-500">
                 No follow-up dates scheduled yet.
               </div>
             ) : (

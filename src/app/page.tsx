@@ -94,7 +94,7 @@ export default function HomePage() {
               <MotionButtonWrap className="w-full sm:w-auto">
                 <Button
                   asChild
-                  className="w-full bg-slate-950 bg-gradient-to-br from-slate-900 via-slate-950 to-slate-950 font-bold text-white shadow-[0_1px_2px_rgba(0,0,0,0.1),0_8px_16px_rgba(0,0,0,0.1),0_16px_32px_-8px_rgba(0,0,0,0.2)] ring-1 ring-white/20 sm:w-auto"
+                  className="w-full sm:w-auto"
                 >
                   <Link href="/sign-up">Start for free</Link>
                 </Button>
@@ -122,10 +122,10 @@ export default function HomePage() {
 
                   <motion.div className="space-y-6" variants={fadeUp(20)}>
                     <p className="section-label">Global resume operating system</p>
-                    <h1 className="serif-display max-w-[11.6ch] text-[3.4rem] leading-[0.91] tracking-[-0.05em] text-slate-950 sm:text-[4.6rem] lg:text-[5.5rem] xl:text-[6.2rem]">
+                    <h1 className="serif-display max-w-[11.6ch] text-[3.4rem] leading-[0.91] tracking-[-0.05em] text-[var(--navy)] sm:text-[4.6rem] lg:text-[5.5rem] xl:text-[6.2rem]">
                       BorderlessCV helps early-career talent apply across borders with confidence.
                     </h1>
-                    <p className="max-w-2xl text-[1.05rem] leading-[1.85] text-slate-500 sm:text-[1.1rem]">
+                    <p className="max-w-2xl text-[1.05rem] leading-[1.85] text-slate-600 sm:text-[1.1rem]">
                       Build one verified master profile, create country-aware resume versions, write grounded cover letters, and track applications without leaving the product.
                     </p>
                   </motion.div>
@@ -135,7 +135,7 @@ export default function HomePage() {
                       <Button
                         asChild
                         size="lg"
-                        className="group w-full bg-slate-950 bg-gradient-to-br from-slate-900 via-black to-slate-950 font-bold text-white shadow-[0_1px_2px_rgba(0,0,0,0.1),0_12px_24px_rgba(0,0,0,0.15),0_24px_48px_-12px_rgba(0,0,0,0.25)] ring-1 ring-white/20 sm:w-auto"
+                        className="group w-full sm:w-auto"
                       >
                         <Link href="/sign-up">
                           Build your first resume
@@ -144,7 +144,7 @@ export default function HomePage() {
                       </Button>
                     </MotionButtonWrap>
                     <MotionButtonWrap className="w-full sm:w-auto">
-                      <Button asChild size="lg" variant="secondary" className="w-full sm:w-auto">
+                      <Button asChild size="lg" variant="ghost" className="w-full sm:w-auto">
                         <Link href="#features">See how it works</Link>
                       </Button>
                     </MotionButtonWrap>
@@ -160,7 +160,7 @@ export default function HomePage() {
                         transition={{ duration: 0.28, delay: 0.15 + index * 0.06 }}
                         whileHover={{ y: -3, scale: 1.03 }}
                       >
-                        <Badge className="gap-1.5 border border-slate-200/90 bg-white/90 px-3.5 py-2 text-[0.78rem] font-medium text-slate-700 shadow-[0_2px_8px_rgba(15,23,42,0.05)] backdrop-blur-sm">
+                        <Badge className="gap-1.5 border border-[var(--accent)]/10 bg-[var(--accent-soft)] px-3.5 py-2 text-[0.78rem] font-medium text-[var(--accent-dark)] shadow-[0_2px_8px_rgba(0,201,167,0.05)] backdrop-blur-sm">
                           <span className="text-sm leading-none">{badge.flag}</span>
                           {badge.label}
                         </Badge>
@@ -173,10 +173,10 @@ export default function HomePage() {
                     {trustSignals.map((item) => (
                       <div
                         key={item}
-                        className="flex items-start gap-3 rounded-[26px] border border-white/75 bg-white/75 p-4 text-sm leading-[1.75] text-slate-600 shadow-[0_12px_32px_rgba(15,23,42,0.05)] backdrop-blur-xl"
+                        className="flex items-start gap-3 rounded-[16px] border border-white/75 bg-white/75 p-4 text-sm leading-[1.75] text-slate-700 shadow-[0_4px_12px_rgba(13,27,42,0.04)] backdrop-blur-xl"
                       >
-                        <div className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-slate-950 text-white">
-                          <Check className="h-3 w-3 stroke-[2.5]" />
+                        <div className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[var(--accent-soft)] text-[var(--accent)]">
+                          <Check className="h-3 w-3 stroke-[3]" />
                         </div>
                         {item}
                       </div>
@@ -195,15 +195,15 @@ export default function HomePage() {
                   <div className="relative flex items-start justify-between gap-4">
                     <div className="space-y-3">
                       <p className="section-label">Why it works</p>
-                      <h2 className="max-w-[14ch] text-[1.6rem] font-semibold leading-tight tracking-[-0.02em] text-slate-950">
+                      <h2 className="max-w-[14ch] text-[1.6rem] font-semibold leading-tight tracking-[-0.02em] text-[var(--navy)]">
                         The hiring workflow, not just templates
                       </h2>
-                      <p className="max-w-md text-sm leading-7 text-slate-500">
+                      <p className="max-w-md text-sm leading-7 text-slate-600">
                         Premium execution for candidates who need clarity, credibility, and version control — not more clutter.
                       </p>
                     </div>
-                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[20px] border border-white/60 bg-slate-950 text-white shadow-[0_14px_30px_rgba(15,23,42,0.20)]">
-                      <ShieldCheck className="h-5 w-5" />
+                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[16px] border border-[var(--accent)]/20 bg-[var(--accent-soft)] text-[var(--accent)] shadow-sm">
+                      <ShieldCheck className="h-6 w-6" />
                     </div>
                   </div>
 
@@ -220,16 +220,15 @@ export default function HomePage() {
                     {workflowSteps.map((step, index) => (
                       <motion.div key={step.title} variants={fadeUp(18)}>
                         <HoverCard hoverY={-4}>
-                          <div className="rounded-[26px] border border-slate-200/70 bg-white/85 p-4 shadow-[0_10px_28px_rgba(15,23,42,0.04)] backdrop-blur-sm transition-shadow duration-300 hover:shadow-[0_16px_40px_rgba(15,23,42,0.08)] sm:p-5">
+                          <div className="rounded-[16px] border border-slate-200/70 bg-white/85 p-4 shadow-[0_4px_12px_rgba(13,27,42,0.03)] backdrop-blur-sm transition-shadow duration-300 hover:shadow-[0_8px_24px_rgba(13,27,42,0.06)] sm:p-5">
                             <div className="flex items-start gap-4">
-                              <div className="relative flex h-10 w-10 shrink-0 items-center justify-center rounded-[16px] bg-slate-950 text-[0.8rem] font-bold text-white shadow-[0_10px_24px_rgba(15,23,42,0.18)]">
-                                <span className="absolute inset-[1.5px] rounded-[14px] border border-white/10" />
+                              <div className="relative flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[var(--accent)] text-[0.85rem] font-bold text-white shadow-sm">
                                 {index + 1}
                               </div>
                               <div className="min-w-0 pt-0.5">
                                 <p className="section-label">{step.eyebrow}</p>
-                                <h3 className="mt-1.5 text-[0.975rem] font-semibold leading-snug text-slate-950">{step.title}</h3>
-                                <p className="mt-1.5 text-[0.82rem] leading-[1.75] text-slate-500">{step.description}</p>
+                                <h3 className="mt-1.5 text-[0.975rem] font-semibold leading-snug text-[var(--navy)]">{step.title}</h3>
+                                <p className="mt-1.5 text-[0.82rem] leading-[1.75] text-slate-600">{step.description}</p>
                               </div>
                             </div>
                           </div>
@@ -251,12 +250,12 @@ export default function HomePage() {
               <Reveal className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
                 <div className="max-w-3xl space-y-4">
                   <p className="section-label">Core product</p>
-                  <h2 className="max-w-[13ch] text-[1.9rem] font-semibold leading-tight tracking-[-0.025em] text-slate-950 sm:text-[2.3rem] lg:text-[2.65rem]">
+                  <h2 className="max-w-[13ch] text-[1.9rem] font-semibold leading-tight tracking-[-0.025em] text-[var(--navy)] sm:text-[2.3rem] lg:text-[2.65rem]">
                     Built for getting hired, not just looking polished
                   </h2>
                 </div>
-                <div className="surface-card max-w-xl rounded-[30px] border border-white/75 p-5">
-                  <p className="text-sm leading-7 text-slate-600">
+                <div className="surface-card max-w-xl p-5">
+                  <p className="text-sm leading-7 text-slate-700">
                     One master profile, multiple country-aware resume versions, grounded AI assistance, and a lightweight application system that keeps every submission traceable.
                   </p>
                 </div>
@@ -275,17 +274,16 @@ export default function HomePage() {
                   return (
                     <motion.div key={feature.title} variants={fadeUp(18)}>
                       <HoverCard className="h-full">
-                        <div className="group h-full rounded-[34px] border border-slate-200/60 bg-white/94 p-6 shadow-[0_16px_44px_rgba(15,23,42,0.06)] backdrop-blur-xl transition-shadow duration-300 hover:shadow-[0_24px_60px_rgba(15,23,42,0.10)]">
-                          {/* Icon container with gradient top-light */}
-                          <div className="relative flex h-14 w-14 items-center justify-center overflow-hidden rounded-[20px] bg-slate-100 text-slate-700 transition-all duration-300 group-hover:bg-slate-950 group-hover:text-white group-hover:shadow-[0_10px_24px_rgba(15,23,42,0.22)]">
-                            <div className="absolute inset-x-0 top-0 h-1/2 bg-gradient-to-b from-white/40 to-transparent" />
+                        <div className="group h-full rounded-[16px] border border-slate-200/80 bg-white p-6 shadow-sm transition-shadow duration-300 hover:shadow-[0_8px_24px_rgba(13,27,42,0.06)]">
+                          {/* Icon container with hover state */}
+                          <div className="relative flex h-14 w-14 items-center justify-center overflow-hidden rounded-[12px] bg-slate-50 text-slate-600 transition-all duration-300 group-hover:bg-[var(--accent-soft)] group-hover:text-[var(--accent)] group-hover:shadow-[0_4px_12px_rgba(0,201,167,0.15)]">
                             <Icon className="relative h-5 w-5" />
                           </div>
                           <div className="mt-6 space-y-2.5">
-                            <h3 className="text-[1.05rem] font-semibold leading-snug tracking-[-0.01em] text-slate-950">
+                            <h3 className="text-[1.05rem] font-semibold leading-snug tracking-[-0.01em] text-[var(--navy)]">
                               {feature.title}
                             </h3>
-                            <p className="text-[0.83rem] leading-[1.8] text-slate-500">{feature.description}</p>
+                            <p className="text-[0.83rem] leading-[1.8] text-slate-600">{feature.description}</p>
                           </div>
                         </div>
                       </HoverCard>

@@ -55,7 +55,7 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
                 <Badge className="mt-5 w-fit border border-slate-200 bg-white/85 text-slate-600 shadow-sm">
                   Global-first career tooling
                 </Badge>
-                <h1 className="serif-display mt-5 text-[2rem] leading-tight tracking-[-0.025em] text-slate-950">
+                <h1 className="serif-display mt-5 text-[2rem] leading-tight tracking-[-0.025em] text-[var(--navy)]">
                   One trusted profile. Country-aware resumes. A stronger shot at getting hired.
                 </h1>
                 <p className="mt-4 text-sm leading-7 text-slate-500">
@@ -81,7 +81,7 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
               transition={{ duration: 11, ease: "easeInOut", repeat: Number.POSITIVE_INFINITY }}
             />
             <motion.div
-              className="absolute bottom-8 right-4 h-72 w-72 rounded-full bg-emerald-400/[0.04] blur-3xl"
+              className="absolute bottom-8 right-4 h-72 w-72 rounded-full bg-[var(--accent)]/[0.06] blur-3xl"
               animate={{ y: [0, 14, 0], x: [0, -12, 0] }}
               transition={{ duration: 13, ease: "easeInOut", repeat: Number.POSITIVE_INFINITY }}
             />
@@ -160,7 +160,7 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
                   className="mt-5 flex items-start gap-3.5 rounded-[24px] border border-white/10 bg-white/[0.055] p-5"
                   variants={fadeUp(16)}
                 >
-                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[14px] bg-white text-slate-950 shadow-[0_8px_20px_rgba(0,0,0,0.18)]">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[14px] bg-white text-[var(--navy)] shadow-[0_8px_20px_rgba(0,0,0,0.18)]">
                     <CheckCircle2 className="h-5 w-5" />
                   </div>
                   <div className="min-w-0">
