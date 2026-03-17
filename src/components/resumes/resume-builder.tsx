@@ -668,7 +668,7 @@ function CompactWorkspaceToggle({
             onClick={() => onChange("editor")}
             className={cn(
               "rounded-[14px] px-4 py-2 text-sm font-semibold transition-colors",
-              activePane === "editor" ? "bg-white text-slate-950 shadow-sm" : "text-slate-500",
+              activePane === "editor" ? "bg-white dark:bg-[var(--surface)] text-slate-950 dark:text-white shadow-sm dark:shadow-none" : "text-slate-500 dark:text-slate-400",
             )}
           >
             Edit
@@ -678,7 +678,7 @@ function CompactWorkspaceToggle({
             onClick={() => onChange("preview")}
             className={cn(
               "rounded-[14px] px-4 py-2 text-sm font-semibold transition-colors",
-              activePane === "preview" ? "bg-white text-slate-950 shadow-sm" : "text-slate-500",
+              activePane === "preview" ? "bg-white dark:bg-[var(--surface)] text-slate-950 dark:text-white shadow-sm dark:shadow-none" : "text-slate-500 dark:text-slate-400",
             )}
           >
             Preview
@@ -729,14 +729,14 @@ function BuilderHeaderCard({
   onApplyEmphasisMode: (mode: ResumeMeta["emphasisMode"]) => void;
 }) {
   return (
-    <Card className="rounded-[34px] border-white/80 bg-white/95 shadow-[0_18px_45px_rgba(15,23,42,0.06)]">
+    <Card className="rounded-[34px] border-white/80 dark:border-transparent bg-white/95 dark:bg-[var(--surface)] shadow-[0_18px_45px_rgba(15,23,42,0.06)] dark:shadow-[0_8px_32px_rgba(0,0,0,0.4)]">
       <CardContent className="space-y-4 p-4 sm:p-5 xl:p-6">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div className="space-y-3">
             <div>
               <p className="section-label">Resume workspace</p>
-              <h2 className="mt-2 text-[1.4rem] font-semibold tracking-[-0.03em] text-slate-950 sm:text-[1.65rem]">{resume.title}</h2>
-              <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-500">
+              <h2 className="mt-2 text-[1.4rem] font-semibold tracking-[-0.03em] text-slate-950 dark:text-white sm:text-[1.65rem]">{resume.title}</h2>
+              <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-500 dark:text-slate-400">
                 Tighten structure, control density, and keep this version on a strong one-page target before you export.
               </p>
             </div>
@@ -934,15 +934,15 @@ function FitSummaryPanel({
   fitDeltaLabel: string;
 }) {
   return (
-    <div className="rounded-[28px] border border-slate-200 bg-slate-50/85 p-4">
+    <div className="rounded-[28px] border border-slate-200 dark:border-[#334155] bg-slate-50/85 dark:bg-[#0F1117] p-4">
       <div className="flex items-start justify-between gap-3">
         <div>
           <p className="section-label">One-page fit</p>
           <div className="mt-2 flex items-end gap-2">
-            <span className="text-[1.9rem] font-semibold tracking-[-0.03em] text-slate-950">
+            <span className="text-[1.9rem] font-semibold tracking-[-0.03em] text-slate-950 dark:text-white">
               {fitSummary.adjustedLines}/{TARGET_RESUME_LINES}
             </span>
-            <span className="pb-1 text-sm text-slate-500">lines</span>
+            <span className="pb-1 text-sm text-slate-500 dark:text-slate-400">lines</span>
           </div>
         </div>
         <span className={cn("rounded-full border px-3 py-1.5 text-[0.68rem] font-semibold", fitTone.badgeClass)}>{fitTone.caption}</span>
@@ -979,12 +979,12 @@ function VersionsRail({
   onSelect: (versionId: string) => void;
 }) {
   return (
-    <Card className="rounded-[32px] border-white/80 bg-white/95 shadow-[0_16px_40px_rgba(15,23,42,0.05)]">
+    <Card className="rounded-[32px] border-white/80 dark:border-transparent bg-white/95 dark:bg-[var(--surface)] shadow-[0_16px_40px_rgba(15,23,42,0.05)] dark:shadow-none">
       <CardContent className="space-y-4 p-4">
         <div>
           <p className="section-label">Version history</p>
-          <h3 className="mt-2 text-lg font-semibold text-slate-950">Drafts</h3>
-          <p className="mt-1 text-sm leading-6 text-slate-500">Switch between tailored copies without losing your base story.</p>
+          <h3 className="mt-2 text-lg font-semibold text-slate-950 dark:text-white">Drafts</h3>
+          <p className="mt-1 text-sm leading-6 text-slate-500 dark:text-slate-400">Switch between tailored copies without losing your base story.</p>
         </div>
         <div className="max-h-[340px] space-y-2.5 overflow-y-auto pr-1">
           {versions.map((version) => (
@@ -995,8 +995,8 @@ function VersionsRail({
               className={cn(
                 "w-full rounded-[22px] border px-4 py-3 text-left transition-all duration-200",
                 version.id === activeVersionId
-                  ? "border-slate-950 bg-slate-950 text-white shadow-[0_10px_24px_rgba(15,23,42,0.18)]"
-                  : "border-slate-200 bg-white text-slate-700 hover:border-slate-300 hover:shadow-[0_4px_14px_rgba(15,23,42,0.06)]",
+                  ? "border-slate-950 dark:border-white/10 bg-slate-950 dark:bg-[#212530] text-white shadow-[0_10px_24px_rgba(15,23,42,0.18)] dark:shadow-none"
+                  : "border-slate-200 dark:border-[#334155]/50 bg-white dark:bg-transparent text-slate-700 dark:text-slate-300 hover:border-slate-300 dark:hover:border-[#334155] hover:shadow-[0_4px_14px_rgba(15,23,42,0.06)] dark:hover:shadow-none",
               )}
             >
               <div className="text-[0.88rem] font-semibold">{version.title}</div>
@@ -1069,12 +1069,12 @@ function VersionDetailsCard({
   onChange: (updater: (current: ResumeVersionState) => ResumeVersionState) => void;
 }) {
   return (
-    <Card className="rounded-[32px] border-white/80 bg-white/95 shadow-[0_16px_40px_rgba(15,23,42,0.05)]">
+    <Card className="rounded-[32px] border-white/80 dark:border-transparent bg-white/95 dark:bg-[var(--surface)] shadow-[0_16px_40px_rgba(15,23,42,0.05)] dark:shadow-none">
       <CardContent className="space-y-5 p-5">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div>
             <p className="section-label">Current version</p>
-            <h3 className="mt-2 text-[1.2rem] font-semibold text-slate-950">{activeVersion.title}</h3>
+            <h3 className="mt-2 text-[1.2rem] font-semibold text-slate-950 dark:text-white">{activeVersion.title}</h3>
           </div>
           <div className="flex items-center gap-2">
             <Badge variant="outline">{activeVersion.tone}</Badge>
@@ -1150,13 +1150,13 @@ function TailoringCard({
   onPrioritizeMatchedEvidence: () => void;
 }) {
   return (
-    <Card className="rounded-[32px] border-white/80 bg-white/95 shadow-[0_16px_40px_rgba(15,23,42,0.05)]">
+    <Card className="rounded-[32px] border-white/80 dark:border-transparent bg-white/95 dark:bg-[var(--surface)] shadow-[0_16px_40px_rgba(15,23,42,0.05)] dark:shadow-none">
       <CardContent className="space-y-4 p-5">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
             <p className="section-label">Tailoring</p>
-            <h3 className="mt-2 text-[1.1rem] font-semibold text-slate-950">Job fit analysis</h3>
-            <p className="mt-1 text-sm leading-6 text-slate-500">
+            <h3 className="mt-2 text-[1.1rem] font-semibold text-slate-950 dark:text-white">Job fit analysis</h3>
+            <p className="mt-1 text-sm leading-6 text-slate-500 dark:text-slate-400">
               Ground this version in the job description, then move real evidence higher in the page.
             </p>
           </div>
@@ -1184,14 +1184,14 @@ function TailoringCard({
 
         {activeVersion.aiGuidance ? (
           <div className="space-y-4">
-            <div className="rounded-[24px] border border-slate-200 bg-slate-50/80 p-4">
+            <div className="rounded-[24px] border border-slate-200 dark:border-[#334155]/50 bg-slate-50/80 dark:bg-[#0F1117] p-4">
               <p className="section-label">Tailored summary</p>
-              <p className="mt-2 text-sm leading-7 text-slate-700">{activeVersion.aiGuidance.tailoredSummary}</p>
-              <p className="mt-3 text-xs leading-6 text-amber-700">{activeVersion.aiGuidance.caution}</p>
+              <p className="mt-2 text-sm leading-7 text-slate-700 dark:text-slate-300">{activeVersion.aiGuidance.tailoredSummary}</p>
+              <p className="mt-3 text-xs leading-6 text-amber-700 dark:text-amber-500">{activeVersion.aiGuidance.caution}</p>
             </div>
 
             <div className="grid gap-3 md:grid-cols-2">
-              <div className="rounded-[24px] border border-slate-200 bg-white p-4">
+              <div className="rounded-[24px] border border-slate-200 dark:border-[#334155]/50 bg-white dark:bg-[#1A1D24] p-4">
                 <p className="section-label">Matched keywords</p>
                 <div className="mt-3 space-y-2">
                   {activeVersion.aiGuidance.matchedKeywords.length ? (
@@ -1207,7 +1207,7 @@ function TailoringCard({
                 </div>
               </div>
 
-              <div className="rounded-[24px] border border-slate-200 bg-white p-4">
+              <div className="rounded-[24px] border border-slate-200 dark:border-[#334155]/50 bg-white dark:bg-[#1A1D24] p-4">
                 <p className="section-label">Missing evidence</p>
                 <div className="mt-3 flex flex-wrap gap-2">
                   {activeVersion.aiGuidance.missingKeywords.length ? (
@@ -1224,9 +1224,9 @@ function TailoringCard({
             </div>
 
             <div className="grid gap-3 md:grid-cols-2">
-              <div className="rounded-[24px] border border-slate-200 bg-white p-4">
+              <div className="rounded-[24px] border border-slate-200 dark:border-[#334155]/50 bg-white dark:bg-[#1A1D24] p-4">
                 <p className="section-label">Improvement suggestions</p>
-                <ul className="mt-3 space-y-2 text-sm leading-6 text-slate-600">
+                <ul className="mt-3 space-y-2 text-sm leading-6 text-slate-600 dark:text-slate-400">
                   {activeVersion.aiGuidance.improvementSuggestions.map((suggestion) => (
                     <li key={suggestion} className="ml-5 list-disc pl-1">
                       {suggestion}
@@ -1235,7 +1235,7 @@ function TailoringCard({
                 </ul>
               </div>
 
-              <div className="rounded-[24px] border border-slate-200 bg-white p-4">
+              <div className="rounded-[24px] border border-slate-200 dark:border-[#334155]/50 bg-white dark:bg-[#1A1D24] p-4">
                 <p className="section-label">Evidence hotspots</p>
                 <div className="mt-3 space-y-2">
                   {matchedSectionEntries.length ? (
@@ -1256,7 +1256,7 @@ function TailoringCard({
             </div>
           </div>
         ) : (
-          <div className="rounded-[24px] border border-dashed border-slate-200 bg-slate-50/80 p-4 text-sm leading-7 text-slate-500">
+          <div className="rounded-[24px] border border-dashed border-slate-200 dark:border-[#334155] bg-slate-50/80 dark:bg-[#0F1117] p-4 text-sm leading-7 text-slate-500 dark:text-slate-400">
             Run analysis after adding a target job description to see which requirements your current resume already supports and where the page still needs stronger proof.
           </div>
         )}
@@ -1289,12 +1289,12 @@ function SectionMapCard({
   onToggleHidden: (section: SectionKey) => void;
 }) {
   return (
-    <Card className="rounded-[32px] border-white/80 bg-white/95 shadow-[0_16px_40px_rgba(15,23,42,0.05)]">
+    <Card className="rounded-[32px] border-white/80 dark:border-transparent bg-white/95 dark:bg-[var(--surface)] shadow-[0_16px_40px_rgba(15,23,42,0.05)] dark:shadow-none">
       <CardContent className="space-y-4 p-4">
         <div>
           <p className="section-label">Section map</p>
-          <h3 className="mt-2 text-base font-semibold text-slate-950">Order and visibility</h3>
-          <p className="mt-1 text-sm leading-6 text-slate-500">Keep high-signal evidence at the top and trim low-value sections first.</p>
+          <h3 className="mt-2 text-base font-semibold text-slate-950 dark:text-white">Order and visibility</h3>
+          <p className="mt-1 text-sm leading-6 text-slate-500 dark:text-slate-400">Keep high-signal evidence at the top and trim low-value sections first.</p>
         </div>
 
         <div className="flex flex-wrap gap-2">
@@ -1343,11 +1343,11 @@ function SectionEditorCard({
   onRewriteBullet: (section: keyof ProfileContent, entryIndex: number, bulletIndex: number, bullet: string, bulletKey: string) => void;
 }) {
   return (
-    <Card className="rounded-[32px] border-white/80 bg-white/95 shadow-[0_16px_40px_rgba(15,23,42,0.05)]">
+    <Card className="rounded-[32px] border-white/80 dark:border-transparent bg-white/95 dark:bg-[var(--surface)] shadow-[0_16px_40px_rgba(15,23,42,0.05)] dark:shadow-none">
       <CardContent className="flex h-full min-h-0 flex-col p-4 sm:p-5">
         <div className="mb-4">
           <p className="section-label">Section editor</p>
-          <h3 className="mt-2 text-base font-semibold text-slate-950">Tighten content, not just formatting</h3>
+          <h3 className="mt-2 text-base font-semibold text-slate-950 dark:text-white">Tighten content, not just formatting</h3>
         </div>
 
         <Tabs defaultValue="experience" className="flex min-h-0 flex-1 flex-col">
@@ -1543,21 +1543,21 @@ function PreviewCard({
 }) {
   return (
     <div className={cn("min-h-0 xl:sticky xl:top-0 xl:h-[calc(100vh-116px)]", className)}>
-      <Card className="rounded-[34px] border-white/80 bg-white/95 shadow-[0_22px_48px_rgba(15,23,42,0.08)] xl:h-full">
+      <Card className="rounded-[34px] border-white/80 dark:border-[#334155]/30 bg-white/95 dark:bg-[var(--surface)] shadow-[0_22px_48px_rgba(15,23,42,0.08)] dark:shadow-[0_8px_32px_rgba(0,0,0,0.4)] xl:h-full">
         <CardContent className="flex min-h-0 flex-col p-4 sm:p-5 xl:h-full">
           <ScrollArea className="min-h-0 flex-1 pr-2">
             <div className="space-y-4">
               <div className="flex items-start justify-between gap-4">
                 <div>
                   <p className="section-label">One-page preview</p>
-                  <h3 className="mt-2 text-lg font-semibold text-slate-950">Recruiter view</h3>
-                  <p className="mt-1 text-sm leading-6 text-slate-500">
+                  <h3 className="mt-2 text-lg font-semibold text-slate-950 dark:text-white">Recruiter view</h3>
+                  <p className="mt-1 text-sm leading-6 text-slate-500 dark:text-slate-400">
                     The live preview tightens spacing automatically to stay close to a single exportable page.
                   </p>
                 </div>
-                <div className="rounded-[20px] border border-slate-200 bg-slate-50 px-3 py-2 text-right">
-                  <div className="text-[0.68rem] font-semibold uppercase tracking-[0.18em] text-slate-500">{countryCode}</div>
-                  <div className="mt-1 text-sm font-semibold text-slate-900">1 page target</div>
+                <div className="rounded-[20px] border border-slate-200 dark:border-[#334155]/50 bg-slate-50 dark:bg-[#0F1117] px-3 py-2 text-right">
+                  <div className="text-[0.68rem] font-semibold uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400">{countryCode}</div>
+                  <div className="mt-1 text-sm font-semibold text-slate-900 dark:text-white">1 page target</div>
                 </div>
               </div>
 

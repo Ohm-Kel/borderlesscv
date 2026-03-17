@@ -37,6 +37,26 @@
   --space-24: 96px;
 }
 
+.dark {
+  --background: #0F1117;
+  --foreground: #F8F9FA;
+  
+  --surface: #1A1D24;
+  --surface-muted: #212530;
+  
+  --border: #334155;
+  --ring: #00C9A7;
+  
+  /* Accent stays same for contrast, dark variant slightly adjusted */
+  --accent: #00D3B0;
+  --accent-dark: #00C9A7;
+  --accent-soft: rgba(0, 201, 167, 0.15);
+  
+  --navy: #0F1117; /* In dark mode, navy is the background */
+  
+  --muted-foreground: #94A3B8;
+}
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -83,12 +103,21 @@ a {
   border: 1px solid var(--border);
   box-shadow: 0 1px 4px rgba(13, 27, 42, 0.06);
   border-radius: 16px;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease, border-color 0.2s ease;
+}
+
+.dark .surface-card {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
 }
 
 .surface-card:hover {
   transform: translateY(-2px);
   box-shadow: 0 8px 16px rgba(13, 27, 42, 0.08);
+}
+
+.dark .surface-card:hover {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+  border-color: rgba(255, 255, 255, 0.1);
 }
 
 /* ─── Landing mesh background ───────────────────────────── */
@@ -108,6 +137,12 @@ a {
     0 24px 60px rgba(13, 27, 42, 0.14),
     inset 0 1px 0 rgba(255, 255, 255, 0.10);
   transition: background 0.22s ease, border-color 0.22s ease, box-shadow 0.22s ease;
+}
+
+.dark .auth-panel-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
 }
 
 .auth-panel-card:hover {
@@ -160,7 +195,11 @@ a {
   background: var(--surface);
   padding: 1rem;
   box-shadow: 0 1px 2px rgba(13, 27, 42, 0.04);
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+
+.dark .field-card {
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 .field-card:focus-within {
@@ -168,6 +207,12 @@ a {
   box-shadow:
     0 4px 12px rgba(0, 201, 167, 0.08),
     0 0 0 2px rgba(0, 201, 167, 0.2);
+}
+
+.dark .field-card:focus-within {
+  box-shadow:
+    0 4px 12px rgba(0, 201, 167, 0.15),
+    0 0 0 2px rgba(0, 201, 167, 0.3);
 }
 
 /* ─── Skeleton Pulse ────────────────────────────────────── */

@@ -154,9 +154,9 @@ export function ApplicationBoard({
 
   return (
     <div className="flex h-full min-h-0 flex-col gap-3">
-      <section className="surface-card flex h-[56px] items-center justify-between gap-4 rounded-[24px] border border-white/75 px-4 shadow-[0_10px_26px_rgba(15,23,42,0.05)]">
+      <section className="surface-card flex h-[56px] items-center justify-between gap-4 rounded-[24px] border border-white/75 dark:border-transparent px-4 shadow-[0_10px_26px_rgba(15,23,42,0.05)] dark:shadow-none bg-white/92 dark:bg-[var(--surface)]">
         <div className="min-w-0">
-          <p className="truncate text-sm font-medium text-slate-700">
+          <p className="truncate text-sm font-medium text-slate-700 dark:text-slate-300">
             Application tracker. {applications.length} role{applications.length === 1 ? "" : "s"} tracked with version-aware follow-up history.
           </p>
         </div>
@@ -168,15 +168,15 @@ export function ApplicationBoard({
 
       <div className="grid gap-2 lg:grid-cols-6">
         {counts.map((item) => (
-          <div key={item.status} className="rounded-[18px] border border-white/75 bg-white/92 px-3 py-2.5 shadow-[0_8px_22px_rgba(15,23,42,0.04)]">
+          <div key={item.status} className="rounded-[18px] border border-white/75 dark:border-transparent bg-white/92 dark:bg-[var(--surface)] px-3 py-2.5 shadow-[0_8px_22px_rgba(15,23,42,0.04)] dark:shadow-none">
             <p className="text-[0.62rem] font-semibold uppercase tracking-[0.18em] text-slate-400">{item.status}</p>
-            <p className="mt-1 text-lg font-semibold text-slate-950">{item.count}</p>
+            <p className="mt-1 text-lg font-semibold text-slate-950 dark:text-white">{item.count}</p>
           </div>
         ))}
       </div>
 
       {showComposer ? (
-        <Card className="rounded-[26px] bg-white">
+        <Card className="rounded-[26px] bg-white dark:bg-[var(--surface)] border-white/75 dark:border-transparent">
           <CardContent className="space-y-4 p-4">
             <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
               <Field label="Company">
@@ -284,22 +284,22 @@ export function ApplicationBoard({
       ) : null}
 
       <div className="grid min-h-0 flex-1 gap-3 xl:grid-cols-[1.18fr_0.82fr]">
-        <section className="min-h-0 rounded-[26px] border border-white/75 bg-white/92 shadow-[0_12px_34px_rgba(15,23,42,0.05)]">
-          <div className="flex items-center justify-between gap-3 border-b border-slate-200 px-4 py-3.5">
+        <section className="min-h-0 rounded-[26px] border border-white/75 dark:border-transparent bg-white/92 dark:bg-[var(--surface)] shadow-[0_12px_34px_rgba(15,23,42,0.05)] dark:shadow-none flex flex-col">
+          <div className="flex items-center justify-between gap-3 border-b border-slate-200 dark:border-[#334155]/50 px-4 py-3.5">
             <div>
               <p className="section-label">Pipeline</p>
-              <h2 className="mt-1 text-[1.05rem] font-semibold text-slate-950">Tracked applications</h2>
+              <h2 className="mt-1 text-[1.05rem] font-semibold text-slate-950 dark:text-white">Tracked applications</h2>
             </div>
             <Badge variant="outline">{applications.length} total</Badge>
           </div>
 
           {applications.length === 0 ? (
-            <div className="m-4 rounded-[22px] border border-dashed border-slate-200 bg-slate-50/60 px-4 py-8 text-center text-sm text-slate-500">
+            <div className="m-4 rounded-[22px] border border-dashed border-slate-200 dark:border-[#334155] bg-slate-50/60 dark:bg-[#0F1117]/50 px-4 py-8 text-center text-sm text-slate-500 dark:text-slate-400">
               Add your first application to connect the role, resume version, and next step in one place.
             </div>
           ) : (
             <div className="flex h-[calc(100%-78px)] min-h-0 flex-col">
-              <div className="hidden grid-cols-[minmax(0,1.35fr)_1fr_0.8fr_0.85fr_0.3fr] gap-4 border-b border-slate-200 px-4 py-3 text-[0.7rem] font-semibold uppercase tracking-[0.18em] text-slate-500 lg:grid">
+              <div className="hidden grid-cols-[minmax(0,1.35fr)_1fr_0.8fr_0.85fr_0.3fr] gap-4 border-b border-slate-200 dark:border-[#334155]/50 px-4 py-3 text-[0.7rem] font-semibold uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400 lg:grid">
                 <span>Role</span>
                 <span>Resume version</span>
                 <span>Status</span>
@@ -307,20 +307,20 @@ export function ApplicationBoard({
                 <span />
               </div>
               <ScrollArea className="min-h-0 flex-1">
-                <div className="divide-y divide-slate-200">
+                <div className="divide-y divide-slate-200 dark:divide-[#334155]/30">
                   {applications.map((application) => (
                     <div key={application.id} className="px-4 py-3">
                       <div className="flex flex-col gap-3 lg:grid lg:grid-cols-[minmax(0,1.35fr)_1fr_0.8fr_0.85fr_0.3fr] lg:items-center lg:gap-4">
                         <div className="min-w-0">
-                          <p className="truncate text-sm font-semibold text-slate-950">{application.role}</p>
+                          <p className="truncate text-sm font-semibold text-slate-950 dark:text-white">{application.role}</p>
                           <p className="truncate text-xs text-slate-400">
                             {application.company} • {application.location || application.country || "No location"}
                           </p>
-                          {application.notes ? <p className="mt-1 line-clamp-2 text-xs text-slate-500">{application.notes}</p> : null}
+                          {application.notes ? <p className="mt-1 line-clamp-2 text-xs text-slate-500 dark:text-slate-400">{application.notes}</p> : null}
                         </div>
 
                         <div>
-                          <p className="truncate text-sm text-slate-700">{application.resumeVersionLabel || "No version attached"}</p>
+                          <p className="truncate text-sm text-slate-700 dark:text-slate-300">{application.resumeVersionLabel || "No version attached"}</p>
                           {application.source ? <p className="truncate text-xs text-slate-400">{application.source}</p> : null}
                         </div>
 
@@ -362,32 +362,32 @@ export function ApplicationBoard({
         </section>
 
         <div className="grid min-h-0 gap-3 xl:grid-rows-[auto_minmax(0,1fr)]">
-          <section className="rounded-[26px] border border-white/75 bg-white/92 shadow-[0_12px_34px_rgba(15,23,42,0.05)]">
-            <div className="flex items-center gap-3 border-b border-slate-200 px-4 py-3.5">
-              <div className="flex h-8 w-8 items-center justify-center rounded-[12px] bg-slate-950 text-white">
+          <section className="rounded-[26px] border border-white/75 dark:border-transparent bg-white/92 dark:bg-[var(--surface)] shadow-[0_12px_34px_rgba(15,23,42,0.05)] dark:shadow-none">
+            <div className="flex items-center gap-3 border-b border-slate-200 dark:border-[#334155]/50 px-4 py-3.5">
+              <div className="flex h-8 w-8 items-center justify-center rounded-[12px] bg-slate-950 dark:bg-white text-white dark:text-slate-950">
                 <CalendarClock className="h-4 w-4" />
               </div>
               <div>
                 <p className="section-label">Upcoming</p>
-                <h2 className="mt-1 text-[1.05rem] font-semibold text-slate-950">Follow-ups</h2>
+                <h2 className="mt-1 text-[1.05rem] font-semibold text-slate-950 dark:text-white">Follow-ups</h2>
               </div>
             </div>
 
             {upcomingFollowUps.length === 0 ? (
-              <div className="m-4 rounded-[20px] bg-slate-50 px-4 py-4 text-sm text-slate-500">
+              <div className="m-4 rounded-[20px] bg-slate-50 dark:bg-[#0F1117]/50 px-4 py-4 text-sm text-slate-500 dark:text-slate-400">
                 No follow-up dates scheduled yet.
               </div>
             ) : (
-              <div className="divide-y divide-slate-200">
+              <div className="divide-y divide-slate-200 dark:divide-[#334155]/30">
                 {upcomingFollowUps.map((application) => (
                   <div key={application.id} className="grid gap-3 px-4 py-3 md:grid-cols-[minmax(0,1.2fr)_0.8fr_0.8fr] md:items-center">
                     <div className="min-w-0">
-                      <p className="truncate text-sm font-semibold text-slate-950">{application.role}</p>
+                      <p className="truncate text-sm font-semibold text-slate-950 dark:text-white">{application.role}</p>
                       <p className="truncate text-xs text-slate-400">{application.company}</p>
                     </div>
-                    <p className="text-sm text-slate-600">{formatDate(application.nextStepAt, "EEE, MMM d")}</p>
+                    <p className="text-sm text-slate-600 dark:text-slate-400">{formatDate(application.nextStepAt, "EEE, MMM d")}</p>
                     <div className="md:text-right">
-                      <span className="inline-flex rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1 text-[0.66rem] font-semibold text-slate-500">
+                      <span className="inline-flex rounded-full border border-slate-200 dark:border-[#334155] bg-slate-50 dark:bg-[#0F1117] px-2.5 py-1 text-[0.66rem] font-semibold text-slate-500 dark:text-slate-400">
                         {application.status}
                       </span>
                     </div>
@@ -397,19 +397,19 @@ export function ApplicationBoard({
             )}
           </section>
 
-          <section className="min-h-0 rounded-[26px] border border-white/75 bg-white/92 shadow-[0_12px_34px_rgba(15,23,42,0.05)]">
-            <div className="flex items-center justify-between gap-3 border-b border-slate-200 px-4 py-3.5">
+          <section className="min-h-0 rounded-[26px] border border-white/75 dark:border-transparent bg-white/92 dark:bg-[var(--surface)] shadow-[0_12px_34px_rgba(15,23,42,0.05)] dark:shadow-none">
+            <div className="flex items-center justify-between gap-3 border-b border-slate-200 dark:border-[#334155]/50 px-4 py-3.5">
               <div>
                 <p className="section-label">Stage mix</p>
-                <h2 className="mt-1 text-[1.05rem] font-semibold text-slate-950">Pipeline counts</h2>
+                <h2 className="mt-1 text-[1.05rem] font-semibold text-slate-950 dark:text-white">Pipeline counts</h2>
               </div>
             </div>
             <ScrollArea className="h-[calc(100%-78px)]">
               <div className="grid gap-2 p-4 sm:grid-cols-2">
                 {counts.map((item) => (
-                  <div key={item.status} className="rounded-[18px] border border-slate-200 bg-slate-50/70 px-3 py-3">
+                  <div key={item.status} className="rounded-[18px] border border-slate-200 dark:border-[#334155]/50 bg-slate-50/70 dark:bg-[#0F1117] px-3 py-3">
                     <p className="text-[0.62rem] font-semibold uppercase tracking-[0.18em] text-slate-400">{item.status}</p>
-                    <p className="mt-1 text-lg font-semibold text-slate-950">{item.count}</p>
+                    <p className="mt-1 text-lg font-semibold text-slate-950 dark:text-white">{item.count}</p>
                   </div>
                 ))}
               </div>

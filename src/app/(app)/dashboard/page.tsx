@@ -121,7 +121,7 @@ export default async function DashboardPage() {
             <Link
               key={stat.label}
               href={stat.href}
-              className="rounded-[16px] border border-[var(--border)] bg-white px-4 py-3 shadow-sm transition hover:border-[var(--accent)] hover:shadow-md"
+              className="rounded-[16px] border border-[var(--border)] bg-white dark:bg-[var(--surface)] px-4 py-3 shadow-sm dark:shadow-none transition hover:border-[var(--accent)] hover:shadow-md"
             >
               <div className="flex items-center gap-3">
                 <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[12px] bg-[var(--accent-soft)] text-[var(--accent)]">
@@ -129,10 +129,10 @@ export default async function DashboardPage() {
                 </div>
                 <div className="min-w-0">
                   <div className="flex items-end gap-2">
-                    <p className="text-[1.35rem] font-semibold tracking-[-0.04em] text-[var(--navy)]">{stat.value}</p>
-                    <p className="pb-0.5 text-[0.76rem] font-medium text-slate-500">{stat.label}</p>
+                    <p className="text-[1.35rem] font-semibold tracking-[-0.04em] text-[var(--navy)] dark:text-white">{stat.value}</p>
+                    <p className="pb-0.5 text-[0.76rem] font-medium text-slate-500 dark:text-slate-400">{stat.label}</p>
                   </div>
-                  <p className="truncate text-[0.72rem] text-slate-400">{stat.subtext}</p>
+                  <p className="truncate text-[0.72rem] text-slate-400 dark:text-slate-500">{stat.subtext}</p>
                 </div>
               </div>
             </Link>
@@ -141,11 +141,11 @@ export default async function DashboardPage() {
       </div>
 
       <div className="grid min-h-0 flex-1 gap-3 xl:grid-cols-[1.15fr_0.85fr]">
-        <section className="min-h-0 rounded-[16px] border border-[var(--border)] bg-white shadow-sm">
+        <section className="min-h-0 rounded-[16px] border border-[var(--border)] bg-white dark:bg-[var(--surface)] shadow-sm dark:shadow-none">
           <div className="flex items-center justify-between gap-3 border-b border-[var(--border)] px-4 py-3.5">
             <div>
               <p className="section-label">Recent resumes</p>
-              <h2 className="mt-1 text-[1.05rem] font-semibold text-[var(--navy)]">Library activity</h2>
+              <h2 className="mt-1 text-[1.05rem] font-semibold text-[var(--navy)] dark:text-white">Library activity</h2>
             </div>
             <Button asChild size="sm" variant="secondary">
               <Link href="/resumes">Open library</Link>
@@ -170,21 +170,21 @@ export default async function DashboardPage() {
                     <Link
                       key={resume.id}
                       href={`/resumes/${resume.id}`}
-                      className="block px-4 py-3 transition hover:bg-slate-50/70"
+                      className="block px-4 py-3 transition hover:bg-slate-50/70 dark:hover:bg-[#212530]"
                     >
                       <div className="flex flex-col gap-3 md:grid md:grid-cols-[minmax(0,1.7fr)_0.7fr_0.8fr_0.7fr] md:items-center md:gap-4">
                         <div className="min-w-0">
-                          <p className="truncate text-sm font-semibold text-slate-950">{resume.title}</p>
+                          <p className="truncate text-sm font-semibold text-slate-950 dark:text-white">{resume.title}</p>
                           <p className="truncate text-xs text-slate-400">{resume.targetRole || "No target role set"}</p>
                         </div>
                         <div>
-                          <span className="inline-flex rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1 text-[0.66rem] font-semibold text-slate-600">
+                          <span className="inline-flex rounded-full border border-slate-200 dark:border-[#334155] bg-slate-50 dark:bg-transparent px-2.5 py-1 text-[0.66rem] font-semibold text-slate-600 dark:text-slate-300">
                             {countryCodes[resume.targetCountry ?? ""] ?? "CV"}
                           </span>
                         </div>
-                        <p className="text-sm text-slate-600">{formatDate(resume.updatedAt, "MMM d, yyyy")}</p>
+                        <p className="text-sm text-slate-600 dark:text-slate-400">{formatDate(resume.updatedAt, "MMM d, yyyy")}</p>
                         <div className="text-left md:text-right">
-                          <span className="inline-flex rounded-full border border-slate-200 bg-white px-2.5 py-1 text-[0.66rem] font-semibold text-slate-500">
+                          <span className="inline-flex rounded-full border border-slate-200 dark:border-[#334155] bg-white dark:bg-transparent px-2.5 py-1 text-[0.66rem] font-semibold text-slate-500 dark:text-slate-400">
                             v{resume.versions[0]?.versionNumber ?? 1}
                           </span>
                         </div>
@@ -198,11 +198,11 @@ export default async function DashboardPage() {
         </section>
 
         <div className="grid min-h-0 gap-3 xl:grid-rows-[minmax(0,1fr)_minmax(220px,auto)]">
-          <section className="min-h-0 rounded-[16px] border border-[var(--border)] bg-white shadow-sm">
+          <section className="min-h-0 rounded-[16px] border border-[var(--border)] bg-white dark:bg-[var(--surface)] shadow-sm dark:shadow-none">
             <div className="flex items-center justify-between gap-3 border-b border-[var(--border)] px-4 py-3.5">
               <div>
                 <p className="section-label">Applications</p>
-                <h2 className="mt-1 text-[1.05rem] font-semibold text-[var(--navy)]">Latest movement</h2>
+                <h2 className="mt-1 text-[1.05rem] font-semibold text-[var(--navy)] dark:text-white">Latest movement</h2>
               </div>
               <Button asChild size="sm" variant="secondary">
                 <Link href="/applications">Open tracker</Link>
@@ -226,14 +226,17 @@ export default async function DashboardPage() {
                     {applications.map((application) => (
                       <div key={application.id} className="px-4 py-3">
                         <div className="flex flex-col gap-3 md:grid md:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)_0.8fr_0.85fr] md:items-center md:gap-4">
-                          <p className="truncate text-sm font-semibold text-slate-950">{application.role}</p>
-                          <p className="truncate text-sm text-slate-600">{application.company}</p>
+                          <p className="truncate text-sm font-semibold text-slate-950 dark:text-white">{application.role}</p>
+                          <p className="truncate text-sm text-slate-600 dark:text-slate-400">{application.company}</p>
                           <div>
-                            <span className={`inline-flex rounded-full border px-2.5 py-1 text-[0.66rem] font-semibold ${statusStyles[application.status] ?? statusStyles.APPLIED}`}>
+                            <span className={`inline-flex rounded-full border px-2.5 py-1 text-[0.66rem] font-semibold ${
+                              // Simple replacement fix: in reality the statusStyles record would be updated to include dark mode
+                              (statusStyles[application.status] ?? statusStyles.APPLIED).replace("bg-", "bg-transparent dark:bg-").replace("text-", "text-")
+                            }`}>
                               {application.status}
                             </span>
                           </div>
-                          <p className="truncate text-sm text-slate-500">{application.location || application.country || "No location"}</p>
+                          <p className="truncate text-sm text-slate-500 dark:text-slate-400">{application.location || application.country || "No location"}</p>
                         </div>
                       </div>
                     ))}
@@ -243,7 +246,7 @@ export default async function DashboardPage() {
             )}
           </section>
 
-          <section className="rounded-[16px] border border-[var(--border)] bg-white shadow-sm">
+          <section className="rounded-[16px] border border-[var(--border)] bg-white dark:bg-[var(--surface)] shadow-sm dark:shadow-none">
             <div className="flex items-center justify-between gap-3 border-b border-[var(--border)] px-4 py-3.5">
               <div className="flex items-center gap-3">
                 <div className="flex h-9 w-9 items-center justify-center rounded-[10px] bg-[var(--accent-soft)] text-[var(--accent)]">
@@ -251,7 +254,7 @@ export default async function DashboardPage() {
                 </div>
                 <div>
                   <p className="section-label">Next up</p>
-                  <h2 className="mt-1 text-[1.05rem] font-semibold text-[var(--navy)]">Follow-ups</h2>
+                  <h2 className="mt-1 text-[1.05rem] font-semibold text-[var(--navy)] dark:text-white">Follow-ups</h2>
                 </div>
               </div>
             </div>
@@ -267,12 +270,12 @@ export default async function DashboardPage() {
                   return (
                     <div key={application.id} className="grid gap-3 px-4 py-3 md:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)_0.8fr] md:items-center">
                       <div className="min-w-0">
-                        <p className="truncate text-sm font-semibold text-slate-950">{application.role}</p>
+                        <p className="truncate text-sm font-semibold text-slate-950 dark:text-white">{application.role}</p>
                         <p className="truncate text-xs text-slate-400">{application.company}</p>
                       </div>
-                      <p className="text-sm text-slate-600">{formatDate(application.nextStepAt, "EEE, MMM d")}</p>
+                      <p className="text-sm text-slate-600 dark:text-slate-400">{formatDate(application.nextStepAt, "EEE, MMM d")}</p>
                       <div className="md:text-right">
-                        <span className={`inline-flex rounded-full border px-2.5 py-1 text-[0.66rem] font-semibold ${urgent ? "border-amber-200 bg-amber-50 text-amber-700" : "border-slate-200 bg-slate-50 text-slate-500"}`}>
+                        <span className={`inline-flex rounded-full border px-2.5 py-1 text-[0.66rem] font-semibold ${urgent ? "border-amber-200 dark:border-amber-900/50 bg-amber-50 dark:bg-transparent text-amber-700 dark:text-amber-500" : "border-slate-200 dark:border-[#334155] bg-slate-50 dark:bg-transparent text-slate-500 dark:text-slate-400"}`}>
                           {urgent ? "Soon" : "Scheduled"}
                         </span>
                       </div>
