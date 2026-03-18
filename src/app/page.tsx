@@ -94,7 +94,7 @@ export default function HomePage() {
               <MotionButtonWrap className="w-full sm:w-auto">
                 <Button
                   asChild
-                  className="w-full sm:w-auto"
+                  className="w-full bg-[var(--navy)] font-bold text-white shadow-md hover:bg-slate-800 ring-1 ring-white/20 sm:w-auto"
                 >
                   <Link href="/sign-up">Start for free</Link>
                 </Button>
@@ -135,7 +135,7 @@ export default function HomePage() {
                       <Button
                         asChild
                         size="lg"
-                        className="group w-full sm:w-auto"
+                        className="group w-full bg-[var(--navy)] font-bold text-white shadow-lg hover:bg-slate-800 ring-1 ring-white/20 sm:w-auto"
                       >
                         <Link href="/sign-up">
                           Build your first resume
