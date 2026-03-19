@@ -31,6 +31,7 @@ export function buildResumeDocumentFromProfile(
     summary: professionalSummary,
     sectionOrder: getDefaultSectionOrder(country, experienceLevel),
     hiddenSections: [],
+    sectionLabelOverrides: {},
     sections: content,
   };
 }
