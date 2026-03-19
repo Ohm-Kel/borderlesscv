@@ -20,7 +20,7 @@ type ResumeCard = {
   title: string;
   targetRole: string | null;
   targetCountry: string | null;
-  templateKey: "ATLAS" | "HORIZON" | "EMBER";
+  templateKey: "ATLAS" | "HORIZON" | "EMBER" | "CLASSIC";
   updatedAt: string;
   versionCount: number;
 };
