@@ -24,6 +24,7 @@ export function parseResumeDocument(version: Pick<ResumeVersion, "content"> | nu
     summary: "",
     sectionOrder: [],
     hiddenSections: [],
+    sectionLabelOverrides: {},
     sections: createEmptyProfileContent(),
   };
 }
