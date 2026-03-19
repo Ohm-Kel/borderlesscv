@@ -36,7 +36,7 @@ type ResumeMeta = {
   title: string;
   targetRole: string | null;
   targetCountry: "GHANA" | "UK" | "USA" | "CANADA" | "EUROPE" | "REMOTE";
-  templateKey: "ATLAS" | "HORIZON" | "EMBER";
+  templateKey: "ATLAS" | "HORIZON" | "EMBER" | "CLASSIC";
   emphasisMode: "AUTO" | "EDUCATION_FIRST" | "SKILLS_FIRST" | "EXPERIENCE_FIRST";
   visibility: "PRIVATE" | "PUBLIC";
 };
