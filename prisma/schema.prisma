@@ -27,6 +27,7 @@ enum ResumeTemplateKey {
   ATLAS
   HORIZON
   EMBER
+  CLASSIC
 }
 
 enum ResumeVisibility {

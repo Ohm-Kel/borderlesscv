@@ -10,6 +10,7 @@ export const resumeDocumentSchema = z.object({
   summary: z.string().trim().max(1200).default(""),
   sectionOrder: z.array(z.enum(SECTION_KEYS)).default([...SECTION_KEYS]),
   hiddenSections: z.array(z.enum(SECTION_KEYS)).default([]),
+  sectionLabelOverrides: z.record(z.string(), z.string().trim().max(80)).default({}),
   sections: profileContentSchema,
 });
 
@@ -17,7 +18,7 @@ export const createResumeSchema = z.object({
   title: z.string().trim().min(2, "Resume title is required.").max(120),
   targetRole: z.string().trim().max(120).optional().default(""),
   targetCountry: countryEnum,
-  templateKey: z.enum(["ATLAS", "HORIZON", "EMBER"]),
+  templateKey: z.enum(["ATLAS", "HORIZON", "EMBER", "CLASSIC"]),
   emphasisMode: z.enum(["AUTO", "EDUCATION_FIRST", "SKILLS_FIRST", "EXPERIENCE_FIRST"]),
 });
 

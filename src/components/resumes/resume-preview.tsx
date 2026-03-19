@@ -26,7 +26,7 @@ type PersonalDetails = {
   phone: string;
 };
 
-type LayoutVariant = "atlas" | "horizon" | "ember";
+type LayoutVariant = "atlas" | "horizon" | "ember" | "classic";
 type PreviewMode = "full" | "builder";
 
 function getPreviewTuning(previewMode: PreviewMode, density: ResumeDensityMode) {
@@ -115,6 +115,78 @@ export function ResumePreview({
   const sectionGroups = getTemplateSectionGroups(templateKey, visibleSections);
   const contactLine = formatMetaPieces([personalDetails.location, personalDetails.phone]);
   const tuning = getPreviewTuning(previewMode, density);
+
+  if (templateKey === "CLASSIC") {
+    const visibleSections = getVisibleSections(document);
+    const email = "";
+    const isBuilder = previewMode === "builder";
+    const contactParts = [
+      personalDetails.phone,
+      personalDetails.location,
+    ].filter(Boolean);
+
+    return (
+      <div
+        className={cn(
+          "h-full overflow-hidden border border-gray-400 bg-white font-serif text-black",
+          tuning.shell,
+          isBuilder ? "p-5" : "p-8 lg:p-10",
+        )}
+      >
+        {/* ── Name ── */}
+        <div className="text-center">
+          <h1
+            className={cn(
+              "font-bold leading-tight tracking-normal",
+              isBuilder ? "text-[1.15rem]" : "text-[1.6rem]",
+            )}
+          >
+            {personalDetails.name || "Your Name"}
+          </h1>
+          <p
+            className={cn(
+              "mt-1 leading-tight text-black",
+              isBuilder ? "text-[0.65rem]" : "text-sm",
+            )}
+          >
+            {contactParts.join(" | ") || "City, Country | Phone"}
+          </p>
+        </div>
+
+        {/* ── Professional Summary ── */}
+        {document.summary ? (
+          <div className={isBuilder ? "mt-2.5" : "mt-4"}>
+            <div className={cn("border-b border-black", isBuilder ? "mb-1" : "mb-1.5")}>
+              <p
+                className={cn(
+                  "font-bold uppercase leading-none",
+                  isBuilder ? "text-[0.62rem] pb-0.5" : "text-[0.82rem] pb-1",
+                )}
+              >
+                Professional Summary
+              </p>
+            </div>
+            <p className={cn("leading-snug text-black", isBuilder ? "text-[0.65rem]" : "text-[0.82rem]")}>
+              {document.summary}
+            </p>
+          </div>
+        ) : null}
+
+        {/* ── Sections ── */}
+        <div className={cn(isBuilder ? "mt-2.5 space-y-2" : "mt-4 space-y-3")}>
+          {visibleSections.map((section) => (
+            <ClassicPreviewSection
+              key={section}
+              section={section}
+              content={document.sections}
+              labelOverrides={document.sectionLabelOverrides}
+              isBuilder={isBuilder}
+            />
+          ))}
+        </div>
+      </div>
+    );
+  }
 
   if (templateKey === "HORIZON") {
     return (
@@ -538,4 +610,137 @@ function AwardList({
 
 function isBuilderPreviewClass(previewMode: PreviewMode) {
   return previewMode === "builder";
+}
+
+// ─────────────────────────────────────────────────────────────
+// CLASSIC template components
+// ─────────────────────────────────────────────────────────────
+
+function ClassicPreviewSection({
+  section,
+  content,
+  labelOverrides,
+  isBuilder,
+}: {
+  section: keyof ProfileContent;
+  content: ProfileContent;
+  labelOverrides: Record<string, string>;
+  isBuilder: boolean;
+}) {
+  const heading = getSectionHeading(section as Parameters<typeof getSectionHeading>[0], labelOverrides);
+  const titleSize = isBuilder ? "text-[0.62rem]" : "text-[0.78rem]";
+  const bodySize = isBuilder ? "text-[0.63rem]" : "text-[0.78rem]";
+  const metaSize = isBuilder ? "text-[0.6rem]" : "text-[0.73rem]";
+
+  return (
+    <section>
+      {/* Section heading: BOLD ALL-CAPS with underline rule */}
+      <div className={cn("border-b border-black", isBuilder ? "mb-1 pb-0.5" : "mb-1.5 pb-1")}>
+        <h2 className={cn("font-bold uppercase tracking-wide", titleSize)}>{heading}</h2>
+      </div>
+
+      {/* Skills: "Computer/Technical: skill1, skill2" */}
+      {section === "skills" && content.skills.length > 0 && (
+        <p className={cn("leading-snug text-black", bodySize)}>
+          <strong>Computer/Technical:</strong> {content.skills.join(", ")}
+        </p>
+      )}
+
+      {/* Languages: "Languages: English [Native]" */}
+      {section === "languages" && content.languages.length > 0 && (
+        <p className={cn("leading-snug text-black", bodySize)}>
+          <strong>Languages:</strong>{" "}
+          {content.languages.map((l) => `${l.name}${l.proficiency ? ` [${l.proficiency}]` : ""}`).join(", ")}
+        </p>
+      )}
+
+      {/* Certifications: grouped as prose */}
+      {section === "certifications" && content.certifications.length > 0 && (
+        <p className={cn("leading-snug text-black", bodySize)}>
+          <strong>Certifications:</strong>{" "}
+          {content.certifications
+            .map((c) => `${c.issuer ? `${c.issuer} — ` : ""}${c.title}${c.date ? ` [${c.date}]` : ""}`)
+            .join("; ")}
+        </p>
+      )}
+
+      {/* Awards */}
+      {section === "awards" && content.awards.length > 0 && (
+        <div className={cn("space-y-1", isBuilder ? "mt-0.5" : "mt-1")}>
+          {content.awards.map((award) => (
+            <div key={award.id} className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-x-2">
+              <div>
+                <p className={cn("font-bold leading-snug", bodySize)}>{award.title}</p>
+                {award.issuer ? <p className={cn("leading-snug italic", metaSize)}>{award.issuer}</p> : null}
+                {award.description ? <p className={cn("leading-snug", metaSize)}>{award.description}</p> : null}
+              </div>
+              {award.date ? <p className={cn("whitespace-nowrap text-right leading-snug", metaSize)}>{award.date}</p> : null}
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Links */}
+      {section === "links" && content.links.length > 0 && (
+        <p className={cn("leading-snug text-black", bodySize)}>
+          {content.links.map((l) => l.label || l.url).join(" | ")}
+        </p>
+      )}
+
+      {/* Entry-based sections: experience, internships, projects, education, leadership, volunteer */}
+      {(["experience", "internships", "projects", "education", "leadership", "volunteer"] as const).includes(
+        section as "experience",
+      ) &&
+        Array.isArray(content[section]) &&
+        (content[section] as ProfileListEntry[]).map((item) => (
+          <ClassicEntryCard key={item.id} item={item} isBuilder={isBuilder} />
+        ))}
+    </section>
+  );
+}
+
+function ClassicEntryCard({
+  item,
+  isBuilder,
+}: {
+  item: ProfileListEntry;
+  isBuilder: boolean;
+}) {
+  const bodySize = isBuilder ? "text-[0.63rem]" : "text-[0.78rem]";
+  const metaSize = isBuilder ? "text-[0.6rem]" : "text-[0.73rem]";
+
+  return (
+    <article className={isBuilder ? "mt-1" : "mt-1.5"}>
+      {/* Row 1: bold org + date right-aligned */}
+      <div className="grid grid-cols-[minmax(0,1fr)_auto] items-baseline gap-x-2">
+        <p className={cn("font-bold leading-snug", bodySize)}>
+          {item.title}
+          {item.organization ? (
+            <span className="font-normal">, <em>{item.organization}</em></span>
+          ) : null}
+          {item.location ? <span className="font-normal"> – {item.location}</span> : null}
+        </p>
+        {item.date ? (
+          <p className={cn("whitespace-nowrap text-right leading-snug", metaSize)}>{item.date}</p>
+        ) : null}
+      </div>
+
+      {/* Description paragraph */}
+      {item.description ? (
+        <p className={cn("leading-snug", metaSize)}>{item.description}</p>
+      ) : null}
+
+      {/* Bullet list */}
+      {item.bullets.filter(Boolean).length > 0 && (
+        <ul className={cn("list-none leading-snug", isBuilder ? "mt-0.5 space-y-0 pl-3" : "mt-1 space-y-0.5 pl-4")}>
+          {item.bullets.filter(Boolean).map((bullet, i) => (
+            <li key={i} className={cn("flex gap-1.5", bodySize)}>
+              <span className="shrink-0 select-none">•</span>
+              <span>{bullet}</span>
+            </li>
+          ))}
+        </ul>
+      )}
+    </article>
+  );
 }

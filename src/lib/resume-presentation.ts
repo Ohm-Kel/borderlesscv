@@ -97,6 +97,28 @@ export const TEMPLATE_THEMES: Record<ResumeTemplateKey, TemplateTheme> = {
       muted: "#78716c",
     },
   },
+  CLASSIC: {
+    preview: {
+      shell: "border-gray-400 bg-white",
+      accent: "bg-black",
+      accentSoft: "bg-white",
+      badge: "border-gray-300 bg-white text-black",
+      sidebar: "bg-white",
+      divider: "border-black",
+      title: "text-black",
+      muted: "text-black",
+    },
+    pdf: {
+      accent: "#000000",
+      accentSoft: "#ffffff",
+      accentMuted: "#d4d4d4",
+      surface: "#ffffff",
+      border: "#000000",
+      title: "#000000",
+      text: "#000000",
+      muted: "#374151",
+    },
+  },
 };
 
 function hasSectionContent(section: keyof ProfileContent, content: ProfileContent) {
@@ -114,12 +136,12 @@ export function getVisibleSections(document: ResumeDocument) {
   );
 }
 
-export function getSectionHeading(section: SectionKey) {
-  return SECTION_LABELS[section];
+export function getSectionHeading(section: SectionKey, overrides?: Record<string, string>) {
+  return overrides?.[section]?.trim() || SECTION_LABELS[section];
 }
 
 export function getTemplateSectionGroups(templateKey: ResumeTemplateKey, visibleSections: SectionKey[]) {
-  if (templateKey === "ATLAS") {
+  if (templateKey === "ATLAS" || templateKey === "CLASSIC") {
     return {
       mainSections: visibleSections,
       sidebarSections: [] as SectionKey[],

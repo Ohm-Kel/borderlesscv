@@ -573,6 +573,52 @@ export function ResumePdfDocument({
     );
   }
 
+  if (templateKey === "CLASSIC") {
+    const visibleSections = getVisibleSections(document);
+    const contactParts = [person.phone, person.location].filter(Boolean);
+
+    return (
+      <Document title={`${title}.pdf`}>
+        <Page size="A4" style={[styles.page, { padding: tuning.atlasPadding, fontFamily: "Times-Roman", fontSize: tuning.baseFontSize }]}>
+          {/* Header */}
+          <View style={{ marginBottom: 10, textAlign: "center" as const, alignItems: "center" }}>
+            <Text style={{ fontFamily: "Times-Bold", fontSize: tuning.nameSize + 2, color: "#000000" }}>
+              {person.name || "Candidate"}
+            </Text>
+            <Text style={{ fontSize: tuning.metaSize + 0.5, color: "#000000", marginTop: 3 }}>
+              {contactParts.join(" | ") || "City, Country | Phone"}
+            </Text>
+          </View>
+
+          {/* Summary */}
+          {document.summary ? (
+            <View style={{ marginBottom: 8 }}>
+              <View style={{ borderBottomWidth: 1, borderBottomColor: "#000000", marginBottom: 3 }}>
+                <Text style={{ fontFamily: "Times-Bold", fontSize: tuning.baseFontSize, textTransform: "uppercase", color: "#000000" }}>
+                  Professional Summary
+                </Text>
+              </View>
+              <Text style={{ fontSize: tuning.paragraphSize, lineHeight: tuning.paragraphLineHeight, color: "#000000" }}>
+                {document.summary}
+              </Text>
+            </View>
+          ) : null}
+
+          {/* Sections */}
+          {visibleSections.map((section) => (
+            <ClassicPdfSection
+              key={section}
+              section={section}
+              content={document.sections}
+              labelOverrides={document.sectionLabelOverrides}
+              tuning={tuning}
+            />
+          ))}
+        </Page>
+      </Document>
+    );
+  }
+
   return (
     <Document title={`${title}.pdf`}>
       <Page size="A4" style={[styles.page, styles.atlasPage, { fontSize: tuning.baseFontSize, padding: tuning.atlasPadding }]}>
@@ -912,6 +958,146 @@ function PdfAwardList({
           <Text style={[styles.itemTitle, { color: theme.title, fontSize: tuning.paragraphSize }]}>{item.title}</Text>
           <Text style={[styles.itemMeta, { color: theme.muted, fontSize: tuning.itemMetaSize, lineHeight: tuning.itemMetaLineHeight }]}>{formatMetaPieces([item.issuer, item.date])}</Text>
           {item.description ? <Text style={[styles.paragraph, { marginTop: 2, color: theme.text, fontSize: tuning.paragraphSize, lineHeight: tuning.paragraphLineHeight }]}>{item.description}</Text> : null}
+        </View>
+      ))}
+    </View>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────
+// CLASSIC PDF components
+// ─────────────────────────────────────────────────────────────
+
+function ClassicPdfSection({
+  section,
+  content,
+  labelOverrides,
+  tuning,
+}: {
+  section: keyof ProfileContent;
+  content: ProfileContent;
+  labelOverrides: Record<string, string>;
+  tuning: PdfTuning;
+}) {
+  const heading = getSectionHeading(section as Parameters<typeof getSectionHeading>[0], labelOverrides);
+  const bodySize = tuning.paragraphSize;
+  const metaSize = tuning.itemMetaSize;
+
+  return (
+    <View style={{ marginBottom: 8 }}>
+      {/* Section heading */}
+      <View style={{ borderBottomWidth: 1, borderBottomColor: "#000000", marginBottom: 3 }}>
+        <Text style={{ fontFamily: "Times-Bold", fontSize: tuning.baseFontSize, textTransform: "uppercase", color: "#000000" }}>
+          {heading}
+        </Text>
+      </View>
+
+      {/* Skills */}
+      {section === "skills" && content.skills.length > 0 && (
+        <Text style={{ fontSize: bodySize, color: "#000000", lineHeight: tuning.paragraphLineHeight }}>
+          <Text style={{ fontFamily: "Times-Bold" }}>Computer/Technical: </Text>
+          {content.skills.join(", ")}
+        </Text>
+      )}
+
+      {/* Languages */}
+      {section === "languages" && content.languages.length > 0 && (
+        <Text style={{ fontSize: bodySize, color: "#000000", lineHeight: tuning.paragraphLineHeight }}>
+          <Text style={{ fontFamily: "Times-Bold" }}>Languages: </Text>
+          {content.languages.map((l) => `${l.name}${l.proficiency ? ` [${l.proficiency}]` : ""}`).join(", ")}
+        </Text>
+      )}
+
+      {/* Certifications */}
+      {section === "certifications" && content.certifications.length > 0 && (
+        <Text style={{ fontSize: bodySize, color: "#000000", lineHeight: tuning.paragraphLineHeight }}>
+          <Text style={{ fontFamily: "Times-Bold" }}>Certifications: </Text>
+          {content.certifications
+            .map((c) => `${c.issuer ? `${c.issuer} — ` : ""}${c.title}${c.date ? ` [${c.date}]` : ""}`)
+            .join("; ")}
+        </Text>
+      )}
+
+      {/* Awards */}
+      {section === "awards" && content.awards.length > 0 && (
+        <View>
+          {content.awards.map((award) => (
+            <View key={award.id} style={{ flexDirection: "row", justifyContent: "space-between", marginBottom: 3 }}>
+              <View style={{ flexGrow: 1, flexShrink: 1, paddingRight: 8 }}>
+                <Text style={{ fontFamily: "Times-Bold", fontSize: bodySize, color: "#000000" }}>{award.title}</Text>
+                {award.issuer ? <Text style={{ fontFamily: "Times-Italic", fontSize: metaSize, color: "#000000" }}>{award.issuer}</Text> : null}
+                {award.description ? <Text style={{ fontSize: metaSize, color: "#000000", lineHeight: tuning.paragraphLineHeight }}>{award.description}</Text> : null}
+              </View>
+              {award.date ? <Text style={{ fontSize: metaSize, color: "#000000", width: 90, textAlign: "right" }}>{award.date}</Text> : null}
+            </View>
+          ))}
+        </View>
+      )}
+
+      {/* Links */}
+      {section === "links" && content.links.length > 0 && (
+        <Text style={{ fontSize: bodySize, color: "#000000", lineHeight: tuning.paragraphLineHeight }}>
+          {content.links.map((l) => l.label || l.url).join(" | ")}
+        </Text>
+      )}
+
+      {/* Entry-based sections */}
+      {(["experience", "internships", "projects", "education", "leadership", "volunteer"] as const).includes(
+        section as "experience",
+      ) &&
+        Array.isArray(content[section]) &&
+        (content[section] as ProfileListEntry[]).map((item) => (
+          <ClassicPdfEntry key={item.id} item={item} tuning={tuning} />
+        ))}
+    </View>
+  );
+}
+
+function ClassicPdfEntry({
+  item,
+  tuning,
+}: {
+  item: ProfileListEntry;
+  tuning: PdfTuning;
+}) {
+  const bodySize = tuning.paragraphSize;
+  const metaSize = tuning.itemMetaSize;
+
+  return (
+    <View style={{ marginBottom: 4 }}>
+      {/* Title row: bold org, italic role, location — date right-aligned */}
+      <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
+        <View style={{ flexGrow: 1, flexShrink: 1, paddingRight: 8 }}>
+          <Text style={{ fontSize: bodySize, color: "#000000", lineHeight: tuning.paragraphLineHeight }}>
+            <Text style={{ fontFamily: "Times-Bold" }}>{item.title}</Text>
+            {item.organization ? (
+              <Text>
+                {`, `}
+                <Text style={{ fontFamily: "Times-Italic" }}>{item.organization}</Text>
+              </Text>
+            ) : null}
+            {item.location ? <Text>{` – ${item.location}`}</Text> : null}
+          </Text>
+        </View>
+        {item.date ? (
+          <Text style={{ fontSize: metaSize, color: "#000000", width: tuning.dateColumnWidth, textAlign: "right", lineHeight: tuning.itemMetaLineHeight }}>
+            {item.date}
+          </Text>
+        ) : null}
+      </View>
+
+      {/* Description */}
+      {item.description ? (
+        <Text style={{ fontSize: metaSize, color: "#000000", lineHeight: tuning.paragraphLineHeight, marginTop: 1 }}>
+          {item.description}
+        </Text>
+      ) : null}
+
+      {/* Bullets */}
+      {item.bullets.filter(Boolean).map((bullet, i) => (
+        <View key={i} style={{ flexDirection: "row", marginTop: 1, paddingLeft: 8 }}>
+          <Text style={{ fontSize: bodySize, color: "#000000", marginRight: 4 }}>•</Text>
+          <Text style={{ fontSize: bodySize, color: "#000000", flexShrink: 1, lineHeight: tuning.bulletLineHeight }}>{bullet}</Text>
         </View>
       ))}
     </View>

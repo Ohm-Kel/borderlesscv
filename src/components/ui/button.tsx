@@ -9,14 +9,21 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: "bg-[var(--accent)] text-white shadow-[0_1px_2px_rgba(0,201,167,0.14),0_8px_16px_rgba(0,201,167,0.10)] ring-1 ring-white/10 hover:bg-[var(--accent-dark)]",
-        secondary: "bg-white text-[var(--navy)] ring-1 ring-[var(--border)] shadow-[0_4px_12px_rgba(13,27,42,0.04)] hover:bg-slate-50",
-        ghost: "text-slate-600 hover:text-[var(--accent)] hover:bg-[var(--accent-soft)] hover:underline decoration-2 underline-offset-4",
-        navy: "bg-[var(--navy)] text-white shadow-[0_1px_2px_rgba(13,27,42,0.14),0_8px_16px_rgba(13,27,42,0.10)] ring-1 ring-white/10 hover:brightness-110",
-        outline: "bg-transparent text-[var(--navy)] ring-1 ring-slate-300 hover:bg-white",
-        danger: "bg-rose-600 text-white shadow-sm hover:bg-rose-500",
-        // Backward-compatible alias
-        accent: "bg-[var(--accent)] text-white shadow-[0_1px_2px_rgba(0,201,167,0.14),0_8px_16px_rgba(0,201,167,0.10)] ring-1 ring-white/10 hover:bg-[var(--accent-dark)]",
+        default:
+          "bg-[var(--primary)] text-white shadow-[0_1px_2px_rgba(255,126,95,0.14),0_8px_16px_rgba(255,126,95,0.18)] ring-1 ring-white/10 hover:bg-[var(--accent-dark)]",
+        secondary:
+          "bg-[var(--secondary)] text-[var(--secondary-foreground)] ring-1 ring-[var(--border)] shadow-[0_4px_12px_rgba(61,52,54,0.04)] hover:bg-[var(--muted)]",
+        ghost:
+          "text-[var(--foreground)] hover:text-[var(--primary)] hover:bg-[var(--muted)] hover:underline decoration-2 underline-offset-4",
+        navy:
+          "bg-[var(--navy)] text-white shadow-[0_1px_2px_rgba(61,52,54,0.14),0_8px_16px_rgba(61,52,54,0.10)] ring-1 ring-white/10 hover:brightness-110",
+        outline:
+          "bg-transparent text-[var(--foreground)] ring-1 ring-[var(--border)] hover:bg-[var(--muted)]",
+        danger:
+          "bg-destructive text-white shadow-sm hover:bg-destructive/90",
+        // backward-compatible alias
+        accent:
+          "bg-[var(--accent)] text-[var(--accent-foreground)] shadow-[0_1px_2px_rgba(254,180,123,0.14),0_8px_16px_rgba(254,180,123,0.14)] ring-1 ring-white/10 hover:brightness-105",
       },
       size: {
         default: "h-11 px-6 py-2",
@@ -32,14 +39,24 @@ const buttonVariants = cva(
   },
 );
 
-export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement>, VariantProps<typeof buttonVariants> {
+export interface ButtonProps
+  extends React.ButtonHTMLAttributes<HTMLButtonElement>,
+    VariantProps<typeof buttonVariants> {
   asChild?: boolean;
 }
 
-const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(({ className, variant, size, asChild = false, ...props }, ref) => {
-  const Comp = asChild ? Slot : "button";
-  return <Comp className={cn(buttonVariants({ variant, size, className }))} ref={ref} {...props} />;
-});
+const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
+  ({ className, variant, size, asChild = false, ...props }, ref) => {
+    const Comp = asChild ? Slot : "button";
+    return (
+      <Comp
+        className={cn(buttonVariants({ variant, size, className }))}
+        ref={ref}
+        {...props}
+      />
+    );
+  },
+);
 Button.displayName = "Button";
 
 export { Button, buttonVariants };

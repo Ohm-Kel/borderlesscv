@@ -35,6 +35,11 @@ export const RESUME_TEMPLATE_OPTIONS: Array<{
     label: "Ember",
     description: "A compact ATS-first template optimized for speed and consistency.",
   },
+  {
+    value: "CLASSIC",
+    label: "Classic",
+    description: "A traditional, single-column serif template matching strict ATS layout requirements.",
+  },
 ];
 
 export const EMPHASIS_MODE_OPTIONS: Array<{ value: EmphasisMode; label: string; description: string }> = [

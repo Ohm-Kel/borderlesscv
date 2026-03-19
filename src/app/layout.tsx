@@ -1,19 +1,26 @@
 import type { Metadata } from "next";
-import { DM_Sans, DM_Serif_Display } from "next/font/google";
+import { Montserrat, Merriweather, Ubuntu_Mono } from "next/font/google";
 
 import { AppProviders } from "@/app/providers";
 
 import "./globals.css";
 
-const fontSans = DM_Sans({
+const fontSans = Montserrat({
   subsets: ["latin"],
   variable: "--font-sans",
+  weight: ["300", "400", "500", "600", "700"],
 });
 
-const fontSerif = DM_Serif_Display({
+const fontSerif = Merriweather({
   subsets: ["latin"],
-  weight: "400",
+  weight: ["400", "700"],
   variable: "--font-serif",
+});
+
+const fontMono = Ubuntu_Mono({
+  subsets: ["latin"],
+  weight: ["400", "700"],
+  variable: "--font-mono",
 });
 
 export const metadata: Metadata = {
@@ -32,7 +39,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${fontSans.variable} ${fontSerif.variable} min-h-screen bg-[var(--background)] font-sans text-[var(--foreground)] antialiased`}>
+      <body className={`${fontSans.variable} ${fontSerif.variable} ${fontMono.variable} min-h-screen bg-[var(--background)] font-sans text-[var(--foreground)] antialiased`}>
         <AppProviders>{children}</AppProviders>
       </body>
     </html>

@@ -1,77 +1,138 @@
 @import "tailwindcss";
 
 :root {
-  /* Light mode palette only for now */
-  --background: #F8F9FA;
-  --foreground: #0D1B2A;
-  
-  --surface: #FFFFFF;
-  --surface-muted: #F3F4F6;
-  
-  --border: #E5E7EB;
-  --ring: #00C9A7;
-  
-  /* Accent: electric teal */
-  --accent: #00C9A7;
-  --accent-dark: #00A98A;
-  --accent-soft: #F0FDF9;
-  
-  /* Deep Navy */
-  --navy: #0D1B2A;
-  
-  --muted-foreground: #6B7280;
-  
-  /* 8pt grid spacing system (1 = 4px, 2 = 8px, etc) */
-  --space-0: 0px;
-  --space-1: 4px;
-  --space-2: 8px;
-  --space-3: 12px;
-  --space-4: 16px;
-  --space-5: 20px;
-  --space-6: 24px;
-  --space-8: 32px;
-  --space-10: 40px;
-  --space-12: 48px;
-  --space-16: 64px;
-  --space-20: 80px;
-  --space-24: 96px;
+  --card: #ffffff;
+  --ring: #ff7e5f;
+  --input: #ffe0d6;
+  --muted: #fff0eb;
+  --accent: #feb47b;
+  --border: #ffe0d6;
+  --radius: 0.625rem;
+  --chart-1: #ff7e5f;
+  --chart-2: #feb47b;
+  --chart-3: #ffcaa7;
+  --chart-4: #ffad8f;
+  --chart-5: #ce6a57;
+  --popover: #ffffff;
+  --primary: #ff7e5f;
+  --sidebar: #fff0eb;
+  --font-mono: "Ubuntu Mono", monospace;
+  --font-sans: "Montserrat", sans-serif;
+  --secondary: #ffedea;
+  --background: #fff9f5;
+  --font-serif: "Merriweather", serif;
+  --foreground: #3d3436;
+  --destructive: #e63946;
+  --shadow-blur: 12px;
+  --shadow-color: hsl(0 0% 0%);
+  --sidebar-ring: #ff7e5f;
+  --shadow-spread: -3px;
+  --shadow-opacity: 0.09;
+  --sidebar-accent: #feb47b;
+  --sidebar-border: #ffe0d6;
+  --card-foreground: #3d3436;
+  --shadow-offset-x: 0px;
+  --shadow-offset-y: 6px;
+  --sidebar-primary: #ff7e5f;
+  --muted-foreground: #78716C;
+  --accent-foreground: #3d3436;
+  --popover-foreground: #3d3436;
+  --primary-foreground: #ffffff;
+  --sidebar-foreground: #3d3436;
+  --secondary-foreground: #b35340;
+  --destructive-foreground: #ffffff;
+  --sidebar-accent-foreground: #3d3436;
+  --sidebar-primary-foreground: #ffffff;
+
+  /* Semantic aliases used throughout components */
+  --navy: #3d3436;
+  --accent-dark: #e05e3a;
+  --accent-soft: #fff0eb;
 }
 
 .dark {
-  --background: #0F1117;
-  --foreground: #F8F9FA;
-  
-  --surface: #1A1D24;
-  --surface-muted: #212530;
-  
-  --border: #334155;
-  --ring: #00C9A7;
-  
-  /* Accent stays same for contrast, dark variant slightly adjusted */
-  --accent: #00D3B0;
-  --accent-dark: #00C9A7;
-  --accent-soft: rgba(0, 201, 167, 0.15);
-  
-  --navy: #0F1117; /* In dark mode, navy is the background */
-  
-  --muted-foreground: #94A3B8;
+  --card: #392f35;
+  --ring: #ff7e5f;
+  --input: #463a41;
+  --muted: #392f35;
+  --accent: #feb47b;
+  --border: #463a41;
+  --radius: 0.625rem;
+  --chart-1: #ff7e5f;
+  --chart-2: #feb47b;
+  --chart-3: #ffcaa7;
+  --chart-4: #ffad8f;
+  --chart-5: #ce6a57;
+  --popover: #392f35;
+  --primary: #ff7e5f;
+  --sidebar: #2a2024;
+  --secondary: #463a41;
+  --background: #2a2024;
+  --foreground: #f2e9e4;
+  --destructive: #e63946;
+  --sidebar-ring: #ff7e5f;
+  --sidebar-accent: #feb47b;
+  --sidebar-border: #463a41;
+  --card-foreground: #f2e9e4;
+  --sidebar-primary: #ff7e5f;
+  --muted-foreground: #d7c6bc;
+  --accent-foreground: #2a2024;
+  --popover-foreground: #f2e9e4;
+  --primary-foreground: #ffffff;
+  --sidebar-foreground: #f2e9e4;
+  --secondary-foreground: #f2e9e4;
+  --destructive-foreground: #ffffff;
+  --sidebar-accent-foreground: #2a2024;
+  --sidebar-primary-foreground: #ffffff;
+
+  /* Semantic aliases used throughout components */
+  --navy: #f2e9e4;
+  --accent-dark: #ff9671;
+  --accent-soft: rgba(255, 126, 95, 0.15);
 }
 
 @theme inline {
+  --color-card: var(--card);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-muted: var(--muted);
+  --color-accent: var(--accent);
+  --color-border: var(--border);
+  --color-radius: var(--radius);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-popover: var(--popover);
+  --color-primary: var(--primary);
+  --color-sidebar: var(--sidebar);
+  --color-secondary: var(--secondary);
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --color-surface: var(--surface);
-  --color-surface-muted: var(--surface-muted);
-  --color-border: var(--border);
-  --color-accent: var(--accent);
+  --color-destructive: var(--destructive);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-card-foreground: var(--card-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-navy: var(--navy);
   --color-accent-dark: var(--accent-dark);
   --color-accent-soft: var(--accent-soft);
-  --color-navy: var(--navy);
-  --color-muted-foreground: var(--muted-foreground);
-  
+
   /* Map fonts configured via next/font/google */
   --font-sans: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
   --font-serif: var(--font-serif), ui-serif, Georgia, serif;
+  --font-mono: var(--font-mono), ui-monospace, monospace;
 }
 
 * {
@@ -85,6 +146,7 @@ html {
 body {
   background: var(--background);
   color: var(--foreground);
+  font-family: var(--font-sans);
 }
 
 a {
@@ -93,15 +155,15 @@ a {
 }
 
 ::selection {
-  background: rgba(0, 201, 167, 0.2); 
+  background: rgba(255, 126, 95, 0.2);
   color: var(--navy);
 }
 
 /* ─── Surface card ──────────────────────────────────────── */
 .surface-card {
-  background: var(--surface);
+  background: var(--card);
   border: 1px solid var(--border);
-  box-shadow: 0 1px 4px rgba(13, 27, 42, 0.06);
+  box-shadow: 0 1px 4px rgba(61, 52, 54, 0.06);
   border-radius: 16px;
   transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease, border-color 0.2s ease;
 }
@@ -112,7 +174,7 @@ a {
 
 .surface-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 16px rgba(13, 27, 42, 0.08);
+  box-shadow: 0 8px 16px rgba(61, 52, 54, 0.08);
 }
 
 .dark .surface-card:hover {
@@ -123,10 +185,18 @@ a {
 /* ─── Landing mesh background ───────────────────────────── */
 .mesh-bg {
   background:
-    radial-gradient(ellipse 70% 45% at 4% 0%, rgba(0, 201, 167, 0.12), transparent auto),
-    radial-gradient(ellipse 55% 38% at 96% 6%, rgba(13, 27, 42, 0.08), transparent auto),
-    radial-gradient(ellipse 45% 32% at 50% 102%, rgba(0, 201, 167, 0.05), transparent auto),
-    linear-gradient(180deg, #FFFFFF 0%, #F8F9FA 50%, #F3F4F6 100%);
+    radial-gradient(ellipse 70% 45% at 4% 0%, rgba(255, 126, 95, 0.10), transparent auto),
+    radial-gradient(ellipse 55% 38% at 96% 6%, rgba(254, 180, 123, 0.08), transparent auto),
+    radial-gradient(ellipse 45% 32% at 50% 102%, rgba(255, 126, 95, 0.05), transparent auto),
+    linear-gradient(180deg, #FFFFFF 0%, #fff9f5 50%, #fff0eb 100%);
+}
+
+.dark .mesh-bg {
+  background:
+    radial-gradient(ellipse 70% 45% at 4% 0%, rgba(255, 126, 95, 0.10), transparent auto),
+    radial-gradient(ellipse 55% 38% at 96% 6%, rgba(254, 180, 123, 0.08), transparent auto),
+    radial-gradient(ellipse 45% 32% at 50% 102%, rgba(255, 126, 95, 0.04), transparent auto),
+    linear-gradient(180deg, #2a2024 0%, #2a2024 50%, #2a2024 100%);
 }
 
 /* ─── Auth panel card (dark left side) ──────────────────── */
@@ -134,13 +204,13 @@ a {
   background: rgba(255, 255, 255, 0.08);
   border: 1px solid rgba(255, 255, 255, 0.15);
   box-shadow:
-    0 24px 60px rgba(13, 27, 42, 0.14),
+    0 24px 60px rgba(61, 52, 54, 0.14),
     inset 0 1px 0 rgba(255, 255, 255, 0.10);
   transition: background 0.22s ease, border-color 0.22s ease, box-shadow 0.22s ease;
 }
 
 .dark .auth-panel-card {
-  background: var(--surface);
+  background: var(--card);
   border: 1px solid var(--border);
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
 }
@@ -149,7 +219,7 @@ a {
   background: rgba(255, 255, 255, 0.12);
   border-color: rgba(255, 255, 255, 0.25);
   box-shadow:
-    0 28px 70px rgba(13, 27, 42, 0.18),
+    0 28px 70px rgba(61, 52, 54, 0.18),
     inset 0 1px 0 rgba(255, 255, 255, 0.12);
 }
 
@@ -162,9 +232,9 @@ a {
 /* ─── Editor grid ───────────────────────────────────────── */
 .editor-grid {
   background-image:
-    linear-gradient(var(--surface) 0 0),
-    linear-gradient(90deg, rgba(13, 27, 42, 0.04) 1px, transparent 1px),
-    linear-gradient(rgba(13, 27, 42, 0.04) 1px, transparent 1px);
+    linear-gradient(var(--card) 0 0),
+    linear-gradient(90deg, rgba(61, 52, 54, 0.04) 1px, transparent 1px),
+    linear-gradient(rgba(61, 52, 54, 0.04) 1px, transparent 1px);
   background-size:
     100% 100%,
     24px 24px,
@@ -192,9 +262,9 @@ a {
 .field-card {
   border-radius: 12px;
   border: 1px solid var(--border);
-  background: var(--surface);
+  background: var(--card);
   padding: 1rem;
-  box-shadow: 0 1px 2px rgba(13, 27, 42, 0.04);
+  box-shadow: 0 1px 2px rgba(61, 52, 54, 0.04);
   transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
 }
 
@@ -203,16 +273,16 @@ a {
 }
 
 .field-card:focus-within {
-  border-color: var(--accent);
+  border-color: var(--primary);
   box-shadow:
-    0 4px 12px rgba(0, 201, 167, 0.08),
-    0 0 0 2px rgba(0, 201, 167, 0.2);
+    0 4px 12px rgba(255, 126, 95, 0.08),
+    0 0 0 2px rgba(255, 126, 95, 0.2);
 }
 
 .dark .field-card:focus-within {
   box-shadow:
-    0 4px 12px rgba(0, 201, 167, 0.15),
-    0 0 0 2px rgba(0, 201, 167, 0.3);
+    0 4px 12px rgba(255, 126, 95, 0.15),
+    0 0 0 2px rgba(255, 126, 95, 0.3);
 }
 
 /* ─── Skeleton Pulse ────────────────────────────────────── */
@@ -224,6 +294,6 @@ a {
 
 .skeleton {
   animation: pulse-shimmer 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-  background-color: var(--surface-muted);
+  background-color: var(--muted);
   border-radius: 6px;
 }
